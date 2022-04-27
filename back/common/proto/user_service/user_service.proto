@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+option go_package = "github.com/XWS-2022-Tim12/Dislinkt/back/common/user";
+
+package user;
+
+import "google/api/annotations.proto";
+
+service UserService{
+        rpc Get(GetRequest) returns(GetResponse) {
+        	option (google.api.http) = {
+			get: "/user/user/{id}"
+		};
+        }
+        rpc GetAll(GetAllRequest) returns(GetAllResponse) {
+        	option (google.api.http) = {
+			get: "/user/users"
+		};
+        }
+}
+
+message GetRequest {
+        string id = 1;
+}
+
+message GetResponse {
+        User user = 1;
+}
+
+message GetAllRequest {
+}
+
+message GetAllResponse {
+        repeated User user = 1;
+}
+
+message User {
+        string id = 1;
+        string email = 2;
+        string username = 3;
+        string password = 4;
+}
