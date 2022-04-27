@@ -3,6 +3,14 @@ module github.com/XWS-2022-Tim12/Dislinkt/back/user_service
 go 1.17
 
 replace github.com/XWS-2022-Tim12/Dislinkt/back/common => ../common
+replace github.com/XWS-2022-Tim12/Dislinkt/back/user_service/domain => ../user_service/domain
+replace github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_service => ../common/proto/user_service
+replace github.com/XWS-2022-Tim12/Dislinkt/back/user_service/domain => ../user_service/domain
+replace github.com/XWS-2022-Tim12/Dislinkt/back/user_service/application => ../user_service/application
+replace github.com/XWS-2022-Tim12/Dislinkt/back/user_service/infrastructure/api => ../user_service/infrastructure/api
+replace github.com/XWS-2022-Tim12/Dislinkt/back/user_service/infrastructure/persistence => ../user_service/infrastructure/persistence
+replace github.com/XWS-2022-Tim12/Dislinkt/back/user_service/startup/config => ../user_service/startup/config
+replace github.com/XWS-2022-Tim12/Dislinkt/back/user_service/startup => ../user_service/startup
 
 require (
 	go.mongodb.org/mongo-driver v1.8.4

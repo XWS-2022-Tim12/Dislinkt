@@ -2,6 +2,8 @@ module github.com/tamararankovic/microservices_demo/common
 
 go 1.17
 
+replace github.com/XWS-2022-Tim12/Dislinkt/back/common/user => ../common/user
+
 require (
 	github.com/golang/protobuf v1.5.2
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.9.0

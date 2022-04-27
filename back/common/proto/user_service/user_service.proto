@@ -31,7 +31,7 @@ message GetAllRequest {
 }
 
 message GetAllResponse {
-        repeated User user = 1;
+        repeated User users = 1;
 }
 
 message User {

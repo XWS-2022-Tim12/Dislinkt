@@ -15,7 +15,7 @@ const (
 )
 
 type UserMongoDBStore struct {
-	Users *mongo.Collection
+	users *mongo.Collection
 }
 
 func NewUserMongoDBStore(client *mongo.Client) domain.UserStore {
