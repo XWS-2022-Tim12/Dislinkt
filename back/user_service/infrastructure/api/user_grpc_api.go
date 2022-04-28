@@ -59,3 +59,39 @@ func (handler *UserHandler) Register(ctx context.Context, request *pb.RegisterRe
 	}
 	return response, err
 }
+
+func (handler *UserHandler) UpdateBasicInfo(ctx context.Context, request *pb.UpdateBasicInfoRequest) (*pb.UpdateBasicInfoResponse, error) {
+	user := mapBasicInfoUser(request.User)
+	successs, err := handler.service.UpdateBasicInfo(user)
+	response := &pb.UpdateBasicInfoResponse{
+		Success: successs,
+	}
+	return response, err
+}
+
+func (handler *UserHandler) UpdateAdvancedInfo(ctx context.Context, request *pb.UpdateAdvancedInfoRequest) (*pb.UpdateAdvancedInfoResponse, error) {
+	user := mapAdvancedInfoUser(request.User)
+	successs, err := handler.service.UpdateAdvancedInfo(user)
+	response := &pb.UpdateAdvancedInfoResponse{
+		Success: successs,
+	}
+	return response, err
+}
+
+func (handler *UserHandler) UpdatePersonalInfo(ctx context.Context, request *pb.UpdatePersonalInfoRequest) (*pb.UpdatePersonalInfoResponse, error) {
+	user := mapPersonalInfoUser(request.User)
+	successs, err := handler.service.UpdatePersonalInfo(user)
+	response := &pb.UpdatePersonalInfoResponse{
+		Success: successs,
+	}
+	return response, err
+}
+
+func (handler *UserHandler) UpdateAllInfo(ctx context.Context, request *pb.UpdateAllInfoRequest) (*pb.UpdateAllInfoResponse, error) {
+	user := mapAllInfoUser(request.User)
+	successs, err := handler.service.UpdateAllInfo(user)
+	response := &pb.UpdateAllInfoResponse{
+		Success: successs,
+	}
+	return response, err
+}

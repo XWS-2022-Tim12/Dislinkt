@@ -1,6 +1,8 @@
 package api
 
 import (
+	"time"
+
 	pb "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_service"
 	"github.com/XWS-2022-Tim12/Dislinkt/back/user_service/domain"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -28,23 +30,138 @@ func mapUser(user *domain.User) *pb.User {
 
 func mapNewUser(userPb *pb.User) *domain.User {
 
-	user := &domain.User{
-		Id:           primitive.NewObjectID(),
-		Firstname:    userPb.Firstname,
-		Email:        userPb.Email,
-		MobileNumber: userPb.MobileNumber,
-		Gender:       mapNewGender(userPb.Gender),
-		BirthDay:     userPb.BirthDay.AsTime(),
-		Username:     userPb.Username,
-		Biography:    userPb.Biography,
-		Experience:   userPb.Experience,
-		Education:    mapNewEducation(userPb.Education),
-		Skills:       userPb.Skills,
-		Interests:    userPb.Interests,
-		Password:     userPb.Password,
+	if userPb.BirthDay != nil {
+		user := &domain.User{
+			Id:           primitive.NewObjectID(),
+			Firstname:    userPb.Firstname,
+			Email:        userPb.Email,
+			MobileNumber: userPb.MobileNumber,
+			Gender:       mapNewGender(userPb.Gender),
+			BirthDay:     userPb.BirthDay.AsTime(),
+			Username:     userPb.Username,
+			Biography:    userPb.Biography,
+			Experience:   userPb.Experience,
+			Education:    mapNewEducation(userPb.Education),
+			Skills:       userPb.Skills,
+			Interests:    userPb.Interests,
+			Password:     userPb.Password,
+		}
+		return user
+	} else {
+		user := &domain.User{
+			Id:           primitive.NewObjectID(),
+			Firstname:    userPb.Firstname,
+			Email:        userPb.Email,
+			MobileNumber: userPb.MobileNumber,
+			Gender:       mapNewGender(userPb.Gender),
+			BirthDay:     time.Now(),
+			Username:     userPb.Username,
+			Biography:    userPb.Biography,
+			Experience:   userPb.Experience,
+			Education:    mapNewEducation(userPb.Education),
+			Skills:       userPb.Skills,
+			Interests:    userPb.Interests,
+			Password:     userPb.Password,
+		}
+		return user
 	}
+}
 
+func mapBasicInfoUser(userPb *pb.User) *domain.User {
+
+	id, _ := primitive.ObjectIDFromHex(userPb.Id)
+
+	if userPb.BirthDay != nil {
+		user := &domain.User{
+			Id:           id,
+			Firstname:    userPb.Firstname,
+			Email:        userPb.Email,
+			MobileNumber: userPb.MobileNumber,
+			Gender:       mapNewGender(userPb.Gender),
+			BirthDay:     userPb.BirthDay.AsTime(),
+			Username:     userPb.Username,
+			Biography:    userPb.Biography,
+			Password:     userPb.Password,
+		}
+		return user
+	} else {
+		user := &domain.User{
+			Id:           id,
+			Firstname:    userPb.Firstname,
+			Email:        userPb.Email,
+			MobileNumber: userPb.MobileNumber,
+			Gender:       mapNewGender(userPb.Gender),
+			BirthDay:     time.Now(),
+			Username:     userPb.Username,
+			Biography:    userPb.Biography,
+			Password:     userPb.Password,
+		}
+		return user
+	}
+}
+
+func mapAdvancedInfoUser(userPb *pb.User) *domain.User {
+	id, _ := primitive.ObjectIDFromHex(userPb.Id)
+
+	user := &domain.User{
+		Id:         id,
+		Experience: userPb.Experience,
+		Education:  mapNewEducation(userPb.Education),
+		Password:   userPb.Password,
+	}
 	return user
+}
+
+func mapPersonalInfoUser(userPb *pb.User) *domain.User {
+	id, _ := primitive.ObjectIDFromHex(userPb.Id)
+
+	user := &domain.User{
+		Id:        id,
+		Skills:    userPb.Skills,
+		Interests: userPb.Interests,
+		Password:  userPb.Password,
+	}
+	return user
+}
+
+func mapAllInfoUser(userPb *pb.User) *domain.User {
+	id, _ := primitive.ObjectIDFromHex(userPb.Id)
+
+	if userPb.BirthDay != nil {
+		user := &domain.User{
+			Id:           id,
+			Firstname:    userPb.Firstname,
+			Email:        userPb.Email,
+			MobileNumber: userPb.MobileNumber,
+			Gender:       mapNewGender(userPb.Gender),
+			BirthDay:     userPb.BirthDay.AsTime(),
+			Username:     userPb.Username,
+			Biography:    userPb.Biography,
+			Experience:   userPb.Experience,
+			Education:    mapNewEducation(userPb.Education),
+			Skills:       userPb.Skills,
+			Interests:    userPb.Interests,
+			Password:     userPb.Password,
+		}
+		return user
+	} else {
+		user := &domain.User{
+			Id:           id,
+			Firstname:    userPb.Firstname,
+			Email:        userPb.Email,
+			MobileNumber: userPb.MobileNumber,
+			Gender:       mapNewGender(userPb.Gender),
+			BirthDay:     time.Now(),
+			Username:     userPb.Username,
+			Biography:    userPb.Biography,
+			Experience:   userPb.Experience,
+			Education:    mapNewEducation(userPb.Education),
+			Skills:       userPb.Skills,
+			Interests:    userPb.Interests,
+			Password:     userPb.Password,
+		}
+		return user
+	}
 }
 
 func mapEducation(status domain.EducationEnum) pb.User_EducationEnum {

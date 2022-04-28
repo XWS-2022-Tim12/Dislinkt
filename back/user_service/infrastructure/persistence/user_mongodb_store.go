@@ -45,19 +45,134 @@ func (store *UserMongoDBStore) GetAll() ([]*domain.User, error) {
 	return store.filter(filter)
 }
 
+func (store *UserMongoDBStore) UpdateBasicInfo(user *domain.User) (string, error) {
+	userInDatabase, err := store.Get(user.Id)
+	if userInDatabase == nil {
+		return "user doesn't exist", nil
+	}
+	if userInDatabase.Password != user.Password {
+		return "wrong password", nil
+	}
+	checkUsername, err := store.GetByUsername(user.Username)
+	if checkUsername != nil {
+		if checkUsername.Id != userInDatabase.Id {
+			return "username exists", nil
+		}
+	}
+	userInDatabase.Firstname = user.Firstname
+	userInDatabase.Email = user.Email
+	userInDatabase.MobileNumber = user.MobileNumber
+	userInDatabase.Gender = user.Gender
+	userInDatabase.BirthDay = user.BirthDay
+	userInDatabase.Username = user.Username
+	userInDatabase.Biography = user.Biography
+	filter := bson.M{"_id": userInDatabase.Id}
+	update := bson.M{
+		"$set": userInDatabase,
+	}
+	_, err = store.users.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return "error while updating", err
+	}
+
+	return "success", nil
+
+}
+func (store *UserMongoDBStore) UpdateAdvancedInfo(user *domain.User) (string, error) {
+	userInDatabase, err := store.Get(user.Id)
+	if userInDatabase == nil {
+		return "user doesn't exist", nil
+	}
+	if userInDatabase.Password != user.Password {
+		return "wrong password", nil
+	}
+	userInDatabase.Experience = user.Experience
+	userInDatabase.Education = user.Education
+	filter := bson.M{"_id": userInDatabase.Id}
+	update := bson.M{
+		"$set": userInDatabase,
+	}
+	_, err = store.users.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return "error while updating", err
+	}
+
+	return "success", nil
+
+}
+func (store *UserMongoDBStore) UpdatePersonalInfo(user *domain.User) (string, error) {
+
+	userInDatabase, err := store.Get(user.Id)
+	if userInDatabase == nil {
+		return "user doesn't exist", nil
+	}
+	if userInDatabase.Password != user.Password {
+		return "wrong password", nil
+	}
+	userInDatabase.Skills = user.Skills
+	userInDatabase.Interests = user.Interests
+	filter := bson.M{"_id": userInDatabase.Id}
+	update := bson.M{
+		"$set": userInDatabase,
+	}
+	_, err = store.users.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return "error while updating", err
+	}
+
+	return "success", nil
+}
+func (store *UserMongoDBStore) UpdateAllInfo(user *domain.User) (string, error) {
+	userInDatabase, err := store.Get(user.Id)
+	if userInDatabase == nil {
+		return "user doesn't exist", nil
+	}
+	if userInDatabase.Password != user.Password {
+		return "wrong password", nil
+	}
+	checkUsername, err := store.GetByUsername(user.Username)
+	if checkUsername != nil {
+		if checkUsername.Id != userInDatabase.Id {
+			return "username exists", nil
+		}
+	}
+	userInDatabase.Firstname = user.Firstname
+	userInDatabase.Email = user.Email
+	userInDatabase.MobileNumber = user.MobileNumber
+	userInDatabase.Gender = user.Gender
+	userInDatabase.BirthDay = user.BirthDay
+	userInDatabase.Username = user.Username
+	userInDatabase.Biography = user.Biography
+	userInDatabase.Experience = user.Experience
+	userInDatabase.Education = user.Education
+	userInDatabase.Skills = user.Skills
+	userInDatabase.Interests = user.Interests
+	filter := bson.M{"_id": userInDatabase.Id}
+	update := bson.M{
+		"$set": userInDatabase,
+	}
+	_, err = store.users.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return "error while updating", err
+	}
+
+	return "success", nil
+
+}
+
 func (store *UserMongoDBStore) Insert(user *domain.User) (string, error) {
 	userInDatabase, err := store.Get(user.Id)
 	user.Id = primitive.NewObjectID()
 	if userInDatabase != nil {
-		return "id exists", err
+		return "id exists", nil
 	}
 	userInDatabase, err = store.GetByEmail(user.Email)
 	if userInDatabase != nil {
-		return "email exists", err
+		return "email exists", nil
 	}
 	userInDatabase, err = store.GetByUsername(user.Username)
 	if userInDatabase != nil {
-		return "username exists", err
+		return "username exists", nil
 	}
 	result, err := store.users.InsertOne(context.TODO(), user)
 	if err != nil {

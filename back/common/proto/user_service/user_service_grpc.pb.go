@@ -20,6 +20,10 @@ type UserServiceClient interface {
 	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
 	GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
+	UpdateBasicInfo(ctx context.Context, in *UpdateBasicInfoRequest, opts ...grpc.CallOption) (*UpdateBasicInfoResponse, error)
+	UpdateAdvancedInfo(ctx context.Context, in *UpdateAdvancedInfoRequest, opts ...grpc.CallOption) (*UpdateAdvancedInfoResponse, error)
+	UpdatePersonalInfo(ctx context.Context, in *UpdatePersonalInfoRequest, opts ...grpc.CallOption) (*UpdatePersonalInfoResponse, error)
+	UpdateAllInfo(ctx context.Context, in *UpdateAllInfoRequest, opts ...grpc.CallOption) (*UpdateAllInfoResponse, error)
 }
 
 type userServiceClient struct {
@@ -57,6 +61,42 @@ func (c *userServiceClient) Register(ctx context.Context, in *RegisterRequest, o
 	return out, nil
 }
 
+func (c *userServiceClient) UpdateBasicInfo(ctx context.Context, in *UpdateBasicInfoRequest, opts ...grpc.CallOption) (*UpdateBasicInfoResponse, error) {
+	out := new(UpdateBasicInfoResponse)
+	err := c.cc.Invoke(ctx, "/user.UserService/UpdateBasicInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UpdateAdvancedInfo(ctx context.Context, in *UpdateAdvancedInfoRequest, opts ...grpc.CallOption) (*UpdateAdvancedInfoResponse, error) {
+	out := new(UpdateAdvancedInfoResponse)
+	err := c.cc.Invoke(ctx, "/user.UserService/UpdateAdvancedInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UpdatePersonalInfo(ctx context.Context, in *UpdatePersonalInfoRequest, opts ...grpc.CallOption) (*UpdatePersonalInfoResponse, error) {
+	out := new(UpdatePersonalInfoResponse)
+	err := c.cc.Invoke(ctx, "/user.UserService/UpdatePersonalInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UpdateAllInfo(ctx context.Context, in *UpdateAllInfoRequest, opts ...grpc.CallOption) (*UpdateAllInfoResponse, error) {
+	out := new(UpdateAllInfoResponse)
+	err := c.cc.Invoke(ctx, "/user.UserService/UpdateAllInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -64,6 +104,10 @@ type UserServiceServer interface {
 	Get(context.Context, *GetRequest) (*GetResponse, error)
 	GetAll(context.Context, *GetAllRequest) (*GetAllResponse, error)
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
+	UpdateBasicInfo(context.Context, *UpdateBasicInfoRequest) (*UpdateBasicInfoResponse, error)
+	UpdateAdvancedInfo(context.Context, *UpdateAdvancedInfoRequest) (*UpdateAdvancedInfoResponse, error)
+	UpdatePersonalInfo(context.Context, *UpdatePersonalInfoRequest) (*UpdatePersonalInfoResponse, error)
+	UpdateAllInfo(context.Context, *UpdateAllInfoRequest) (*UpdateAllInfoResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -79,6 +123,18 @@ func (*UnimplementedUserServiceServer) GetAll(context.Context, *GetAllRequest) (
 }
 func (*UnimplementedUserServiceServer) Register(context.Context, *RegisterRequest) (*RegisterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
+}
+func (*UnimplementedUserServiceServer) UpdateBasicInfo(context.Context, *UpdateBasicInfoRequest) (*UpdateBasicInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateBasicInfo not implemented")
+}
+func (*UnimplementedUserServiceServer) UpdateAdvancedInfo(context.Context, *UpdateAdvancedInfoRequest) (*UpdateAdvancedInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateAdvancedInfo not implemented")
+}
+func (*UnimplementedUserServiceServer) UpdatePersonalInfo(context.Context, *UpdatePersonalInfoRequest) (*UpdatePersonalInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePersonalInfo not implemented")
+}
+func (*UnimplementedUserServiceServer) UpdateAllInfo(context.Context, *UpdateAllInfoRequest) (*UpdateAllInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateAllInfo not implemented")
 }
 func (*UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -140,6 +196,78 @@ func _UserService_Register_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_UpdateBasicInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateBasicInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UpdateBasicInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/UpdateBasicInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UpdateBasicInfo(ctx, req.(*UpdateBasicInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UpdateAdvancedInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateAdvancedInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UpdateAdvancedInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/UpdateAdvancedInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UpdateAdvancedInfo(ctx, req.(*UpdateAdvancedInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UpdatePersonalInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdatePersonalInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UpdatePersonalInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/UpdatePersonalInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UpdatePersonalInfo(ctx, req.(*UpdatePersonalInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UpdateAllInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateAllInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UpdateAllInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/UpdateAllInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UpdateAllInfo(ctx, req.(*UpdateAllInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _UserService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "user.UserService",
 	HandlerType: (*UserServiceServer)(nil),
@@ -155,6 +283,22 @@ var _UserService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Register",
 			Handler:    _UserService_Register_Handler,
+		},
+		{
+			MethodName: "UpdateBasicInfo",
+			Handler:    _UserService_UpdateBasicInfo_Handler,
+		},
+		{
+			MethodName: "UpdateAdvancedInfo",
+			Handler:    _UserService_UpdateAdvancedInfo_Handler,
+		},
+		{
+			MethodName: "UpdatePersonalInfo",
+			Handler:    _UserService_UpdatePersonalInfo_Handler,
+		},
+		{
+			MethodName: "UpdateAllInfo",
+			Handler:    _UserService_UpdateAllInfo_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -24,6 +24,30 @@ service UserService{
                         body: "user"
                 };
         }
+         rpc UpdateBasicInfo(UpdateBasicInfoRequest) returns(UpdateBasicInfoResponse) {
+                option (google.api.http) = {
+                        put: "/user/basic"
+                        body: "user"
+                };
+        }
+         rpc UpdateAdvancedInfo(UpdateAdvancedInfoRequest) returns(UpdateAdvancedInfoResponse) {
+                option (google.api.http) = {
+                        put: "/user/advanced"
+                        body: "user"
+                };
+        }
+         rpc UpdatePersonalInfo(UpdatePersonalInfoRequest) returns(UpdatePersonalInfoResponse) {
+                option (google.api.http) = {
+                        put: "/user/personal"
+                        body: "user"
+                };
+        }
+         rpc UpdateAllInfo(UpdateAllInfoRequest) returns(UpdateAllInfoResponse) {
+                option (google.api.http) = {
+                        put: "/user/allInfo"
+                        body: "user"
+                };
+        }
 }
 
 message GetRequest {
@@ -46,6 +70,38 @@ message RegisterRequest {
 }
 
 message RegisterResponse {
+        string success = 1;
+}
+
+message UpdateBasicInfoRequest {
+        User user = 1;
+}
+
+message UpdateBasicInfoResponse {
+        string success = 1;
+}
+
+message UpdateAdvancedInfoRequest {
+        User user = 1;
+}
+
+message UpdateAdvancedInfoResponse {
+        string success = 1;
+}
+
+message UpdatePersonalInfoRequest {
+        User user = 1;
+}
+
+message UpdatePersonalInfoResponse {
+        string success = 1;
+}
+
+message UpdateAllInfoRequest {
+        User user = 1;
+}
+
+message UpdateAllInfoResponse {
         string success = 1;
 }
 

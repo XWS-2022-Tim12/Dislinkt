@@ -10,5 +10,9 @@ type UserStore interface {
 	GetByUsername(username string) (*User, error)
 	GetAll() ([]*User, error)
 	Insert(user *User) (string, error)
+	UpdateBasicInfo(user *User) (string, error)
+	UpdateAdvancedInfo(user *User) (string, error)
+	UpdatePersonalInfo(user *User) (string, error)
+	UpdateAllInfo(user *User) (string, error)
 	DeleteAll()
 }
