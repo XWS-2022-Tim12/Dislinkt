@@ -14,9 +14,9 @@ var users = []*domain.User{
 	},
 	{
 		Id:       getObjectId("623b0cc3a34d25d8567f9f83"),
-		Email:    "email",
-		Username: "username",
-		Password: "password",
+		Email:    "email2",
+		Username: "username2",
+		Password: "password2",
 	},
 }
 

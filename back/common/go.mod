@@ -1,4 +1,4 @@
-module github.com/tamararankovic/microservices_demo/common
+module github.com/XWS-2022-Tim12/Dislinkt/back/common
 
 go 1.17
 

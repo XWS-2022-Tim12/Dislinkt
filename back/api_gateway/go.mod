@@ -5,6 +5,7 @@ go 1.17
 replace github.com/XWS-2022-Tim12/Dislinkt/back/common => ../common
 replace github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_service => ../common/proto/user_service
 replace github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/startup/config => ../api_gateway/startup/config
+replace github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/startup => ../api_gateway/startup
 
 require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.9.0
