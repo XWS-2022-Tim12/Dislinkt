@@ -22,3 +22,8 @@ func (service *UserService) Get(id primitive.ObjectID) (*domain.User, error) {
 func (service *UserService) GetAll() ([]*domain.User, error) {
 	return service.store.GetAll()
 }
+
+func (service *UserService) Register(user *domain.User) (string, error) {
+	success, err := service.store.Insert(user)
+	return success, err
+}

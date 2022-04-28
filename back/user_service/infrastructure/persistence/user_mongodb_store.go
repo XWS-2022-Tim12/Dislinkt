@@ -30,18 +30,41 @@ func (store *UserMongoDBStore) Get(id primitive.ObjectID) (*domain.User, error) 
 	return store.filterOne(filter)
 }
 
+func (store *UserMongoDBStore) GetByEmail(email string) (*domain.User, error) {
+	filter := bson.M{"email": email}
+	return store.filterOne(filter)
+}
+
+func (store *UserMongoDBStore) GetByUsername(username string) (*domain.User, error) {
+	filter := bson.M{"username": username}
+	return store.filterOne(filter)
+}
+
 func (store *UserMongoDBStore) GetAll() ([]*domain.User, error) {
 	filter := bson.D{{}}
 	return store.filter(filter)
 }
 
-func (store *UserMongoDBStore) Insert(user *domain.User) error {
+func (store *UserMongoDBStore) Insert(user *domain.User) (string, error) {
+	userInDatabase, err := store.Get(user.Id)
+	user.Id = primitive.NewObjectID()
+	if userInDatabase != nil {
+		return "id exists", err
+	}
+	userInDatabase, err = store.GetByEmail(user.Email)
+	if userInDatabase != nil {
+		return "email exists", err
+	}
+	userInDatabase, err = store.GetByUsername(user.Username)
+	if userInDatabase != nil {
+		return "username exists", err
+	}
 	result, err := store.users.InsertOne(context.TODO(), user)
 	if err != nil {
-		return err
+		return "error while inserting", err
 	}
 	user.Id = result.InsertedID.(primitive.ObjectID)
-	return nil
+	return "success", nil
 }
 
 func (store *UserMongoDBStore) DeleteAll() {

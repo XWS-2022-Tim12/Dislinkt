@@ -50,3 +50,12 @@ func (handler *UserHandler) GetAll(ctx context.Context, request *pb.GetAllReques
 	}
 	return response, nil
 }
+
+func (handler *UserHandler) Register(ctx context.Context, request *pb.RegisterRequest) (*pb.RegisterResponse, error) {
+	user := mapNewUser(request.User)
+	successs, err := handler.service.Register(user)
+	response := &pb.RegisterResponse{
+		Success: successs,
+	}
+	return response, err
+}

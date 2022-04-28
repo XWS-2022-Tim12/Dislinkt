@@ -18,6 +18,12 @@ service UserService{
 			get: "/user/users"
 		};
         }
+        rpc Register(RegisterRequest) returns(RegisterResponse) {
+                option (google.api.http) = {
+                        post: "/user"
+                        body: "user"
+                };
+        }
 }
 
 message GetRequest {
@@ -33,6 +39,14 @@ message GetAllRequest {
 
 message GetAllResponse {
         repeated User users = 1;
+}
+
+message RegisterRequest {
+        User user = 1;
+}
+
+message RegisterResponse {
+        string success = 1;
 }
 
 message User {
