@@ -161,8 +161,8 @@ func (store *UserMongoDBStore) UpdateAllInfo(user *domain.User) (string, error) 
 }
 
 func (store *UserMongoDBStore) Insert(user *domain.User) (string, error) {
-	userInDatabase, err := store.Get(user.Id)
 	user.Id = primitive.NewObjectID()
+	userInDatabase, err := store.Get(user.Id)
 	if userInDatabase != nil {
 		return "id exists", nil
 	}
