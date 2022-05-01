@@ -17,3 +17,10 @@ type User struct {
 	Interests    string
 	Password     string
 }
+
+type Session struct {
+	Id          string
+	UserId      string
+	Date        time.Time
+	Role        string
+}

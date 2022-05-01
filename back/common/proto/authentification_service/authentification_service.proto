@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+option go_package = "github.com/XWS-2022-Tim12/Dislinkt/back/common/authentification";
+
+package authentification;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+service AuthentificationService{
+        rpc Get(GetRequest) returns(GetResponse) {
+        	option (google.api.http) = {
+			get: "/session/{id}"
+		};
+        }
+        rpc Add(AddRequest) returns(AddResponse) {
+                option (google.api.http) = {
+                        post: "/session/add"
+                        body: "session"
+                };
+        }
+}
+
+message GetRequest {
+        string id = 1;
+}
+
+message GetResponse {
+        Session session = 1;
+}
+
+message AddRequest {
+        Session session = 1;
+}
+
+message AddResponse {
+        string success = 1;
+}
+
+message Session {
+        string id = 1;
+        string userId = 2;
+        google.protobuf.Timestamp date = 3;
+        string role = 4;
+}

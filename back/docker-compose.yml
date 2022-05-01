@@ -17,6 +17,22 @@ services:
     networks:
       - network
 
+  authentification_service:
+    image: authentification_service
+    container_name: authentification_service
+    build:
+      context: .
+      dockerfile: ./authentification_service/Dockerfile
+    restart: on-failure
+    environment:
+      AUTHENTIFICATION_DB_HOST: ${AUTHENTIFICATION_DB_HOST}
+      AUTHENTIFICATION_DB_PORT: ${AUTHENTIFICATION_DB_PORT}
+      AUTHENTIFICATION_SERVICE_PORT: ${AUTHENTIFICATION_SERVICE_PORT}
+    depends_on:
+      - authentification_db
+    networks:
+      - network
+
   api_gateway:
     image: api_gateway
     container_name: api_gateway
@@ -30,12 +46,21 @@ services:
       GATEWAY_PORT: ${GATEWAY_PORT}
       USER_SERVICE_HOST: ${USER_SERVICE_HOST}
       USER_SERVICE_PORT: ${USER_SERVICE_PORT}
+      AUTHENTIFICATION_SERVICE_HOST: ${AUTHENTIFICATION_SERVICE_HOST}
+      AUTHENTIFICATION_SERVICE_PORT: ${AUTHENTIFICATION_SERVICE_PORT}
     networks:
       - network
 
   user_db:
     image: mongo
     container_name: user_db
+    restart: on-failure
+    networks:
+      - network
+
+  authentification_db:
+    image: mongo
+    container_name: authentification_db
     restart: on-failure
     networks:
       - network

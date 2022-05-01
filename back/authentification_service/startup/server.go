@@ -5,7 +5,7 @@ import (
 	"log"
 	"net"
 
-	user "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
+	session "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
 	"github.com/XWS-2022-Tim12/Dislinkt/back/authentification_service/application"
 	"github.com/XWS-2022-Tim12/Dislinkt/back/authentification_service/domain"
 	"github.com/XWS-2022-Tim12/Dislinkt/back/authentification_service/infrastructure/api"
@@ -64,7 +64,7 @@ func (server *Server) startGrpcServer(sessionHandler *api.SessionHandler) {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	grpcServer := grpc.NewServer()
-	session.RegisterSessionServiceServer(grpcServer, sessionHandler)
+	session.RegisterAuthentificationServiceServer(grpcServer, sessionHandler)
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %s", err)
 	}

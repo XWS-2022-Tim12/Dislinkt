@@ -9,7 +9,7 @@ import (
 )
 
 type SessionHandler struct {
-	pb.UnimplementedUserServiceServer
+	pb.UnimplementedAuthentificationServiceServer
 	service *application.SessionService
 }
 

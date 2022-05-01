@@ -14,6 +14,7 @@ func mapSession(session *domain.Session) *pb.Session {
 		Id:           session.Id.Hex(),
 		UserId:       session.UserId.Hex(),
 		Date:         timestamppb.New(session.Date),
+		Role:         session.Role,
 	}
 	return sessionPb
 }
@@ -21,8 +22,9 @@ func mapSession(session *domain.Session) *pb.Session {
 func mapNewSession(sessionPb *pb.Session) *domain.Session {
 	session := &domain.Session{
 		Id:           primitive.NewObjectID(),
-		UserId        primitive.NewObjectID(),
-		Date:     time.Now(),
+		UserId:        primitive.NewObjectID(),
+		Date:         time.Now(),
+		Role:         sessionPb.Role,
 	}
 	return session
 }

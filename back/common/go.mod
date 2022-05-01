@@ -3,6 +3,7 @@ module github.com/XWS-2022-Tim12/Dislinkt/back/common
 go 1.17
 
 replace github.com/XWS-2022-Tim12/Dislinkt/back/common/user => ../common/user
+replace github.com/XWS-2022-Tim12/Dislinkt/back/common/authentification => ../common/authentification
 
 require (
 	github.com/golang/protobuf v1.5.2

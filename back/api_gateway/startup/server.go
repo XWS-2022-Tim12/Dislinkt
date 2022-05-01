@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-
+	"github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/infrastructure/api"
 	cfg "github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/startup/config"
 	userGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_service"
+	authentificationGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -24,6 +25,7 @@ func NewServer(config *cfg.Config) *Server {
 		mux:    runtime.NewServeMux(),
 	}
 	server.initHandlers()
+	server.initCustomHandlers()
 	return server
 }
 
@@ -34,6 +36,19 @@ func (server *Server) initHandlers() {
 	if err != nil {
 		panic(err)
 	}
+
+	authentificationEndpoint := fmt.Sprintf("%s:%s", server.config.AuthentificationHost, server.config.AuthentificationPort)
+	err = authentificationGw.RegisterAuthentificationServiceHandlerFromEndpoint(context.TODO(), server.mux, authentificationEndpoint, opts)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (server *Server) initCustomHandlers() {
+	userEndpoint := fmt.Sprintf("%s:%s", server.config.UserHost, server.config.UserPort)
+	authentificationEndpoint := fmt.Sprintf("%s:%s", server.config.AuthentificationHost, server.config.AuthentificationPort)
+	authentificationHandler := api.NewAuthentificationHandler(userEndpoint, authentificationEndpoint)
+	authentificationHandler.Init(server.mux)
 }
 
 func (server *Server) Start() {

@@ -2,7 +2,7 @@ package persistence
 
 import (
 	"context"
-
+	"time"
 	"github.com/XWS-2022-Tim12/Dislinkt/back/authentification_service/domain"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -30,11 +30,6 @@ func (store *SessionMongoDBStore) Get(id primitive.ObjectID) (*domain.Session, e
 	return store.filterOne(filter)
 }
 
-func (store *UserMongoDBStore) GetAll() ([]*domain.User, error) {
-	filter := bson.D{{}}
-	return store.filter(filter)
-}
-
 func (store *SessionMongoDBStore) Insert(session *domain.Session) (string, error) {
 	
 	sessionInDatabase, err := store.Get(session.Id)
@@ -42,37 +37,37 @@ func (store *SessionMongoDBStore) Insert(session *domain.Session) (string, error
 		filterId := bson.M{"_id": sessionInDatabase.Id}
 		store.sessions.DeleteOne(context.TODO(), filterId)
 		sessionInDatabase.Id = primitive.NewObjectID()
-		sessionInDatabase.Date = time.New()
+		sessionInDatabase.Date = time.Now()
 		sessionInDatabase.UserId = session.UserId
-		_, err = store.session.InsertOne(context.TODO(), sessionInDatabase)
+		_, err = store.sessions.InsertOne(context.TODO(), sessionInDatabase)
 		if err != nil {
 			return "error while inserting", err
 		}
-		return "success", nil
+		return sessionInDatabase.Id.Hex(), nil
 	}
 
-	filter := bson.M{"userId": id}
-	sessionInDatabase = store.filterOne(filter)
+	filter := bson.M{"userId": session.UserId}
+	sessionInDatabase, err = store.filterOne(filter)
 
 	if sessionInDatabase != nil {
 		store.sessions.DeleteOne(context.TODO(), filter)
 		sessionInDatabase.Id = primitive.NewObjectID()
-		sessionInDatabase.Date = time.New()
-		_, err = store.session.InsertOne(context.TODO(), sessionInDatabase)
+		sessionInDatabase.Date = time.Now()
+		_, err = store.sessions.InsertOne(context.TODO(), sessionInDatabase)
 		if err != nil {
 			return "error while inserting", err
 		}
-		return "success", nil
+		return sessionInDatabase.Id.Hex(), nil
 	}
 
 	session.Id = primitive.NewObjectID()
-	session.Date = time.New()
+	session.Date = time.Now()
 	result, err := store.sessions.InsertOne(context.TODO(), session)
 	if err != nil {
 		return "error while inserting", err
 	}
 	session.Id = result.InsertedID.(primitive.ObjectID)
-	return "success", nil
+	return session.Id.Hex(), nil
 }
 
 func (store *SessionMongoDBStore) DeleteAll() {
