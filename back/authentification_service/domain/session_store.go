@@ -8,4 +8,6 @@ type SessionStore interface {
 	Get(id primitive.ObjectID) (*Session, error)
 	Insert(session *Session) (string, error)
 	DeleteAll()
+	GetAll() ([]*Session, error)
+	Delete(id primitive.ObjectID)
 }

@@ -56,9 +56,9 @@ func (handler *AuthentificationHandler) Login(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
 	cookie := &http.Cookie{Name: "sessionId", Value: success, HttpOnly: false}
 	http.SetCookie(w, cookie)
+	w.WriteHeader(http.StatusOK)
 	return
 }
 

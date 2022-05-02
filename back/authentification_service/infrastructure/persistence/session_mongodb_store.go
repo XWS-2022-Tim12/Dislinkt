@@ -30,8 +30,19 @@ func (store *SessionMongoDBStore) Get(id primitive.ObjectID) (*domain.Session, e
 	return store.filterOne(filter)
 }
 
+func (store *SessionMongoDBStore) GetAll() ([]*domain.Session, error) {
+	filter := bson.D{{}}
+	return store.filter(filter)
+}
+
 func (store *SessionMongoDBStore) Insert(session *domain.Session) (string, error) {
-	
+	sessionsForDelete, err := store.GetAll()
+	for _, sessionForDelete := range sessionsForDelete {
+		if sessionForDelete.Date.Add(time.Minute * 30).Before(time.Now()) {
+			store.Delete(sessionForDelete.Id)
+		}
+	}
+
 	sessionInDatabase, err := store.Get(session.Id)
 	if sessionInDatabase != nil {
 		filterId := bson.M{"_id": sessionInDatabase.Id}
@@ -72,6 +83,11 @@ func (store *SessionMongoDBStore) Insert(session *domain.Session) (string, error
 
 func (store *SessionMongoDBStore) DeleteAll() {
 	store.sessions.DeleteMany(context.TODO(), bson.D{{}})
+}
+
+func (store *SessionMongoDBStore) Delete(id primitive.ObjectID) {
+	filter := bson.M{"_id": id}
+	store.sessions.DeleteOne(context.TODO(), filter)
 }
 
 func (store *SessionMongoDBStore) filter(filter interface{}) ([]*domain.Session, error) {
