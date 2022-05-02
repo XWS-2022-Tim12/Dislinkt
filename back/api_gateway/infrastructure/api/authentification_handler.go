@@ -3,24 +3,25 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"net/http"
+
 	"github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/domain"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/infrastructure/services"
-	user "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_service"
 	authentification "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
 	pb "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
-	"net/http"
+	user "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_service"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 )
 
 type AuthentificationHandler struct {
-	authentificationClientAddress  string
-	userClientAddress string
+	authentificationClientAddress string
+	userClientAddress             string
 }
 
 func NewAuthentificationHandler(authentificationClientAddress, userClientAddress string) Handler {
 	return &AuthentificationHandler{
-		authentificationClientAddress:  authentificationClientAddress,
-		userClientAddress: userClientAddress,
+		authentificationClientAddress: authentificationClientAddress,
+		userClientAddress:             userClientAddress,
 	}
 }
 
@@ -38,41 +39,62 @@ func (handler *AuthentificationHandler) Login(w http.ResponseWriter, r *http.Req
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	userClient := services.NewUserClient(handler.userClientAddress)
-	authentificationClient := services.NewAuthentificationClient(handler.authentificationClientAddress)
 
-	userResponse, err := userClient.GetAll(context.TODO(), &user.GetAllRequest{})
+	id, err := handler.FindUser(usr)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	success, err := handler.AddSession(id, r)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
+	cookie := &http.Cookie{Name: "sessionId", Value: success, HttpOnly: false}
+	http.SetCookie(w, cookie)
+	return
+}
+
+func (handler *AuthentificationHandler) FindUser(usr *domain.User) (string, error) {
+	userClient := services.NewUserClient(handler.userClientAddress)
+
+	userResponse, err := userClient.GetAll(context.TODO(), &user.GetAllRequest{})
+	if err != nil {
+		return "", err
+	}
+
 	for _, userInDatabase := range userResponse.Users {
 		if usr.Username == userInDatabase.Username && usr.Password == userInDatabase.Password {
-			tokenCookie, err := r.Cookie("sessionId")
-			if err != nil {
-				tokenCookie = nil
-			}
-
-			session := &pb.Session{
-				Id:           tokenCookie.Value,
-				UserId:       userInDatabase.Id,
-				Role:         "user",
-			}
-
-			success, err := authentificationClient.Add(context.TODO(), &authentification.AddRequest{Session: session})
-			if err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
-				return
-			}
-
-			w.WriteHeader(http.StatusOK)
-			cookie := &http.Cookie{Name: "sessionId", Value: success.Success, HttpOnly: false}
-			http.SetCookie(w, cookie)
-			return
+			return userInDatabase.Id, nil
 		}
 	}
 
-	w.WriteHeader(http.StatusNotFound)
-	return
+	return "", nil
+}
+
+func (handler *AuthentificationHandler) AddSession(id string, r *http.Request) (string, error) {
+	authentificationClient := services.NewAuthentificationClient(handler.authentificationClientAddress)
+	tokenCookie, err := r.Cookie("sessionId")
+	session := &pb.Session{
+		Id:     "623b0cc3a34d25d8567f9f89",
+		UserId: id,
+		Role:   "user",
+	}
+	if err == nil {
+		session.Id = tokenCookie.Value
+	}
+
+	success, err := authentificationClient.Add(context.TODO(), &authentification.AddRequest{Session: session})
+	if err != nil {
+		return "", err
+	}
+
+	return success.Success, nil
 }

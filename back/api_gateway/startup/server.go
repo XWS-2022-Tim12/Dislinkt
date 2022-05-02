@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
 	"github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/infrastructure/api"
 	cfg "github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/startup/config"
-	userGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_service"
 	authentificationGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
+	userGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_service"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -47,7 +48,7 @@ func (server *Server) initHandlers() {
 func (server *Server) initCustomHandlers() {
 	userEndpoint := fmt.Sprintf("%s:%s", server.config.UserHost, server.config.UserPort)
 	authentificationEndpoint := fmt.Sprintf("%s:%s", server.config.AuthentificationHost, server.config.AuthentificationPort)
-	authentificationHandler := api.NewAuthentificationHandler(userEndpoint, authentificationEndpoint)
+	authentificationHandler := api.NewAuthentificationHandler(authentificationEndpoint, userEndpoint)
 	authentificationHandler.Init(server.mux)
 }
 
