@@ -95,3 +95,12 @@ func (handler *UserHandler) UpdateAllInfo(ctx context.Context, request *pb.Updat
 	}
 	return response, err
 }
+
+func (handler *UserHandler) FollowPublicProfile(ctx context.Context, request *pb.FollowPublicProfileRequest) (*pb.FollowPublicProfileResponse, error) {
+	user := mapUserToFollow(request.User)
+	successs, err := handler.service.FollowPublicProfile(user)
+	response := &pb.FollowPublicProfileResponse{
+		Success: successs,
+	}
+	return response, err
+}

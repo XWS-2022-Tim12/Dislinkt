@@ -47,3 +47,8 @@ func (service *UserService) UpdateAllInfo(user *domain.User) (string, error) {
 	success, err := service.store.UpdateAllInfo(user)
 	return success, err
 }
+
+func (service *UserService) FollowPublicProfile(user *domain.User) (string, error) {
+	success, err := service.store.FollowPublicProfile(user)
+	return success, err
+}

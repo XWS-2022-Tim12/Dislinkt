@@ -214,3 +214,44 @@ func decode(cursor *mongo.Cursor) (users []*domain.User, err error) {
 	err = cursor.Err()
 	return
 }
+
+func (store *UserMongoDBStore) FollowPublicProfile(user *domain.User) (string, error) {
+	userWhoFollows, err := store.Get(user.Id)
+	if userWhoFollows == nil {
+		return "user doesn't exist", nil
+	}
+	if err != nil {
+		return "Error", err
+	}
+
+	userWhoIsFollowed, err := store.GetByUsername(user.Username)
+	if userWhoIsFollowed == nil {
+		return "user doesn't exist", nil
+	}
+	if err != nil {
+		return "Error", err
+	}
+
+	userWhoFollows.FollowingUsers = append(userWhoFollows.FollowingUsers, userWhoIsFollowed.Username)
+	userWhoIsFollowed.FollowedByUsers = append(userWhoIsFollowed.FollowedByUsers, userWhoFollows.Username)
+
+	filter1 := bson.M{"_id": userWhoFollows.Id}
+	update1 := bson.M{
+		"$set": userWhoFollows,
+	}
+	_, err = store.users.UpdateOne(context.TODO(), filter1, update1)
+	if err != nil {
+		return "error while updating", err
+	}
+
+	filter2 := bson.M{"_id": userWhoIsFollowed.Id}
+	update2 := bson.M{
+		"$set": userWhoIsFollowed,
+	}
+	_, err = store.users.UpdateOne(context.TODO(), filter2, update2)
+	if err != nil {
+		return "error while updating", err
+	}
+
+	return "success", nil
+}

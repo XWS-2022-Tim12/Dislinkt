@@ -49,6 +49,10 @@ func (handler *AuthentificationHandler) Init(mux *runtime.ServeMux) {
 	if err != nil {
 		panic(err)
 	}
+	err = mux.HandlePath("PUT", "/user/follow", handler.FollowPublicProfile)
+	if err != nil {
+		panic(err)
+	}
 }
 func (handler *AuthentificationHandler) AllInfo(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	usr := &domain.User{}
@@ -316,4 +320,39 @@ func mapGender(status string) user.User_GenderEnum {
 	}
 	return user.User_Female
 
+}
+
+func (handler *AuthentificationHandler) FollowPublicProfile(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	usr := &domain.User{}
+	errr := json.NewDecoder(r.Body).Decode(&usr)
+	if errr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	tokenCookie, err := r.Cookie("sessionId")
+	if err != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	id, err := handler.IsUserLoggedIn(tokenCookie.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	userClient := services.NewUserClient(handler.userClientAddress)
+
+	userToSend := &user.User{
+		Id:       usr.Id,
+		Username: usr.Username,
+	}
+
+	userResponse, err := userClient.FollowPublicProfile(context.TODO(), &user.FollowPublicProfileRequest{User: userToSend})
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(userResponse.Success))
+	return
 }
