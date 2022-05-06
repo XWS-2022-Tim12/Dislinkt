@@ -5,6 +5,7 @@ go 1.17
 replace github.com/XWS-2022-Tim12/Dislinkt/back/common => ../common
 replace github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_service => ../common/proto/user_service
 replace github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service => ../common/proto/authentification_service
+replace github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/post_service => ../common/proto/post_service
 replace github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/startup/config => ../api_gateway/startup/config
 replace github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/startup => ../api_gateway/startup
 

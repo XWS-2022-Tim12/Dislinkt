@@ -17,12 +17,14 @@ import (
 type AuthentificationHandler struct {
 	authentificationClientAddress string
 	userClientAddress             string
+	postClientAdress              string
 }
 
-func NewAuthentificationHandler(authentificationClientAddress, userClientAddress string) Handler {
+func NewAuthentificationHandler(authentificationClientAddress, userClientAddress, postClientAdress string) Handler {
 	return &AuthentificationHandler{
 		authentificationClientAddress: authentificationClientAddress,
 		userClientAddress:             userClientAddress,
+		postClientAdress:              postClientAdress,
 	}
 }
 

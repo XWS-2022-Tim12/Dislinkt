@@ -19,8 +19,15 @@ type User struct {
 }
 
 type Session struct {
-	Id          string
-	UserId      string
-	Date        time.Time
-	Role        string
+	Id     string
+	UserId string
+	Date   time.Time
+	Role   string
+}
+
+type Post struct {
+	Id    string
+	Text  string
+	Image string
+	Link  string
 }
