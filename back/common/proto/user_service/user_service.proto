@@ -48,6 +48,12 @@ service UserService{
                         body: "user"
                 };
         }
+        rpc FollowPublicProfile(FollowPublicProfileRequest) returns(FollowPublicProfileResponse) {
+                option (google.api.http) = {
+                        post: "/user/follow"
+                        body: "user"
+                };
+        }
 }
 
 message GetRequest {
@@ -105,6 +111,14 @@ message UpdateAllInfoResponse {
         string success = 1;
 }
 
+message FollowPublicProfileRequest {
+        User user = 1;
+}
+
+message FollowPublicProfileResponse {
+        string success = 1;
+}
+
 message User {
         string id = 1;
         string firstname = 2;
@@ -131,4 +145,6 @@ message User {
         string skills = 11;
         string interests = 12;
         string password = 13;
+        repeated string followingUsers = 14;
+        repeated string followedByUsers = 15;
 }

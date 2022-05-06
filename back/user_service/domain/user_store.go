@@ -15,4 +15,5 @@ type UserStore interface {
 	UpdatePersonalInfo(user *User) (string, error)
 	UpdateAllInfo(user *User) (string, error)
 	DeleteAll()
+	FollowPublicProfile(user *User) (string, error)
 }

@@ -11,19 +11,21 @@ import (
 
 func mapUser(user *domain.User) *pb.User {
 	userPb := &pb.User{
-		Id:           user.Id.Hex(),
-		Firstname:    user.Firstname,
-		Email:        user.Email,
-		MobileNumber: user.MobileNumber,
-		Gender:       mapGender(user.Gender),
-		BirthDay:     timestamppb.New(user.BirthDay),
-		Username:     user.Username,
-		Biography:    user.Biography,
-		Experience:   user.Experience,
-		Education:    mapEducation(user.Education),
-		Skills:       user.Skills,
-		Interests:    user.Interests,
-		Password:     user.Password,
+		Id:             	user.Id.Hex(),
+		Firstname:      	user.Firstname,
+		Email:          	user.Email,
+		MobileNumber:   	user.MobileNumber,
+		Gender:         	mapGender(user.Gender),
+		BirthDay:       	timestamppb.New(user.BirthDay),
+		Username:       	user.Username,
+		Biography:      	user.Biography,
+		Experience:     	user.Experience,
+		Education:      	mapEducation(user.Education),
+		Skills:         	user.Skills,
+		Interests:      	user.Interests,
+		Password:       	user.Password,
+		FollowingUsers: 	user.FollowingUsers,
+		FollowedByUsers:	user.FollowedByUsers,
 	}
 	return userPb
 }
@@ -213,5 +215,16 @@ func mapNewGender(status pb.User_GenderEnum) domain.GenderEnum {
 		return domain.Male
 	}
 	return domain.Female
+
+}
+
+func mapUserToFollow(userPb *pb.User) *domain.User {
+	id, _ := primitive.ObjectIDFromHex(userPb.Id)
+
+	user := &domain.User{
+		Id:       id,
+		Username: userPb.Username,
+	}
+	return user
 
 }

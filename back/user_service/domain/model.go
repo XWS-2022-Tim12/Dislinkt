@@ -53,17 +53,19 @@ func (status GenderEnum) String() string {
 }
 
 type User struct {
-	Id           primitive.ObjectID `bson:"_id"`
-	Firstname    string             `bson:"firstname"`
-	Email        string             `bson:"email"`
-	MobileNumber string             `bson:"mobileNumber"`
-	Gender       GenderEnum         `bson:"gender"`
-	BirthDay     time.Time          `bson:"birthDay"`
-	Username     string             `bson:"username"`
-	Biography    string             `bson:"biography"`
-	Experience   string             `bson:"experience"`
-	Education    EducationEnum      `bson:"education"`
-	Skills       string             `bson:"skills"`
-	Interests    string             `bson:"interests"`
-	Password     string             `bson:"password"`
+	Id             	primitive.ObjectID 	`bson:"_id"`
+	Firstname      	string             	`bson:"firstname"`
+	Email          	string             	`bson:"email"`
+	MobileNumber   	string             	`bson:"mobileNumber"`
+	Gender         	GenderEnum         	`bson:"gender"`
+	BirthDay       	time.Time          	`bson:"birthDay"`
+	Username       	string             	`bson:"username"`
+	Biography      	string             	`bson:"biography"`
+	Experience     	string             	`bson:"experience"`
+	Education      	EducationEnum      	`bson:"education"`
+	Skills         	string             	`bson:"skills"`
+	Interests      	string             	`bson:"interests"`
+	Password       	string             	`bson:"password"`
+	FollowingUsers 	[]string           	`bson:"followingUsers"`
+	FollowedByUsers []string			`bson:"followedByUsers"`
 }
