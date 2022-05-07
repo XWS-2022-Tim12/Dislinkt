@@ -7,16 +7,29 @@ import (
 
 var posts = []*domain.Post{
 	{
-		Id:    getObjectId("523b0cc3a34d25d8567f9f82"),
-		Text:  "Aaaaaaa",
-		Image: "",
-		Link:  "",
+		Id:       getObjectId("523b0cc3a34d25d8567f9f82"),
+		Text:     "Aaaaaaa",
+		Image:    "",
+		Link:     "",
+		Likes:    14,
+		Dislikes: 10,
+		Comments: []string{
+			"Lepa slika",
+			"Top",
+		},
+		Username: "mico",
 	},
 	{
-		Id:    getObjectId("524b0cc3a34d25d8567f9f82"),
-		Text:  "Bbbbbbb",
-		Image: "",
-		Link:  "",
+		Id:       getObjectId("524b0cc3a34d25d8567f9f82"),
+		Text:     "Bbbbbbb",
+		Image:    "",
+		Link:     "",
+		Likes:    44,
+		Dislikes: 3,
+		Comments: []string{
+			"Sjajno",
+		},
+		Username: "mico",
 	},
 }
 

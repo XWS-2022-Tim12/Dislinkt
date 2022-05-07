@@ -3,12 +3,14 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/domain"
 	"github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/infrastructure/services"
 	authentification "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
 	pb "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
+	post "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/post_service"
 	user "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_service"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -50,6 +52,10 @@ func (handler *AuthentificationHandler) Init(mux *runtime.ServeMux) {
 		panic(err)
 	}
 	err = mux.HandlePath("PUT", "/user/follow", handler.FollowPublicProfile)
+	if err != nil {
+		panic(err)
+	}
+	err = mux.HandlePath("POST", "/user/post/newPost", handler.AddNewPost)
 	if err != nil {
 		panic(err)
 	}
@@ -229,6 +235,26 @@ func (handler *AuthentificationHandler) IsUserLoggedIn(id string) (string, error
 	return "admin", nil
 }
 
+func (handler *AuthentificationHandler) findUsersUsername(id string) (string, error) {
+	userClient := services.NewUserClient(handler.userClientAddress)
+	authentificationClient := services.NewAuthentificationClient(handler.authentificationClientAddress)
+	success, err := authentificationClient.Get(context.TODO(), &authentification.GetRequest{Id: id})
+
+	userResponse, err := userClient.GetAll(context.TODO(), &user.GetAllRequest{})
+	if err != nil {
+		return "", err
+	}
+
+	for _, userInDatabase := range userResponse.Users {
+		fmt.Println(userInDatabase.Id)
+		if success.Session.UserId == userInDatabase.Id {
+			return userInDatabase.Username, nil
+		}
+	}
+
+	return "", nil
+}
+
 func (handler *AuthentificationHandler) Login(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	usr := &domain.User{}
 	errr := json.NewDecoder(r.Body).Decode(&usr)
@@ -269,6 +295,7 @@ func (handler *AuthentificationHandler) FindUser(usr *domain.User) (string, erro
 
 	for _, userInDatabase := range userResponse.Users {
 		if usr.Username == userInDatabase.Username && usr.Password == userInDatabase.Password {
+			fmt.Println(userInDatabase.Id)
 			return userInDatabase.Id, nil
 		}
 	}
@@ -354,5 +381,51 @@ func (handler *AuthentificationHandler) FollowPublicProfile(w http.ResponseWrite
 	userResponse, err := userClient.FollowPublicProfile(context.TODO(), &user.FollowPublicProfileRequest{User: userToSend})
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(userResponse.Success))
+	return
+}
+
+func (handler *AuthentificationHandler) AddNewPost(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	reqPost := &domain.Post{}
+	errr := json.NewDecoder(r.Body).Decode(&reqPost)
+	if errr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	tokenCookie, err := r.Cookie("sessionId")
+	if err != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	id, err := handler.IsUserLoggedIn(tokenCookie.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	postClient := services.NewPostClient(handler.postClientAdress)
+	username, err := handler.findUsersUsername(tokenCookie.Value)
+	if username == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	postToSend := &post.Post{
+		Id:       reqPost.Id,
+		Text:     reqPost.Text,
+		Image:    reqPost.Image,
+		Link:     reqPost.Link,
+		Likes:    0,
+		Dislikes: 0,
+		Comments: []string{},
+		Username: username,
+	}
+
+	postResponse, err := postClient.AddNewPost(context.TODO(), &post.AddNewPostRequest{Post: postToSend})
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(postResponse.Success))
 	return
 }
