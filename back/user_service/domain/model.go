@@ -68,4 +68,5 @@ type User struct {
 	Password       	string             	`bson:"password"`
 	FollowingUsers 	[]string           	`bson:"followingUsers"`
 	FollowedByUsers []string			`bson:"followedByUsers"`
+	FollowingRequests []string			`bson:"followingRequests"`
 }

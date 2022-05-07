@@ -26,6 +26,7 @@ func mapUser(user *domain.User) *pb.User {
 		Password:       	user.Password,
 		FollowingUsers: 	user.FollowingUsers,
 		FollowedByUsers:	user.FollowedByUsers,
+		FollowingRequests:	user.FollowingRequests,
 	}
 	return userPb
 }

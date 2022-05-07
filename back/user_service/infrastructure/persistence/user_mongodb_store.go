@@ -232,8 +232,31 @@ func (store *UserMongoDBStore) FollowPublicProfile(user *domain.User) (string, e
 		return "Error", err
 	}
 
-	userWhoFollows.FollowingUsers = append(userWhoFollows.FollowingUsers, userWhoIsFollowed.Username)
-	userWhoIsFollowed.FollowedByUsers = append(userWhoIsFollowed.FollowedByUsers, userWhoFollows.Username)
+	followedByUsersLength := len(userWhoIsFollowed.FollowedByUsers)
+	for i := 0; i < followedByUsersLength; i++ {
+		if userWhoIsFollowed.FollowedByUsers[i] == userWhoFollows.Username {
+			return "User " + userWhoIsFollowed.Username + " has already followed by " + userWhoFollows.Username, err
+		}
+	}
+	followingUsersLength := len(userWhoFollows.FollowingUsers)
+	for i := 0; i < followingUsersLength; i++ {
+		if userWhoFollows.FollowingUsers[i] == userWhoIsFollowed.Username {
+			return "User " + userWhoFollows.Username + " has already following " + userWhoIsFollowed.Username, err
+		}
+	}
+	followingRequestsLength := len(userWhoIsFollowed.FollowingRequests)
+	for i := 0; i < followingRequestsLength; i++ {
+		if userWhoIsFollowed.FollowingUsers[i] == userWhoFollows.Username {
+			return "User " + userWhoIsFollowed.Username + " already has following request from " + userWhoFollows.Username, err
+		}
+	}
+
+	if (false/*userWhoIsFollowed.Public*/) {
+		userWhoFollows.FollowingUsers = append(userWhoFollows.FollowingUsers, userWhoIsFollowed.Username)
+		userWhoIsFollowed.FollowedByUsers = append(userWhoIsFollowed.FollowedByUsers, userWhoFollows.Username)
+	} else {
+		userWhoIsFollowed.FollowingRequests = append(userWhoIsFollowed.FollowingRequests, userWhoFollows.Username)
+	}
 
 	filter1 := bson.M{"_id": userWhoFollows.Id}
 	update1 := bson.M{
@@ -254,4 +277,67 @@ func (store *UserMongoDBStore) FollowPublicProfile(user *domain.User) (string, e
 	}
 
 	return "success", nil
+}
+
+func (store *UserMongoDBStore) AcceptFollowingRequest(user *domain.User) (string, error) {
+	userWhoFollows, err := store.Get(user.Id)
+	if userWhoFollows == nil {
+		return "user doesn't exist", nil
+	}
+	if err != nil {
+		return "Error", err
+	}
+
+	userWhoIsFollowed, err := store.GetByUsername(user.Username)
+	if userWhoIsFollowed == nil {
+		return "user doesn't exist", nil
+	}
+	if err != nil {
+		return "Error", err
+	}
+
+	length := len(userWhoIsFollowed.FollowingRequests)
+	found := false
+	index := 0
+	for i := 0; i < length; i++ {
+		if userWhoIsFollowed.FollowingRequests[i] == userWhoFollows.Username {
+			found = true
+			index = i
+			break
+		}
+	}
+
+	if found == true {
+		userWhoIsFollowed.FollowingRequests = RemoveIndex(userWhoIsFollowed.FollowingRequests, index)
+		userWhoFollows.FollowingUsers = append(userWhoFollows.FollowingUsers, userWhoIsFollowed.Username)
+		userWhoIsFollowed.FollowedByUsers = append(userWhoIsFollowed.FollowedByUsers, userWhoFollows.Username)
+	} else {
+		return "No following request from " + userWhoFollows.Username, err
+	}
+
+	filter1 := bson.M{"_id": userWhoFollows.Id}
+	update1 := bson.M{
+		"$set": userWhoFollows,
+	}
+	_, err = store.users.UpdateOne(context.TODO(), filter1, update1)
+	if err != nil {
+		return "error while updating", err
+	}
+
+	filter2 := bson.M{"_id": userWhoIsFollowed.Id}
+	update2 := bson.M{
+		"$set": userWhoIsFollowed,
+	}
+	_, err = store.users.UpdateOne(context.TODO(), filter2, update2)
+	if err != nil {
+		return "error while updating", err
+	}
+
+	return "success", nil
+}
+
+func RemoveIndex(s []string, index int) []string {
+    ret := make([]string, 0)
+    ret = append(ret, s[:index]...)
+    return append(ret, s[index+1:]...)
 }

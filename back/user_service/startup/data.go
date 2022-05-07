@@ -26,6 +26,7 @@ var users = []*domain.User{
 			"nina",
 		},
 		FollowedByUsers:	[]string{},
+		FollowingRequests:	[]string{},
 	},
 	{
 		Id:             	getObjectId("623b0cc3a34d25d8567f9f83"),
@@ -45,6 +46,7 @@ var users = []*domain.User{
 		FollowedByUsers: 	[]string{
 			"mico",
 		},
+		FollowingRequests:	[]string{},
 	},
 }
 

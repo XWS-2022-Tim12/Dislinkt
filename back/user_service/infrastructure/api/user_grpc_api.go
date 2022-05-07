@@ -104,3 +104,12 @@ func (handler *UserHandler) FollowPublicProfile(ctx context.Context, request *pb
 	}
 	return response, err
 }
+
+func (handler *UserHandler) AcceptFollowingRequest(ctx context.Context, request *pb.AcceptFollowingRequestRequest) (*pb.AcceptFollowingRequestResponse, error) {
+	user := mapUserToFollow(request.User)
+	successs, err := handler.service.AcceptFollowingRequest(user)
+	response := &pb.AcceptFollowingRequestResponse{
+		Success: successs,
+	}
+	return response, err
+}

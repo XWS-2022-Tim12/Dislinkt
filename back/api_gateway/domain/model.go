@@ -18,6 +18,7 @@ type User struct {
 	Password       	string
 	FollowingUsers 	[]string
 	FollowedByUsers []string
+	FollowingRequests []string
 }
 
 type Session struct {

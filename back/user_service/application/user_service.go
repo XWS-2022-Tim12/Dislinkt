@@ -52,3 +52,8 @@ func (service *UserService) FollowPublicProfile(user *domain.User) (string, erro
 	success, err := service.store.FollowPublicProfile(user)
 	return success, err
 }
+
+func (service *UserService) AcceptFollowingRequest(user *domain.User) (string, error) {
+	success, err := service.store.AcceptFollowingRequest(user)
+	return success, err
+}

@@ -54,6 +54,13 @@ service UserService{
                         body: "user"
                 };
         }
+        rpc AcceptFollowingRequest(AcceptFollowingRequestRequest) returns(AcceptFollowingRequestResponse) {
+                option (google.api.http) = {
+                        post: "/user/acceptFollowingRequest"
+                        body: "user"
+                };
+        }
+        
 }
 
 message GetRequest {
@@ -119,6 +126,14 @@ message FollowPublicProfileResponse {
         string success = 1;
 }
 
+message AcceptFollowingRequestRequest {
+        User user = 1;
+}
+
+message AcceptFollowingRequestResponse {
+        string success = 1;
+}
+
 message User {
         string id = 1;
         string firstname = 2;
@@ -147,4 +162,5 @@ message User {
         string password = 13;
         repeated string followingUsers = 14;
         repeated string followedByUsers = 15;
+        repeated string followingRequests = 16;
 }
