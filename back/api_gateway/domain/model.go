@@ -18,6 +18,7 @@ type User struct {
 	Password       	string
 	FollowingUsers 	[]string
 	FollowedByUsers []string
+	Public       	bool
 }
 
 type Session struct {

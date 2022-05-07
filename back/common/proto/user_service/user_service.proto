@@ -18,6 +18,16 @@ service UserService{
 			get: "/user/users"
 		};
         }
+        rpc GetAllPublicUsers(GetAllPublicUsersRequest) returns(GetAllPublicUsersResponse) {
+        	option (google.api.http) = {
+			get: "/user/publicUsers"
+		};
+        }
+        rpc GetAllPublicUsersByUsername(GetAllPublicUsersByUsernameRequest) returns(GetAllPublicUsersByUsernameResponse) {
+        	option (google.api.http) = {
+			get: "/user/publicUsersByUsername/{username}"
+		};
+        }
         rpc Register(RegisterRequest) returns(RegisterResponse) {
                 option (google.api.http) = {
                         post: "/user"
@@ -68,6 +78,21 @@ message GetAllRequest {
 }
 
 message GetAllResponse {
+        repeated User users = 1;
+}
+
+message GetAllPublicUsersRequest {
+}
+
+message GetAllPublicUsersResponse {
+        repeated User users = 1;
+}
+
+message GetAllPublicUsersByUsernameRequest {
+        string username = 1;
+}
+
+message GetAllPublicUsersByUsernameResponse {
         repeated User users = 1;
 }
 
@@ -147,4 +172,5 @@ message User {
         string password = 13;
         repeated string followingUsers = 14;
         repeated string followedByUsers = 15;
+        bool public = 16;
 }

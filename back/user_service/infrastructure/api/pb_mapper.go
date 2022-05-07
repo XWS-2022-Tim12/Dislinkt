@@ -26,6 +26,7 @@ func mapUser(user *domain.User) *pb.User {
 		Password:       	user.Password,
 		FollowingUsers: 	user.FollowingUsers,
 		FollowedByUsers:	user.FollowedByUsers,
+		Public:       		user.Public,
 	}
 	return userPb
 }
@@ -47,6 +48,7 @@ func mapNewUser(userPb *pb.User) *domain.User {
 			Skills:       userPb.Skills,
 			Interests:    userPb.Interests,
 			Password:     userPb.Password,
+			Public:       userPb.Public,
 		}
 		return user
 	} else {
@@ -64,6 +66,7 @@ func mapNewUser(userPb *pb.User) *domain.User {
 			Skills:       userPb.Skills,
 			Interests:    userPb.Interests,
 			Password:     userPb.Password,
+			Public:       userPb.Public,
 		}
 		return user
 	}
@@ -144,6 +147,7 @@ func mapAllInfoUser(userPb *pb.User) *domain.User {
 			Skills:       userPb.Skills,
 			Interests:    userPb.Interests,
 			Password:     userPb.Password,
+			Public:       userPb.Public,
 		}
 		return user
 	} else {
@@ -161,6 +165,7 @@ func mapAllInfoUser(userPb *pb.User) *domain.User {
 			Skills:       userPb.Skills,
 			Interests:    userPb.Interests,
 			Password:     userPb.Password,
+			Public:       userPb.Public,
 		}
 		return user
 	}
