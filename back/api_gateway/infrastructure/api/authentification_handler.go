@@ -515,6 +515,7 @@ func (handler *AuthentificationHandler) AddNewPost(w http.ResponseWriter, r *htt
 		Dislikes: 0,
 		Comments: []string{},
 		Username: username,
+		ImageContent: reqPost.ImageContent,
 	}
 
 	postResponse, err := postClient.AddNewPost(context.TODO(), &post.AddNewPostRequest{Post: postToSend})

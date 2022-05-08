@@ -38,4 +38,5 @@ type Post struct {
 	Dislikes int32
 	Comments []string
 	Username string
+	ImageContent []byte
 }

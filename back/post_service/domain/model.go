@@ -13,4 +13,5 @@ type Post struct {
 	Dislikes int32              `bson:"dislikes"`
 	Comments []string           `bson:"comments"`
 	Username string             `bson:"username"`
+	ImageContent []byte			`bson:"imageContent"`
 }

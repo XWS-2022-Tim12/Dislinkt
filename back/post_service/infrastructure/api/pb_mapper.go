@@ -16,6 +16,7 @@ func mapPost(post *domain.Post) *pb.Post {
 		Dislikes: post.Dislikes,
 		Comments: post.Comments,
 		Username: post.Username,
+		ImageContent: post.ImageContent,
 	}
 	return postPb
 }
@@ -31,6 +32,7 @@ func mapNewPost(postPb *pb.Post) *domain.Post {
 		Dislikes: postPb.Dislikes,
 		Comments: postPb.Comments,
 		Username: postPb.Username,
+		ImageContent: postPb.ImageContent,
 	}
 	return post
 }

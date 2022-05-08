@@ -100,4 +100,5 @@ message Post {
         int32 dislikes = 6;
         repeated string comments = 7;
         string username = 8;
+        bytes imageContent = 9;
 }
