@@ -45,6 +45,40 @@ func (store *UserMongoDBStore) GetAll() ([]*domain.User, error) {
 	return store.filter(filter)
 }
 
+func (store *UserMongoDBStore) GetAllPublicUsers() ([]*domain.User, error) {
+	filter := bson.M{"public": true}
+	return store.filter(filter)
+}
+
+func (store *UserMongoDBStore) GetAllUsersByUsername(username string) ([]*domain.User, error) {
+	filter := bson.M{"username": bson.M{"$regex": "(?i)^" + username + ".*"}}
+	return store.filter(filter)
+}
+
+func (store *UserMongoDBStore) GetAllPublicUsersByUsername(username string) ([]*domain.User, error) {
+	publicUsers, err := store.GetAllPublicUsers()
+	if err != nil {
+		return nil, err
+	}
+
+	usersByUsername, err := store.GetAllUsersByUsername(username)
+	if err != nil {
+		return nil, err
+	}
+
+	var publicUsersByUsername []*domain.User
+	for i := 0; i < len(publicUsers); i++ {
+		for j := 0; j < len(usersByUsername); j++ {
+			if publicUsers[i].Id == usersByUsername[j].Id {
+				publicUsersByUsername = append(publicUsersByUsername, publicUsers[i])
+				break
+			}
+		}
+	}
+
+	return publicUsersByUsername, nil
+}
+
 func (store *UserMongoDBStore) UpdateBasicInfo(user *domain.User) (string, error) {
 	userInDatabase, err := store.Get(user.Id)
 	if userInDatabase == nil {
@@ -147,6 +181,7 @@ func (store *UserMongoDBStore) UpdateAllInfo(user *domain.User) (string, error) 
 	userInDatabase.Education = user.Education
 	userInDatabase.Skills = user.Skills
 	userInDatabase.Interests = user.Interests
+	userInDatabase.Public = user.Public
 	filter := bson.M{"_id": userInDatabase.Id}
 	update := bson.M{
 		"$set": userInDatabase,

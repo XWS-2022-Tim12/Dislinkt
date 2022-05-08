@@ -9,6 +9,7 @@ import (
 	"github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/infrastructure/services"
 	authentification "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
 	pb "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
+	post "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/post_service"
 	user "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_service"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -17,12 +18,14 @@ import (
 type AuthentificationHandler struct {
 	authentificationClientAddress string
 	userClientAddress             string
+	postClientAdress              string
 }
 
-func NewAuthentificationHandler(authentificationClientAddress, userClientAddress string) Handler {
+func NewAuthentificationHandler(authentificationClientAddress, userClientAddress, postClientAdress string) Handler {
 	return &AuthentificationHandler{
 		authentificationClientAddress: authentificationClientAddress,
 		userClientAddress:             userClientAddress,
+		postClientAdress:              postClientAdress,
 	}
 }
 
@@ -56,6 +59,22 @@ func (handler *AuthentificationHandler) Init(mux *runtime.ServeMux) {
 		panic(err)
 	}
 	err = mux.HandlePath("PUT", "/user/rejectFollowingRequest", handler.RejectFollowingRequest)
+	if err != nil {
+		panic(err)
+	}
+	err = mux.HandlePath("POST", "/user/post/newPost", handler.AddNewPost)
+	if err != nil {
+		panic(err)
+	}
+	err = mux.HandlePath("PUT", "/user/post/likePost", handler.LikePost)
+	if err != nil {
+		panic(err)
+	}
+	err = mux.HandlePath("PUT", "/user/post/dislikePost", handler.DislikePost)
+	if err != nil {
+		panic(err)
+	}
+	err = mux.HandlePath("PUT", "/user/post/commentPost", handler.CommentPost)
 	if err != nil {
 		panic(err)
 	}
@@ -98,6 +117,7 @@ func (handler *AuthentificationHandler) AllInfo(w http.ResponseWriter, r *http.R
 		Skills:       usr.Skills,
 		Interests:    usr.Interests,
 		Password:     usr.Password,
+		Public:       usr.Public,
 	}
 
 	userResponse, err := userClient.UpdateAllInfo(context.TODO(), &user.UpdateAllInfoRequest{User: userToSend})
@@ -233,6 +253,25 @@ func (handler *AuthentificationHandler) IsUserLoggedIn(id string) (string, error
 	}
 
 	return "admin", nil
+}
+
+func (handler *AuthentificationHandler) findUsersUsername(id string) (string, error) {
+	userClient := services.NewUserClient(handler.userClientAddress)
+	authentificationClient := services.NewAuthentificationClient(handler.authentificationClientAddress)
+	success, err := authentificationClient.Get(context.TODO(), &authentification.GetRequest{Id: id})
+
+	userResponse, err := userClient.GetAll(context.TODO(), &user.GetAllRequest{})
+	if err != nil {
+		return "", err
+	}
+
+	for _, userInDatabase := range userResponse.Users {
+		if success.Session.UserId == userInDatabase.Id {
+			return userInDatabase.Username, nil
+		}
+	}
+
+	return "", nil
 }
 
 func (handler *AuthentificationHandler) Login(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
@@ -430,5 +469,221 @@ func (handler *AuthentificationHandler) RejectFollowingRequest(w http.ResponseWr
 	userResponse, err := userClient.RejectFollowingRequest(context.TODO(), &user.RejectFollowingRequestRequest{User: userToSend})
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(userResponse.Success))
+	return
+}
+
+func (handler *AuthentificationHandler) AddNewPost(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	reqPost := &domain.Post{}
+	errr := json.NewDecoder(r.Body).Decode(&reqPost)
+	if errr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	tokenCookie, err := r.Cookie("sessionId")
+	if err != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	id, err := handler.IsUserLoggedIn(tokenCookie.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	postClient := services.NewPostClient(handler.postClientAdress)
+	username, err := handler.findUsersUsername(tokenCookie.Value)
+	if username == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	postToSend := &post.Post{
+		Id:       reqPost.Id,
+		Text:     reqPost.Text,
+		Image:    reqPost.Image,
+		Link:     reqPost.Link,
+		Likes:    0,
+		Dislikes: 0,
+		Comments: []string{},
+		Username: username,
+	}
+
+	postResponse, err := postClient.AddNewPost(context.TODO(), &post.AddNewPostRequest{Post: postToSend})
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(postResponse.Success))
+	return
+}
+
+func (handler *AuthentificationHandler) isUserFollowing(id string, username string) bool {
+	userClient := services.NewUserClient(handler.userClientAddress)
+	authentificationClient := services.NewAuthentificationClient(handler.authentificationClientAddress)
+	success, err := authentificationClient.Get(context.TODO(), &authentification.GetRequest{Id: id})
+
+	userResponse, err := userClient.GetAll(context.TODO(), &user.GetAllRequest{})
+	if err != nil {
+		return false
+	}
+
+	for _, userInDatabase := range userResponse.Users {
+		if userInDatabase.Username == username {
+			if userInDatabase.Public == true {
+				return true
+			}
+		}
+	}
+
+	for _, userInDatabase := range userResponse.Users {
+		if success.Session.UserId == userInDatabase.Id {
+			for _, followingUser := range userInDatabase.FollowingUsers {
+				if username == followingUser {
+					return true
+				}
+			}
+		}
+	}
+
+	return false
+}
+
+func (handler *AuthentificationHandler) LikePost(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	reqPost := &domain.Post{}
+	errr := json.NewDecoder(r.Body).Decode(&reqPost)
+	if errr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	tokenCookie, err := r.Cookie("sessionId")
+	if err != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	id, err := handler.IsUserLoggedIn(tokenCookie.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	postClient := services.NewPostClient(handler.postClientAdress)
+	retVal := handler.isUserFollowing(tokenCookie.Value, reqPost.Username)
+	if retVal == false {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	postToSend := &post.Post{
+		Id:       reqPost.Id,
+		Text:     reqPost.Text,
+		Image:    reqPost.Image,
+		Link:     reqPost.Link,
+		Likes:    reqPost.Likes + 1,
+		Dislikes: reqPost.Dislikes,
+		Comments: reqPost.Comments,
+		Username: reqPost.Username,
+	}
+
+	postResponse, err := postClient.LikePost(context.TODO(), &post.LikePostRequest{Post: postToSend})
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(postResponse.Success))
+	return
+}
+
+func (handler *AuthentificationHandler) DislikePost(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	reqPost := &domain.Post{}
+	errr := json.NewDecoder(r.Body).Decode(&reqPost)
+	if errr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	tokenCookie, err := r.Cookie("sessionId")
+	if err != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	id, err := handler.IsUserLoggedIn(tokenCookie.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	postClient := services.NewPostClient(handler.postClientAdress)
+	retVal := handler.isUserFollowing(tokenCookie.Value, reqPost.Username)
+	if retVal == false {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	postToSend := &post.Post{
+		Id:       reqPost.Id,
+		Text:     reqPost.Text,
+		Image:    reqPost.Image,
+		Link:     reqPost.Link,
+		Likes:    reqPost.Likes,
+		Dislikes: reqPost.Dislikes + 1,
+		Comments: reqPost.Comments,
+		Username: reqPost.Username,
+	}
+
+	postResponse, err := postClient.DislikePost(context.TODO(), &post.DislikePostRequest{Post: postToSend})
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(postResponse.Success))
+	return
+}
+
+func (handler *AuthentificationHandler) CommentPost(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	reqPost := &domain.Post{}
+	errr := json.NewDecoder(r.Body).Decode(&reqPost)
+	if errr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	tokenCookie, err := r.Cookie("sessionId")
+	if err != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	id, err := handler.IsUserLoggedIn(tokenCookie.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	postClient := services.NewPostClient(handler.postClientAdress)
+	retVal := handler.isUserFollowing(tokenCookie.Value, reqPost.Username)
+	if retVal == false {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	postToSend := &post.Post{
+		Id:       reqPost.Id,
+		Text:     reqPost.Text,
+		Image:    reqPost.Image,
+		Link:     reqPost.Link,
+		Likes:    reqPost.Likes,
+		Dislikes: reqPost.Dislikes,
+		Comments: reqPost.Comments,
+		Username: reqPost.Username,
+	}
+
+	postResponse, err := postClient.CommentPost(context.TODO(), &post.CommentPostRequest{Post: postToSend})
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(postResponse.Success))
 	return
 }

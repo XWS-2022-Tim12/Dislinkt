@@ -9,6 +9,7 @@ import (
 	"github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/infrastructure/api"
 	cfg "github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/startup/config"
 	authentificationGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
+	postGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/post_service"
 	userGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_service"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
@@ -43,12 +44,19 @@ func (server *Server) initHandlers() {
 	if err != nil {
 		panic(err)
 	}
+
+	postEndpoint := fmt.Sprintf("%s:%s", server.config.PostHost, server.config.PostPort)
+	err = postGw.RegisterPostServiceHandlerFromEndpoint(context.TODO(), server.mux, postEndpoint, opts)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (server *Server) initCustomHandlers() {
 	userEndpoint := fmt.Sprintf("%s:%s", server.config.UserHost, server.config.UserPort)
+	postEndpoint := fmt.Sprintf("%s:%s", server.config.PostHost, server.config.PostPort)
 	authentificationEndpoint := fmt.Sprintf("%s:%s", server.config.AuthentificationHost, server.config.AuthentificationPort)
-	authentificationHandler := api.NewAuthentificationHandler(authentificationEndpoint, userEndpoint)
+	authentificationHandler := api.NewAuthentificationHandler(authentificationEndpoint, userEndpoint, postEndpoint)
 	authentificationHandler.Init(server.mux)
 }
 

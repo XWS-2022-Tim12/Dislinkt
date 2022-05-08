@@ -1,0 +1,103 @@
+syntax = "proto3";
+
+option go_package = "github.com/XWS-2022-Tim12/Dislinkt/back/common/post";
+
+package post;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+service PostService{
+        rpc Get(GetRequest) returns(GetResponse) {
+        	option (google.api.http) = {
+			get: "/post/{id}"
+		};
+        }
+        rpc GetAll(GetAllRequest) returns(GetAllResponse) {
+        	option (google.api.http) = {
+			get: "/post/posts"
+		};
+        }
+        rpc AddNewPost(AddNewPostRequest) returns(AddNewPostResponse) {
+                option (google.api.http) = {
+                        post: "/post/addPost"
+                        body: "post"
+                };
+        }
+        rpc LikePost(LikePostRequest) returns(LikePostResponse) {
+                option (google.api.http) = {
+                        put: "/post/likePost"
+                        body: "post"
+                };
+        }
+        rpc DislikePost(DislikePostRequest) returns(DislikePostResponse) {
+                option (google.api.http) = {
+                        put: "/post/dislikePost"
+                        body: "post"
+                };
+        }
+        rpc CommentPost(CommentPostRequest) returns(CommentPostResponse) {
+                option (google.api.http) = {
+                        put: "/post/commentPost"
+                        body: "post"
+                };
+        }
+}
+
+message GetRequest {
+        string id = 1;
+}
+
+message GetResponse {
+        Post post = 1;
+}
+
+message GetAllRequest {
+}
+
+message GetAllResponse {
+        repeated Post posts = 1;
+}
+
+message AddNewPostRequest {
+        Post post = 1;
+}
+
+message AddNewPostResponse {
+        string success = 1;
+}
+
+message LikePostRequest {
+        Post post = 1;
+}
+
+message LikePostResponse {
+        string success = 1;
+}
+
+message DislikePostRequest {
+        Post post = 1;
+}
+
+message DislikePostResponse {
+        string success = 1;
+}
+
+message CommentPostRequest {
+        Post post = 1;
+}
+
+message CommentPostResponse {
+        string success = 1;
+}
+
+message Post {
+        string id = 1;
+        string text = 2;
+        string image = 3;
+        string link = 4;
+        int32 likes = 5;
+        int32 dislikes = 6;
+        repeated string comments = 7;
+        string username = 8;
+}
