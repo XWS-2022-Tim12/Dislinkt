@@ -30,6 +30,18 @@ service PostService{
                         body: "post"
                 };
         }
+        rpc DislikePost(DislikePostRequest) returns(DislikePostResponse) {
+                option (google.api.http) = {
+                        put: "/post/dislikePost"
+                        body: "post"
+                };
+        }
+        rpc CommentPost(CommentPostRequest) returns(CommentPostResponse) {
+                option (google.api.http) = {
+                        put: "/post/commentPost"
+                        body: "post"
+                };
+        }
 }
 
 message GetRequest {
@@ -60,6 +72,22 @@ message LikePostRequest {
 }
 
 message LikePostResponse {
+        string success = 1;
+}
+
+message DislikePostRequest {
+        Post post = 1;
+}
+
+message DislikePostResponse {
+        string success = 1;
+}
+
+message CommentPostRequest {
+        Post post = 1;
+}
+
+message CommentPostResponse {
         string success = 1;
 }
 

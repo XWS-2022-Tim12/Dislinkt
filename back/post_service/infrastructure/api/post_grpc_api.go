@@ -61,9 +61,27 @@ func (handler *PostHandler) AddNewPost(ctx context.Context, request *pb.AddNewPo
 }
 
 func (handler *PostHandler) LikePost(ctx context.Context, request *pb.LikePostRequest) (*pb.LikePostResponse, error) {
-	post := mapOneMoreLikeToUser(request.Post)
+	post := mapChangesOfPost(request.Post)
 	successs, err := handler.service.LikePost(post)
 	response := &pb.LikePostResponse{
+		Success: successs,
+	}
+	return response, err
+}
+
+func (handler *PostHandler) DislikePost(ctx context.Context, request *pb.DislikePostRequest) (*pb.DislikePostResponse, error) {
+	post := mapChangesOfPost(request.Post)
+	successs, err := handler.service.DislikePost(post)
+	response := &pb.DislikePostResponse{
+		Success: successs,
+	}
+	return response, err
+}
+
+func (handler *PostHandler) CommentPost(ctx context.Context, request *pb.CommentPostRequest) (*pb.CommentPostResponse, error) {
+	post := mapChangesOfPost(request.Post)
+	successs, err := handler.service.CommentPost(post)
+	response := &pb.CommentPostResponse{
 		Success: successs,
 	}
 	return response, err

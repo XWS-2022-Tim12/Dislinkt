@@ -35,7 +35,7 @@ func mapNewPost(postPb *pb.Post) *domain.Post {
 	return post
 }
 
-func mapOneMoreLikeToUser(postPb *pb.Post) *domain.Post {
+func mapChangesOfPost(postPb *pb.Post) *domain.Post {
 	id, _ := primitive.ObjectIDFromHex(postPb.Id)
 
 	post := &domain.Post{

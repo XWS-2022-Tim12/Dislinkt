@@ -62,6 +62,14 @@ func (handler *AuthentificationHandler) Init(mux *runtime.ServeMux) {
 	if err != nil {
 		panic(err)
 	}
+	err = mux.HandlePath("PUT", "/user/post/dislikePost", handler.DislikePost)
+	if err != nil {
+		panic(err)
+	}
+	err = mux.HandlePath("PUT", "/user/post/commentPost", handler.CommentPost)
+	if err != nil {
+		panic(err)
+	}
 }
 func (handler *AuthentificationHandler) AllInfo(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	usr := &domain.User{}
@@ -495,6 +503,98 @@ func (handler *AuthentificationHandler) LikePost(w http.ResponseWriter, r *http.
 	}
 
 	postResponse, err := postClient.LikePost(context.TODO(), &post.LikePostRequest{Post: postToSend})
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(postResponse.Success))
+	return
+}
+
+func (handler *AuthentificationHandler) DislikePost(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	reqPost := &domain.Post{}
+	errr := json.NewDecoder(r.Body).Decode(&reqPost)
+	if errr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	tokenCookie, err := r.Cookie("sessionId")
+	if err != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	id, err := handler.IsUserLoggedIn(tokenCookie.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	postClient := services.NewPostClient(handler.postClientAdress)
+	retVal := handler.isUserFollowing(tokenCookie.Value, reqPost.Username)
+	if retVal == false {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	postToSend := &post.Post{
+		Id:       reqPost.Id,
+		Text:     reqPost.Text,
+		Image:    reqPost.Image,
+		Link:     reqPost.Link,
+		Likes:    reqPost.Likes,
+		Dislikes: reqPost.Dislikes + 1,
+		Comments: reqPost.Comments,
+		Username: reqPost.Username,
+	}
+
+	postResponse, err := postClient.DislikePost(context.TODO(), &post.DislikePostRequest{Post: postToSend})
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(postResponse.Success))
+	return
+}
+
+func (handler *AuthentificationHandler) CommentPost(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	reqPost := &domain.Post{}
+	errr := json.NewDecoder(r.Body).Decode(&reqPost)
+	if errr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	tokenCookie, err := r.Cookie("sessionId")
+	if err != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	id, err := handler.IsUserLoggedIn(tokenCookie.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	postClient := services.NewPostClient(handler.postClientAdress)
+	retVal := handler.isUserFollowing(tokenCookie.Value, reqPost.Username)
+	if retVal == false {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	postToSend := &post.Post{
+		Id:       reqPost.Id,
+		Text:     reqPost.Text,
+		Image:    reqPost.Image,
+		Link:     reqPost.Link,
+		Likes:    reqPost.Likes,
+		Dislikes: reqPost.Dislikes,
+		Comments: reqPost.Comments,
+		Username: reqPost.Username,
+	}
+
+	postResponse, err := postClient.CommentPost(context.TODO(), &post.CommentPostRequest{Post: postToSend})
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(postResponse.Success))
 	return

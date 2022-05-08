@@ -82,7 +82,7 @@ func decode(cursor *mongo.Cursor) (posts []*domain.Post, err error) {
 	return
 }
 
-func (store *PostMongoDBStore) LikePost(post *domain.Post) (string, error) {
+func (store *PostMongoDBStore) UpdatePost(post *domain.Post) (string, error) {
 	postFromDatabase, err := store.Get(post.Id)
 	if postFromDatabase == nil {
 		return "post doesn't exist", nil

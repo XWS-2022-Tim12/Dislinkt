@@ -29,6 +29,16 @@ func (service *PostService) AddNewPost(post *domain.Post) (string, error) {
 }
 
 func (service *PostService) LikePost(post *domain.Post) (string, error) {
-	success, err := service.store.LikePost(post)
+	success, err := service.store.UpdatePost(post)
+	return success, err
+}
+
+func (service *PostService) DislikePost(post *domain.Post) (string, error) {
+	success, err := service.store.UpdatePost(post)
+	return success, err
+}
+
+func (service *PostService) CommentPost(post *domain.Post) (string, error) {
+	success, err := service.store.UpdatePost(post)
 	return success, err
 }
