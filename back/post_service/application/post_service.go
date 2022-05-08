@@ -27,3 +27,8 @@ func (service *PostService) AddNewPost(post *domain.Post) (string, error) {
 	success, err := service.store.Insert(post)
 	return success, err
 }
+
+func (service *PostService) LikePost(post *domain.Post) (string, error) {
+	success, err := service.store.LikePost(post)
+	return success, err
+}

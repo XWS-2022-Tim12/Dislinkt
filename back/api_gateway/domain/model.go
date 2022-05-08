@@ -35,5 +35,5 @@ type Post struct {
 	Likes    int32
 	Dislikes int32
 	Comments []string
-	username string
+	Username string
 }

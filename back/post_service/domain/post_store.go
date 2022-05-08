@@ -8,5 +8,6 @@ type PostStore interface {
 	Get(id primitive.ObjectID) (*Post, error)
 	GetAll() ([]*Post, error)
 	Insert(post *Post) (string, error)
+	LikePost(post *Post) (string, error)
 	DeleteAll()
 }

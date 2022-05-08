@@ -81,3 +81,29 @@ func decode(cursor *mongo.Cursor) (posts []*domain.Post, err error) {
 	err = cursor.Err()
 	return
 }
+
+func (store *PostMongoDBStore) LikePost(post *domain.Post) (string, error) {
+	postFromDatabase, err := store.Get(post.Id)
+	if postFromDatabase == nil {
+		return "post doesn't exist", nil
+	}
+	postFromDatabase.Text = post.Text
+	postFromDatabase.Image = post.Image
+	postFromDatabase.Link = post.Link
+	postFromDatabase.Likes = post.Likes
+	postFromDatabase.Dislikes = post.Dislikes
+	postFromDatabase.Comments = post.Comments
+	postFromDatabase.Username = post.Username
+
+	filter := bson.M{"_id": post.Id}
+	update := bson.M{
+		"$set": postFromDatabase,
+	}
+	_, err = store.posts.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return "error while updating", err
+	}
+
+	return "success", nil
+
+}

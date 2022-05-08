@@ -29,7 +29,7 @@ var posts = []*domain.Post{
 		Comments: []string{
 			"Sjajno",
 		},
-		Username: "mico",
+		Username: "nina",
 	},
 }
 

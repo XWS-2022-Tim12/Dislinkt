@@ -59,3 +59,12 @@ func (handler *PostHandler) AddNewPost(ctx context.Context, request *pb.AddNewPo
 	}
 	return response, err
 }
+
+func (handler *PostHandler) LikePost(ctx context.Context, request *pb.LikePostRequest) (*pb.LikePostResponse, error) {
+	post := mapOneMoreLikeToUser(request.Post)
+	successs, err := handler.service.LikePost(post)
+	response := &pb.LikePostResponse{
+		Success: successs,
+	}
+	return response, err
+}

@@ -24,6 +24,12 @@ service PostService{
                         body: "post"
                 };
         }
+        rpc LikePost(LikePostRequest) returns(LikePostResponse) {
+                option (google.api.http) = {
+                        put: "/post/likePost"
+                        body: "post"
+                };
+        }
 }
 
 message GetRequest {
@@ -46,6 +52,14 @@ message AddNewPostRequest {
 }
 
 message AddNewPostResponse {
+        string success = 1;
+}
+
+message LikePostRequest {
+        Post post = 1;
+}
+
+message LikePostResponse {
         string success = 1;
 }
 

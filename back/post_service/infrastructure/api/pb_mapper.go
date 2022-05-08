@@ -34,3 +34,19 @@ func mapNewPost(postPb *pb.Post) *domain.Post {
 	}
 	return post
 }
+
+func mapOneMoreLikeToUser(postPb *pb.Post) *domain.Post {
+	id, _ := primitive.ObjectIDFromHex(postPb.Id)
+
+	post := &domain.Post{
+		Id:       id,
+		Text:     postPb.Text,
+		Image:    postPb.Image,
+		Link:     postPb.Link,
+		Likes:    postPb.Likes,
+		Dislikes: postPb.Dislikes,
+		Comments: postPb.Comments,
+		Username: postPb.Username,
+	}
+	return post
+}

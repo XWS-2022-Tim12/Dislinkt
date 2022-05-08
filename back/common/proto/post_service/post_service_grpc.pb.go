@@ -20,6 +20,7 @@ type PostServiceClient interface {
 	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
 	GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
 	AddNewPost(ctx context.Context, in *AddNewPostRequest, opts ...grpc.CallOption) (*AddNewPostResponse, error)
+	LikePost(ctx context.Context, in *LikePostRequest, opts ...grpc.CallOption) (*LikePostResponse, error)
 }
 
 type postServiceClient struct {
@@ -57,6 +58,15 @@ func (c *postServiceClient) AddNewPost(ctx context.Context, in *AddNewPostReques
 	return out, nil
 }
 
+func (c *postServiceClient) LikePost(ctx context.Context, in *LikePostRequest, opts ...grpc.CallOption) (*LikePostResponse, error) {
+	out := new(LikePostResponse)
+	err := c.cc.Invoke(ctx, "/post.PostService/LikePost", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PostServiceServer is the server API for PostService service.
 // All implementations must embed UnimplementedPostServiceServer
 // for forward compatibility
@@ -64,6 +74,7 @@ type PostServiceServer interface {
 	Get(context.Context, *GetRequest) (*GetResponse, error)
 	GetAll(context.Context, *GetAllRequest) (*GetAllResponse, error)
 	AddNewPost(context.Context, *AddNewPostRequest) (*AddNewPostResponse, error)
+	LikePost(context.Context, *LikePostRequest) (*LikePostResponse, error)
 	mustEmbedUnimplementedPostServiceServer()
 }
 
@@ -79,6 +90,9 @@ func (*UnimplementedPostServiceServer) GetAll(context.Context, *GetAllRequest) (
 }
 func (*UnimplementedPostServiceServer) AddNewPost(context.Context, *AddNewPostRequest) (*AddNewPostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddNewPost not implemented")
+}
+func (*UnimplementedPostServiceServer) LikePost(context.Context, *LikePostRequest) (*LikePostResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LikePost not implemented")
 }
 func (*UnimplementedPostServiceServer) mustEmbedUnimplementedPostServiceServer() {}
 
@@ -140,6 +154,24 @@ func _PostService_AddNewPost_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PostService_LikePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LikePostRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).LikePost(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/post.PostService/LikePost",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).LikePost(ctx, req.(*LikePostRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _PostService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "post.PostService",
 	HandlerType: (*PostServiceServer)(nil),
@@ -155,6 +187,10 @@ var _PostService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AddNewPost",
 			Handler:    _PostService_AddNewPost_Handler,
+		},
+		{
+			MethodName: "LikePost",
+			Handler:    _PostService_LikePost_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

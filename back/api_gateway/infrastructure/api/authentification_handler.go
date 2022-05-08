@@ -3,7 +3,6 @@ package api
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/domain"
@@ -56,6 +55,10 @@ func (handler *AuthentificationHandler) Init(mux *runtime.ServeMux) {
 		panic(err)
 	}
 	err = mux.HandlePath("POST", "/user/post/newPost", handler.AddNewPost)
+	if err != nil {
+		panic(err)
+	}
+	err = mux.HandlePath("PUT", "/user/post/likePost", handler.LikePost)
 	if err != nil {
 		panic(err)
 	}
@@ -246,7 +249,6 @@ func (handler *AuthentificationHandler) findUsersUsername(id string) (string, er
 	}
 
 	for _, userInDatabase := range userResponse.Users {
-		fmt.Println(userInDatabase.Id)
 		if success.Session.UserId == userInDatabase.Id {
 			return userInDatabase.Username, nil
 		}
@@ -295,7 +297,6 @@ func (handler *AuthentificationHandler) FindUser(usr *domain.User) (string, erro
 
 	for _, userInDatabase := range userResponse.Users {
 		if usr.Username == userInDatabase.Username && usr.Password == userInDatabase.Password {
-			fmt.Println(userInDatabase.Id)
 			return userInDatabase.Id, nil
 		}
 	}
@@ -425,6 +426,75 @@ func (handler *AuthentificationHandler) AddNewPost(w http.ResponseWriter, r *htt
 	}
 
 	postResponse, err := postClient.AddNewPost(context.TODO(), &post.AddNewPostRequest{Post: postToSend})
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(postResponse.Success))
+	return
+}
+
+func (handler *AuthentificationHandler) isUserFollowing(id string, username string) bool {
+	userClient := services.NewUserClient(handler.userClientAddress)
+	authentificationClient := services.NewAuthentificationClient(handler.authentificationClientAddress)
+	success, err := authentificationClient.Get(context.TODO(), &authentification.GetRequest{Id: id})
+
+	userResponse, err := userClient.GetAll(context.TODO(), &user.GetAllRequest{})
+	if err != nil {
+		return false
+	}
+
+	for _, userInDatabase := range userResponse.Users {
+		if success.Session.UserId == userInDatabase.Id {
+			for _, followingUser := range userInDatabase.FollowingUsers {
+				if username == followingUser {
+					return true
+				}
+			}
+		}
+	}
+
+	return false
+}
+
+func (handler *AuthentificationHandler) LikePost(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	reqPost := &domain.Post{}
+	errr := json.NewDecoder(r.Body).Decode(&reqPost)
+	if errr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	tokenCookie, err := r.Cookie("sessionId")
+	if err != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	id, err := handler.IsUserLoggedIn(tokenCookie.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	postClient := services.NewPostClient(handler.postClientAdress)
+	retVal := handler.isUserFollowing(tokenCookie.Value, reqPost.Username)
+	if retVal == false {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	postToSend := &post.Post{
+		Id:       reqPost.Id,
+		Text:     reqPost.Text,
+		Image:    reqPost.Image,
+		Link:     reqPost.Link,
+		Likes:    reqPost.Likes + 1,
+		Dislikes: reqPost.Dislikes,
+		Comments: reqPost.Comments,
+		Username: reqPost.Username,
+	}
+
+	postResponse, err := postClient.LikePost(context.TODO(), &post.LikePostRequest{Post: postToSend})
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(postResponse.Success))
 	return
