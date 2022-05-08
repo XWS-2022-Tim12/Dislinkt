@@ -51,6 +51,38 @@ func (handler *UserHandler) GetAll(ctx context.Context, request *pb.GetAllReques
 	return response, nil
 }
 
+func (handler *UserHandler) GetAllPublicUsers(ctx context.Context, request *pb.GetAllPublicUsersRequest) (*pb.GetAllPublicUsersResponse, error) {
+	publicUsers, err := handler.service.GetAllPublicUsers()
+	if err != nil {
+		return nil, err
+	}
+	response := &pb.GetAllPublicUsersResponse{
+		Users: []*pb.User{},
+	}
+	for _, user := range publicUsers {
+		current := mapUser(user)
+		response.Users = append(response.Users, current)
+	}
+	return response, nil
+}
+
+func (handler *UserHandler) GetAllPublicUsersByUsername(ctx context.Context, request *pb.GetAllPublicUsersByUsernameRequest) (*pb.GetAllPublicUsersByUsernameResponse, error) {
+	username := request.Username
+	publicUsersByUsername, err := handler.service.GetAllPublicUsersByUsername(username)
+	if err != nil {
+		return nil, err
+	}
+
+	response := &pb.GetAllPublicUsersByUsernameResponse{
+		Users: []*pb.User{},
+	}
+	for _, user := range publicUsersByUsername {
+		current := mapUser(user)
+		response.Users = append(response.Users, current)
+	}
+	return response, nil
+}
+
 func (handler *UserHandler) Register(ctx context.Context, request *pb.RegisterRequest) (*pb.RegisterResponse, error) {
 	user := mapNewUser(request.User)
 	successs, err := handler.service.Register(user)
