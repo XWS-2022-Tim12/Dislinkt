@@ -336,8 +336,97 @@ func (store *UserMongoDBStore) AcceptFollowingRequest(user *domain.User) (string
 	return "success", nil
 }
 
+func (store *UserMongoDBStore) RejectFollowingRequest(user *domain.User) (string, error) {
+	userWhoFollows, err := store.Get(user.Id)
+	if userWhoFollows == nil {
+		return "user doesn't exist", nil
+	}
+	if err != nil {
+		return "Error", err
+	}
+
+	userWhoIsFollowed, err := store.GetByUsername(user.Username)
+	if userWhoIsFollowed == nil {
+		return "user doesn't exist", nil
+	}
+	if err != nil {
+		return "Error", err
+	}
+
+	length := len(userWhoIsFollowed.FollowingRequests)
+	found := false
+	index := 0
+	for i := 0; i < length; i++ {
+		if userWhoIsFollowed.FollowingRequests[i] == userWhoFollows.Username {
+			found = true
+			index = i
+			break
+		}
+	}
+
+	if found == true {
+		userWhoIsFollowed.FollowingRequests = RemoveIndex(userWhoIsFollowed.FollowingRequests, index)
+	} else {
+		return "No following request from " + userWhoFollows.Username, err
+	}
+
+	filter := bson.M{"_id": userWhoIsFollowed.Id}
+	update := bson.M{
+		"$set": userWhoIsFollowed,
+	}
+	_, err = store.users.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return "error while updating", err
+	}
+
+	return "success", nil
+}
+
 func RemoveIndex(s []string, index int) []string {
     ret := make([]string, 0)
     ret = append(ret, s[:index]...)
     return append(ret, s[index+1:]...)
+}
+
+func (store *UserMongoDBStore) SendMessage(user *domain.User) (string, error) {
+	userSender, err := store.Get(user.Id)
+	if userSender == nil {
+		return "user doesn't exist", nil
+	}
+	if err != nil {
+		return "Error", err
+	}
+
+	userReceiver, err := store.GetByUsername(user.Username)
+	if userReceiver == nil {
+		return "user doesn't exist", nil
+	}
+	if err != nil {
+		return "Error", err
+	}
+
+	senderFollowsReceiver := false
+	receiverFollowsSender := false
+	receiverFollowersLength := len(userReceiver.FollowedByUsers)
+	for i := 0; i < receiverFollowersLength; i++ {
+		if userReceiver.FollowedByUsers[i] == userSender.Username {
+			senderFollowsReceiver = true
+			break
+		}
+	}
+	senderFollowersLength := len(userSender.FollowedByUsers)
+	for i := 0; i < senderFollowersLength; i++ {
+		if userSender.FollowedByUsers[i] == userReceiver.Username {
+			receiverFollowsSender = true
+			break
+		}
+	}
+
+	if senderFollowsReceiver == false {
+		return "User " + userReceiver.Username + " is not followed by " + userSender.Username, err
+	} else if receiverFollowsSender == false {
+		return "User " + userSender.Username + " is not followed by " + userReceiver.Username, err
+	}
+
+	return "Message successfully sent!", nil
 }

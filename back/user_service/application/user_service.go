@@ -57,3 +57,8 @@ func (service *UserService) AcceptFollowingRequest(user *domain.User) (string, e
 	success, err := service.store.AcceptFollowingRequest(user)
 	return success, err
 }
+
+func (service *UserService) RejectFollowingRequest(user *domain.User) (string, error) {
+	success, err := service.store.RejectFollowingRequest(user)
+	return success, err
+}

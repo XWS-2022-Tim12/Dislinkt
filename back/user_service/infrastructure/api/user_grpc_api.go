@@ -113,3 +113,12 @@ func (handler *UserHandler) AcceptFollowingRequest(ctx context.Context, request 
 	}
 	return response, err
 }
+
+func (handler *UserHandler) RejectFollowingRequest(ctx context.Context, request *pb.RejectFollowingRequestRequest) (*pb.RejectFollowingRequestResponse, error) {
+	user := mapUserToFollow(request.User)
+	successs, err := handler.service.RejectFollowingRequest(user)
+	response := &pb.RejectFollowingRequestResponse{
+		Success: successs,
+	}
+	return response, err
+}

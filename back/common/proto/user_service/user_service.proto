@@ -60,7 +60,12 @@ service UserService{
                         body: "user"
                 };
         }
-        
+        rpc RejectFollowingRequest(RejectFollowingRequestRequest) returns(RejectFollowingRequestResponse) {
+                option (google.api.http) = {
+                        post: "/user/rejectFollowingRequest"
+                        body: "user"
+                };
+        }
 }
 
 message GetRequest {
@@ -131,6 +136,14 @@ message AcceptFollowingRequestRequest {
 }
 
 message AcceptFollowingRequestResponse {
+        string success = 1;
+}
+
+message RejectFollowingRequestRequest {
+        User user = 1;
+}
+
+message RejectFollowingRequestResponse {
         string success = 1;
 }
 
