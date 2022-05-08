@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+
 	"github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/domain"
 	"github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/infrastructure/services"
 	authentification "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
@@ -447,6 +448,14 @@ func (handler *AuthentificationHandler) isUserFollowing(id string, username stri
 	userResponse, err := userClient.GetAll(context.TODO(), &user.GetAllRequest{})
 	if err != nil {
 		return false
+	}
+
+	for _, userInDatabase := range userResponse.Users {
+		if userInDatabase.Username == username {
+			if userInDatabase.Public == true {
+				return true
+			}
+		}
 	}
 
 	for _, userInDatabase := range userResponse.Users {
