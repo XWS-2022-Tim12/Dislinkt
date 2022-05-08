@@ -286,7 +286,7 @@ func (store *UserMongoDBStore) FollowPublicProfile(user *domain.User) (string, e
 		}
 	}
 
-	if (false/*userWhoIsFollowed.Public*/) {
+	if (userWhoIsFollowed.Public == true) {
 		userWhoFollows.FollowingUsers = append(userWhoFollows.FollowingUsers, userWhoIsFollowed.Username)
 		userWhoIsFollowed.FollowedByUsers = append(userWhoIsFollowed.FollowedByUsers, userWhoFollows.Username)
 	} else {

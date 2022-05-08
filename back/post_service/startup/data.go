@@ -31,6 +31,53 @@ var posts = []*domain.Post{
 		},
 		Username: "nina",
 	},
+	{
+		Id:       getObjectId("524bfksafk4d25d8567f9f82"),
+		Text:     "New here",
+		Image:    "",
+		Link:     "",
+		Likes:    2,
+		Dislikes: 0,
+		Comments: []string{},
+		Username: "treci",
+	},
+	{
+		Id:       getObjectId("v43cc3a34d25d8567f9f82"),
+		Text:     "Neki tekst",
+		Image:    "",
+		Link:     "",
+		Likes:    4,
+		Dislikes: 3,
+		Comments: []string{},
+		Username: "cetvrti",
+	},
+	{
+		Id:       getObjectId("t34v0cc3a34d25d8567f9f82"),
+		Text:     "New post",
+		Image:    "",
+		Link:     "",
+		Likes:    1,
+		Dislikes: 1,
+		Comments: []string{
+			"Bravo",
+			"Super",
+		},
+		Username: "treci",
+	},
+	{
+		Id:       getObjectId("13410cc3a34d25d8567f9f82"),
+		Text:     "Cao",
+		Image:    "",
+		Link:     "",
+		Likes:    1,
+		Dislikes: 10,
+		Comments: []string{
+			"Fuj",
+			"Ne valja",
+			"Glupo",
+		},
+		Username: "peti",
+	},
 }
 
 func getObjectId(id string) primitive.ObjectID {

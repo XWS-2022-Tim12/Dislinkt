@@ -78,6 +78,10 @@ func (handler *AuthentificationHandler) Init(mux *runtime.ServeMux) {
 	if err != nil {
 		panic(err)
 	}
+	err = mux.HandlePath("GET", "/user/post/findPosts", handler.FindPosts)
+	if err != nil {
+		panic(err)
+	}
 }
 func (handler *AuthentificationHandler) AllInfo(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	usr := &domain.User{}
@@ -685,5 +689,61 @@ func (handler *AuthentificationHandler) CommentPost(w http.ResponseWriter, r *ht
 	postResponse, err := postClient.CommentPost(context.TODO(), &post.CommentPostRequest{Post: postToSend})
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(postResponse.Success))
+	return
+}
+
+func (handler *AuthentificationHandler) FindPosts(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	userClient := services.NewUserClient(handler.userClientAddress)
+	postClient := services.NewPostClient(handler.postClientAdress)
+
+	postsResponse, err := postClient.GetAll(context.TODO(), &post.GetAllRequest{})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	userResponse, err := userClient.GetAll(context.TODO(), &user.GetAllRequest{})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	postsByPublicUser := make([]*post.Post, 0)
+	for _, postInDatabase := range postsResponse.Posts {
+		for _, userInDatabase := range userResponse.Users {
+			if postInDatabase.Username == userInDatabase.Username {
+				if userInDatabase.Public == true {
+					postsByPublicUser = append(postsByPublicUser, postInDatabase)
+				} else {
+					tokenCookie, err := r.Cookie("sessionId")
+					if err != nil {
+						break
+					}
+					id, err := handler.IsUserLoggedIn(tokenCookie.Value)
+					if err != nil {
+						break
+					}
+					if id == "" {
+						break
+					}
+	
+					username, err := handler.findUsersUsername(tokenCookie.Value)
+					for _, u := range userInDatabase.FollowedByUsers {
+						if u == username {
+							postsByPublicUser = append(postsByPublicUser, postInDatabase)
+							break
+						}
+					}
+				}
+
+				break
+			}
+		}
+		
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+    json.NewEncoder(w).Encode(postsByPublicUser)
 	return
 }
