@@ -33,6 +33,22 @@ services:
     networks:
       - network
 
+  job_service:
+    image: job_service
+    container_name: job_service
+    build:
+      context: .
+      dockerfile: ./job_service/Dockerfile
+    restart: on-failure
+    environment:
+      JOB_DB_HOST: ${JOB_DB_HOST}
+      JOB_DB_PORT: ${JOB_DB_PORT}
+      JOB_SERVICE_PORT: ${JOB_SERVICE_PORT}
+    depends_on:
+      - job_db
+    networks:
+      - network
+
   authentification_service:
     image: authentification_service
     container_name: authentification_service
@@ -66,6 +82,8 @@ services:
       AUTHENTIFICATION_SERVICE_PORT: ${AUTHENTIFICATION_SERVICE_PORT}
       POST_SERVICE_HOST: ${POST_SERVICE_HOST}
       POST_SERVICE_PORT: ${POST_SERVICE_PORT}
+      JOB_SERVICE_HOST: ${JOB_SERVICE_HOST}
+      JOB_SERVICE_PORT: ${JOB_SERVICE_PORT}
     networks:
       - network
 
@@ -79,6 +97,13 @@ services:
   post_db:
     image: mongo
     container_name: post_db
+    restart: on-failure
+    networks:
+      - network
+
+  job_db:
+    image: mongo
+    container_name: job_db
     restart: on-failure
     networks:
       - network

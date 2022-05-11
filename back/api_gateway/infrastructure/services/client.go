@@ -4,6 +4,7 @@ import (
 	"log"
 
 	authentification "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
+	job "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/job_service"
 	post "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/post_service"
 	user "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_service"
 	"google.golang.org/grpc"
@@ -32,6 +33,14 @@ func NewPostClient(address string) post.PostServiceClient {
 		log.Fatalf("Failed to start gRPC connection to Post service: %v", err)
 	}
 	return post.NewPostServiceClient(conn)
+}
+
+func NewJobClient(address string) job.JobServiceClient {
+	conn, err := getConnection(address)
+	if err != nil {
+		log.Fatalf("Failed to start gRPC connection to Post service: %v", err)
+	}
+	return job.NewJobServiceClient(conn)
 }
 
 func getConnection(address string) (*grpc.ClientConn, error) {

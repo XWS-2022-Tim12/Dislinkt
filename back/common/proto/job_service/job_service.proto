@@ -1,0 +1,112 @@
+syntax = "proto3";
+
+option go_package = "github.com/XWS-2022-Tim12/Dislinkt/back/common/job";
+
+package job;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+service JobService{
+        rpc Get(GetRequest) returns(GetResponse) {
+        	option (google.api.http) = {
+			get: "/job/{id}"
+		};
+        }
+        rpc SearchByUser(SearchByUserRequest) returns(SearchByUserResponse) {
+        	option (google.api.http) = {
+			get: "/job/searchByUser/{userId}"
+		};
+        }
+        rpc GetAll(GetAllRequest) returns(GetAllResponse) {
+        	option (google.api.http) = {
+			get: "/job/jobs"
+		};
+        }
+        rpc SearchByDescription(SearchByDescriptionRequest) returns(SearchByDescriptionResponse) {
+        	option (google.api.http) = {
+			get: "/job/searchByDescription/{description}"
+		};
+        }
+        rpc SearchByPosition(SearchByPositionRequest) returns(SearchByPositionResponse) {
+        	option (google.api.http) = {
+			get: "/job/searchByPosition/{position}"
+		};
+        }
+        rpc SearchByRequirements(SearchByRequirementsRequest) returns(SearchByRequirementsResponse) {
+        	option (google.api.http) = {
+			get: "/job/searchByRequirements/{requirements}"
+		};
+        }
+        rpc Add(AddRequest) returns(AddResponse) {
+                option (google.api.http) = {
+                        post: "/job"
+                        body: "job"
+                };
+        }
+}
+
+message GetRequest {
+        string id = 1;
+}
+
+message GetResponse {
+        Job job = 1;
+}
+
+message SearchByUserRequest {
+        string userId = 1;
+}
+
+message SearchByUserResponse {
+        Job job = 1;
+}
+
+message SearchByDescriptionRequest {
+        string description = 1;
+}
+
+message SearchByDescriptionResponse {
+        repeated Job jobs = 1;
+}
+
+message SearchByPositionRequest {
+        string position = 1;
+}
+
+message SearchByPositionResponse {
+        repeated Job jobs = 1;
+}
+
+message SearchByRequirementsRequest {
+        string requirements = 1;
+}
+
+message SearchByRequirementsResponse {
+        repeated Job jobs = 1;
+}
+
+message GetAllRequest {
+
+}
+
+message GetAllResponse {
+        repeated Job jobs = 1;
+}
+
+message AddRequest {
+        Job job = 1;
+}
+
+message AddResponse {
+        string success = 1;
+}
+
+message Job {
+        string id = 1;
+        string userId = 2;
+        string position = 3;
+        string description = 4;
+        string requirements = 5;
+        google.protobuf.Timestamp creationDay = 6;
+}

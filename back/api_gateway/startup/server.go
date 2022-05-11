@@ -9,6 +9,7 @@ import (
 	"github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/infrastructure/api"
 	cfg "github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/startup/config"
 	authentificationGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
+	jobGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/job_service"
 	postGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/post_service"
 	userGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_service"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -47,6 +48,12 @@ func (server *Server) initHandlers() {
 
 	postEndpoint := fmt.Sprintf("%s:%s", server.config.PostHost, server.config.PostPort)
 	err = postGw.RegisterPostServiceHandlerFromEndpoint(context.TODO(), server.mux, postEndpoint, opts)
+	if err != nil {
+		panic(err)
+	}
+
+	jobEndpoint := fmt.Sprintf("%s:%s", server.config.JobHost, server.config.JobPort)
+	err = jobGw.RegisterJobServiceHandlerFromEndpoint(context.TODO(), server.mux, jobEndpoint, opts)
 	if err != nil {
 		panic(err)
 	}

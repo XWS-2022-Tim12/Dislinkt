@@ -217,6 +217,27 @@ func (store *UserMongoDBStore) Insert(user *domain.User) (string, error) {
 	return "success", nil
 }
 
+func (store *UserMongoDBStore) InsertClassic(user *domain.User) (string, error) {
+	userInDatabase, err := store.Get(user.Id)
+	if userInDatabase != nil {
+		return "id exists", nil
+	}
+	userInDatabase, err = store.GetByEmail(user.Email)
+	if userInDatabase != nil {
+		return "email exists", nil
+	}
+	userInDatabase, err = store.GetByUsername(user.Username)
+	if userInDatabase != nil {
+		return "username exists", nil
+	}
+	result, err := store.users.InsertOne(context.TODO(), user)
+	if err != nil {
+		return "error while inserting", err
+	}
+	user.Id = result.InsertedID.(primitive.ObjectID)
+	return "success", nil
+}
+
 func (store *UserMongoDBStore) DeleteAll() {
 	store.users.DeleteMany(context.TODO(), bson.D{{}})
 }
@@ -286,7 +307,7 @@ func (store *UserMongoDBStore) FollowPublicProfile(user *domain.User) (string, e
 		}
 	}
 
-	if (userWhoIsFollowed.Public == true) {
+	if userWhoIsFollowed.Public == true {
 		userWhoFollows.FollowingUsers = append(userWhoFollows.FollowingUsers, userWhoIsFollowed.Username)
 		userWhoIsFollowed.FollowedByUsers = append(userWhoIsFollowed.FollowedByUsers, userWhoFollows.Username)
 	} else {
@@ -418,9 +439,9 @@ func (store *UserMongoDBStore) RejectFollowingRequest(user *domain.User) (string
 }
 
 func RemoveIndex(s []string, index int) []string {
-    ret := make([]string, 0)
-    ret = append(ret, s[:index]...)
-    return append(ret, s[index+1:]...)
+	ret := make([]string, 0)
+	ret = append(ret, s[:index]...)
+	return append(ret, s[index+1:]...)
 }
 
 func (store *UserMongoDBStore) SendMessage(user *domain.User) (string, error) {
