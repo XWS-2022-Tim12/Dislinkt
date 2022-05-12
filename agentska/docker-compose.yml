@@ -1,0 +1,71 @@
+version: "3.8"
+
+services:
+  agent_user_service:
+    image: agent_user_service
+    container_name: agent_user_service
+    build:
+      context: .
+      dockerfile: ./user_service/Dockerfile
+    restart: on-failure
+    environment:
+      USER_DB_HOST: ${USER_DB_HOST}
+      USER_DB_PORT: ${USER_DB_PORT}
+      USER_SERVICE_PORT: ${USER_SERVICE_PORT}
+    depends_on:
+      - agent_user_db
+    networks:
+      - network
+
+  agent_authentification_service:
+    image: agent_authentification_service
+    container_name: agent_authentification_service
+    build:
+      context: .
+      dockerfile: ./authentification_service/Dockerfile
+    restart: on-failure
+    environment:
+      AUTHENTIFICATION_DB_HOST: ${AUTHENTIFICATION_DB_HOST}
+      AUTHENTIFICATION_DB_PORT: ${AUTHENTIFICATION_DB_PORT}
+      AUTHENTIFICATION_SERVICE_PORT: ${AUTHENTIFICATION_SERVICE_PORT}
+    depends_on:
+      - agent_authentification_db
+    networks:
+      - network
+
+  agent_api_gateway:
+    image: agent_api_gateway
+    container_name: agent_api_gateway
+    build:
+      context: .
+      dockerfile: ./api_gateway/Dockerfile
+    restart: on-failure
+    ports:
+      - ${GATEWAY_PORT}:${GATEWAY_PORT}
+    environment:
+      GATEWAY_PORT: ${GATEWAY_PORT}
+      USER_SERVICE_HOST: ${USER_SERVICE_HOST}
+      USER_SERVICE_PORT: ${USER_SERVICE_PORT}
+      AUTHENTIFICATION_SERVICE_HOST: ${AUTHENTIFICATION_SERVICE_HOST}
+      AUTHENTIFICATION_SERVICE_PORT: ${AUTHENTIFICATION_SERVICE_PORT}
+    networks:
+      - network
+
+  agent_user_db:
+    image: mongo
+    container_name: agent_user_db
+    restart: on-failure
+    networks:
+      - network
+
+  agent_authentification_db:
+    image: mongo
+    container_name: agent_authentification_db
+    restart: on-failure
+    networks:
+      - network
+
+networks:
+  network:
+    external: true
+    

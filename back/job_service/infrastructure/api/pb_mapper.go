@@ -1,6 +1,8 @@
 package api
 
 import (
+	"time"
+
 	pb "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/job_service"
 	"github.com/XWS-2022-Tim12/Dislinkt/back/job_service/domain"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -27,7 +29,7 @@ func mapNewJob(jobPb *pb.Job) *domain.Job {
 		Requirements: jobPb.Requirements,
 		Description:  jobPb.Description,
 		Position:     jobPb.Position,
-		CreationDay:  jobPb.CreationDay.AsTime(),
+		CreationDay:  time.Now(),
 	}
 	return job
 }

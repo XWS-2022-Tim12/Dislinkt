@@ -9,6 +9,7 @@ import (
 	"github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/infrastructure/services"
 	authentification "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
 	pb "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
+	job "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/job_service"
 	post "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/post_service"
 	user "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_service"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -19,18 +20,24 @@ type AuthentificationHandler struct {
 	authentificationClientAddress string
 	userClientAddress             string
 	postClientAdress              string
+	jobClientAdress               string
 }
 
-func NewAuthentificationHandler(authentificationClientAddress, userClientAddress, postClientAdress string) Handler {
+func NewAuthentificationHandler(authentificationClientAddress, userClientAddress, postClientAdress, jobClientAdress string) Handler {
 	return &AuthentificationHandler{
 		authentificationClientAddress: authentificationClientAddress,
 		userClientAddress:             userClientAddress,
 		postClientAdress:              postClientAdress,
+		jobClientAdress:               jobClientAdress,
 	}
 }
 
 func (handler *AuthentificationHandler) Init(mux *runtime.ServeMux) {
 	err := mux.HandlePath("POST", "/user/login", handler.Login)
+	if err != nil {
+		panic(err)
+	}
+	err = mux.HandlePath("POST", "/user/loginOwner", handler.LoginOwner)
 	if err != nil {
 		panic(err)
 	}
@@ -66,6 +73,10 @@ func (handler *AuthentificationHandler) Init(mux *runtime.ServeMux) {
 	if err != nil {
 		panic(err)
 	}
+	err = mux.HandlePath("POST", "/job", handler.AddNewJob)
+	if err != nil {
+		panic(err)
+	}
 	err = mux.HandlePath("PUT", "/user/post/likePost", handler.LikePost)
 	if err != nil {
 		panic(err)
@@ -82,6 +93,7 @@ func (handler *AuthentificationHandler) Init(mux *runtime.ServeMux) {
 	if err != nil {
 		panic(err)
 	}
+
 }
 func (handler *AuthentificationHandler) AllInfo(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	usr := &domain.User{}
@@ -255,6 +267,9 @@ func (handler *AuthentificationHandler) IsUserLoggedIn(id string) (string, error
 	if success.Session.Role == "user" {
 		return "user", nil
 	}
+	if success.Session.Role == "agent_owner" {
+		return "agent_owner", nil
+	}
 
 	return "admin", nil
 }
@@ -308,6 +323,25 @@ func (handler *AuthentificationHandler) Login(w http.ResponseWriter, r *http.Req
 	return
 }
 
+func (handler *AuthentificationHandler) LoginOwner(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	usr := &domain.User{}
+	errr := json.NewDecoder(r.Body).Decode(&usr)
+	if errr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	success, err := handler.AddSessionOwner(usr.Id, r)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(success))
+	return
+}
+
 func (handler *AuthentificationHandler) FindUser(usr *domain.User) (string, error) {
 	userClient := services.NewUserClient(handler.userClientAddress)
 
@@ -332,6 +366,26 @@ func (handler *AuthentificationHandler) AddSession(id string, r *http.Request) (
 		Id:     "623b0cc3a34d25d8567f9f89",
 		UserId: id,
 		Role:   "user",
+	}
+	if err == nil {
+		session.Id = tokenCookie.Value
+	}
+
+	success, err := authentificationClient.Add(context.TODO(), &authentification.AddRequest{Session: session})
+	if err != nil {
+		return "", err
+	}
+
+	return success.Success, nil
+}
+
+func (handler *AuthentificationHandler) AddSessionOwner(id string, r *http.Request) (string, error) {
+	authentificationClient := services.NewAuthentificationClient(handler.authentificationClientAddress)
+	tokenCookie, err := r.Cookie("sessionId")
+	session := &pb.Session{
+		Id:     "623b0cc3a34d25d8567f9f89",
+		UserId: id,
+		Role:   "agent_owner",
 	}
 	if err == nil {
 		session.Id = tokenCookie.Value
@@ -507,20 +561,58 @@ func (handler *AuthentificationHandler) AddNewPost(w http.ResponseWriter, r *htt
 	}
 
 	postToSend := &post.Post{
-		Id:       reqPost.Id,
-		Text:     reqPost.Text,
-		Image:    reqPost.Image,
-		Link:     reqPost.Link,
-		Likes:    0,
-		Dislikes: 0,
-		Comments: []string{},
-		Username: username,
+		Id:           reqPost.Id,
+		Text:         reqPost.Text,
+		Image:        reqPost.Image,
+		Link:         reqPost.Link,
+		Likes:        0,
+		Dislikes:     0,
+		Comments:     []string{},
+		Username:     username,
 		ImageContent: reqPost.ImageContent,
 	}
 
 	postResponse, err := postClient.AddNewPost(context.TODO(), &post.AddNewPostRequest{Post: postToSend})
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(postResponse.Success))
+	return
+}
+
+func (handler *AuthentificationHandler) AddNewJob(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	reqJob := &domain.Job{}
+	errr := json.NewDecoder(r.Body).Decode(&reqJob)
+	if errr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	tokenCookie, err := r.Cookie("ownerSessionId")
+	if err != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	id, err := handler.IsUserLoggedIn(tokenCookie.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if id != "agent_owner" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	jobClient := services.NewJobClient(handler.jobClientAdress)
+
+	jobToSend := &job.Job{
+		Id:           reqJob.Id,
+		UserId:       reqJob.UserId,
+		Position:     reqJob.Position,
+		Description:  reqJob.Description,
+		Requirements: reqJob.Requirements,
+	}
+	jobResponse, err := jobClient.Add(context.TODO(), &job.AddRequest{Job: jobToSend})
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(jobResponse.Success))
 	return
 }
 
@@ -727,7 +819,7 @@ func (handler *AuthentificationHandler) FindPosts(w http.ResponseWriter, r *http
 					if id == "" {
 						break
 					}
-	
+
 					username, err := handler.findUsersUsername(tokenCookie.Value)
 					for _, u := range userInDatabase.FollowedByUsers {
 						if u == username {
@@ -740,11 +832,11 @@ func (handler *AuthentificationHandler) FindPosts(w http.ResponseWriter, r *http
 				break
 			}
 		}
-		
+
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-    json.NewEncoder(w).Encode(postsByPublicUser)
+	json.NewEncoder(w).Encode(postsByPublicUser)
 	return
 }

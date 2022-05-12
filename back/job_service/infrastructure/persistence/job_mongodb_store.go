@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"context"
+	"time"
 
 	"strings"
 
@@ -80,6 +81,7 @@ func (store *JobMongoDBStore) SearchByRequirements(content string) ([]*domain.Jo
 
 func (store *JobMongoDBStore) Insert(job *domain.Job) (string, error) {
 	job.Id = primitive.NewObjectID()
+	job.CreationDay = time.Now()
 	jobInDatabase, err := store.Get(job.Id)
 	if jobInDatabase != nil {
 		return "id exists", nil
