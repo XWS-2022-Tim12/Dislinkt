@@ -13,6 +13,7 @@ import (
 	postGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/post_service"
 	userGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_service"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/rs/cors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -69,5 +70,11 @@ func (server *Server) initCustomHandlers() {
 }
 
 func (server *Server) Start() {
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", server.config.Port), server.mux))
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:4200"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
+		AllowCredentials: true,
+	})
+	handler := c.Handler(server.mux)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", server.config.Port), handler))
 }

@@ -18,7 +18,7 @@ var users = []*domain.User{
 		Username:     "mico",
 		Biography:    "Zivio u Gacku",
 		Experience:   "Radio na farmi",
-		Education:    domain.Master,
+		Education:    domain.UpperSecondaryEducation,
 		Skills:       "Programiranje",
 		Interests:    "Programiranje",
 		Password:     "prvasifra",

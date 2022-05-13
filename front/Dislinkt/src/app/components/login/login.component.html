@@ -1,0 +1,31 @@
+<div class="container">
+	<div class="ekran">
+		<div class="ekranSadrzaj">
+			<form class="login" [formGroup]="loginForm" (ngSubmit)="submitData()">
+				<div class="loginPolje">
+					<input type="text" formControlName="username" [(ngModel)]="user.username" class="loginInput" placeholder="username"/>
+                    <div *ngIf="username.invalid && (username.touched || username.dirty)">
+                        <span style="color: red;" *ngIf="username.errors?.required">Username is required</span>
+                        <span style="color: red;" *ngIf="username.errors?.pattern">Only letters and numbers allowed, min 4 characters</span>
+                    </div>
+				</div>
+				<div class="loginPolje">
+					<input type="password" formControlName="password" [(ngModel)]="user.password" class="loginInput" placeholder="password"/>
+                    <div *ngIf="password.invalid && (password.touched || password.dirty)">
+                        <span style="color: red;" *ngIf="password.errors?.required">Password is required</span>
+                        <span style="color: red;" *ngIf="password.errors?.pattern">Only letters and numbers allowed, min 8 characters</span>
+                    </div>
+				</div>
+				<button class="button loginSubmit" [disabled]="loginForm.invalid">
+					<span>Log In Now</span>
+				</button>	
+                <div *ngIf="userNotFound">
+                    <span style="color: red;">User not found</span>
+                </div>			
+			</form>
+            <button class="button loginSubmit" (click)="register()">
+                <span>Register</span>
+            </button>	
+		</div>	
+	</div>
+</div>

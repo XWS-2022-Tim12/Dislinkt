@@ -294,6 +294,7 @@ func (handler *AuthentificationHandler) findUsersUsername(id string) (string, er
 }
 
 func (handler *AuthentificationHandler) Login(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:4200")
 	usr := &domain.User{}
 	errr := json.NewDecoder(r.Body).Decode(&usr)
 	if errr != nil {
