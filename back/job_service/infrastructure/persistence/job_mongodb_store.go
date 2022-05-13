@@ -33,9 +33,9 @@ func (store *JobMongoDBStore) Get(id primitive.ObjectID) (*domain.Job, error) {
 	return store.filterOne(filter)
 }
 
-func (store *JobMongoDBStore) SearchByUser(id primitive.ObjectID) (*domain.Job, error) {
+func (store *JobMongoDBStore) SearchByUser(id primitive.ObjectID) ([]*domain.Job, error) {
 	filter := bson.M{"userId": id}
-	return store.filterOne(filter)
+	return store.filter(filter)
 }
 
 func (store *JobMongoDBStore) GetAll() ([]*domain.Job, error) {

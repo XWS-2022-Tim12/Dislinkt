@@ -42,13 +42,16 @@ func (handler *JobHandler) SearchByUser(ctx context.Context, request *pb.SearchB
 	if err != nil {
 		return nil, err
 	}
-	job, err := handler.service.SearchByUser(objectId)
+	jobs, err := handler.service.SearchByUser(objectId)
 	if err != nil {
 		return nil, err
 	}
-	jobPb := mapJob(job)
 	response := &pb.SearchByUserResponse{
-		Job: jobPb,
+		Jobs: []*pb.Job{},
+	}
+	for _, job := range jobs {
+		current := mapJob(job)
+		response.Jobs = append(response.Jobs, current)
 	}
 	return response, nil
 }

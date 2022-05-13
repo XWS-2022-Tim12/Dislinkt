@@ -19,7 +19,7 @@ func (service *JobService) Get(id primitive.ObjectID) (*domain.Job, error) {
 	return service.store.Get(id)
 }
 
-func (service *JobService) SearchByUser(id primitive.ObjectID) (*domain.Job, error) {
+func (service *JobService) SearchByUser(id primitive.ObjectID) ([]*domain.Job, error) {
 	return service.store.SearchByUser(id)
 }
 

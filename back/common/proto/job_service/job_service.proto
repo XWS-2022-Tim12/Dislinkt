@@ -59,7 +59,7 @@ message SearchByUserRequest {
 }
 
 message SearchByUserResponse {
-        Job job = 1;
+        repeated Job jobs = 1;
 }
 
 message SearchByDescriptionRequest {
