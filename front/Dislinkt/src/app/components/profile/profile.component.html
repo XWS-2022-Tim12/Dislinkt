@@ -1,0 +1,126 @@
+<div class="container">
+	<div class="ekran">
+		<div class="ekranSadrzaj">
+			<form class="profile" [formGroup]="profileForm">
+				<div class="profilePolje">
+					<input type="text" formControlName="username" [(ngModel)]="user.username" class="profileInput" placeholder="username"/>
+                    <div *ngIf="username.invalid && (username.touched || username.dirty)">
+                        <span style="color: red;" *ngIf="username.errors?.required">Username is required</span>
+                        <span style="color: red;" *ngIf="username.errors?.pattern">Only letters and numbers allowed, min 4 characters</span>
+                    </div>
+				</div>
+				<div class="profilePolje">
+					<input type="password" formControlName="password" [(ngModel)]="user.password" class="profileInput" placeholder="password"/>
+                    <div *ngIf="password.invalid && (password.touched || password.dirty)">
+                        <span style="color: red;" *ngIf="password.errors?.required">Password is required</span>
+                        <span style="color: red;" *ngIf="password.errors?.pattern">Only letters and numbers allowed, min 8 characters</span>
+                    </div>
+				</div>
+                <div class="profilePolje">
+					<input type="text" formControlName="firstname" [(ngModel)]="user.firstname" class="profileInput" placeholder="firstname"/>
+                    <div *ngIf="firstname.invalid && (firstname.touched || firstname.dirty)">
+                        <span style="color: red;" *ngIf="firstname.errors?.required">Firstname is required</span>
+                        <span style="color: red;" *ngIf="firstname.errors?.pattern">Only letters allowed, first letter must be capital</span>
+                    </div>
+				</div>
+                <div class="profilePolje">
+					<input type="email" formControlName="email" [(ngModel)]="user.email" class="profileInput" placeholder="email"/>
+                    <div *ngIf="email.invalid && (email.touched || email.dirty)">
+                        <span style="color: red;" *ngIf="email.errors?.required">Email is required</span>
+                        <span style="color: red;" *ngIf="email.errors?.email">Enter valid email</span>
+                    </div>
+				</div>
+                <div class="profilePolje">
+					<input type="number" formControlName="mobileNumber" [(ngModel)]="user.mobileNumber" class="profileInput" placeholder="mobileNumber"/>
+                    <div *ngIf="mobileNumber.invalid && (mobileNumber.touched || mobileNumber.dirty)">
+                        <span style="color: red;" *ngIf="mobileNumber.errors?.required">Mobile number is required</span>
+                        <span style="color: red;" *ngIf="mobileNumber.errors?.pattern">Enter valid number</span>
+                    </div>
+				</div>
+                <div class="profilePolje">
+					<select type="text" formControlName="gender" [(ngModel)]="user.gender" class="profileInput" placeholder="gender">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                    <div *ngIf="gender.invalid && (gender.touched || gender.dirty)">
+                        <span style="color: red;" *ngIf="gender.errors?.required">Gender is required</span>
+                    </div>
+				</div>
+                <div class="profilePolje">
+					<input type="date" formControlName="birthDay" [(ngModel)]="date" class="profileInput" placeholder="birthDay"/>
+                    <div *ngIf="birthDay.invalid && (birthDay.touched || birthDay.dirty)">
+                        <span style="color: red;" *ngIf="birthDay.errors?.required">Date is required</span>
+                    </div>
+				</div>
+                <div class="profilePolje">
+					<input type="text" formControlName="biography" [(ngModel)]="user.biography" class="profileInput" placeholder="biography"/>
+                    <div *ngIf="biography.invalid && (biography.touched || biography.dirty)">
+                        <span style="color: red;" *ngIf="biography.errors?.required">Biography is required</span>
+                        <span style="color: red;" *ngIf="biography.errors?.pattern">Only letters allowed</span>
+                    </div>
+				</div>
+                <div class="profilePolje">
+					<input type="text" formControlName="experience" [(ngModel)]="user.experience" class="profileInput" placeholder="experience"/>
+                    <div *ngIf="experience.invalid && (experience.touched || experience.dirty)">
+                        <span style="color: red;" *ngIf="experience.errors?.required">Experience is required</span>
+                        <span style="color: red;" *ngIf="experience.errors?.pattern">Only letters allowed</span>
+                    </div>
+				</div>
+                <div class="profilePolje">
+					<select type="text" formControlName="education" [(ngModel)]="user.education" class="profileInput" placeholder="education">
+                        <option value="PrimaryEducation">Primary education</option>
+                        <option value="LowerSecondaryEducation">Lower secondary education</option>
+                        <option value="UpperSecondaryEducation">Upper secondary education</option>
+                        <option value="Bachelor">Bachelor</option>
+                        <option value="Master">Master</option>
+                        <option value="Doctorate">Doctorate</option>
+                    </select>
+                    <div *ngIf="education.invalid && (education.touched || education.dirty)">
+                        <span style="color: red;" *ngIf="education.errors?.required">Education is required</span>
+                    </div>
+				</div>
+                <div class="profilePolje">
+					<input type="text" formControlName="skills" [(ngModel)]="user.skills" class="profileInput" placeholder="skills"/>
+                    <div *ngIf="skills.invalid && (skills.touched || skills.dirty)">
+                        <span style="color: red;" *ngIf="skills.errors?.required">Skills is required</span>
+                        <span style="color: red;" *ngIf="skills.errors?.pattern">Only letters allowed</span>
+                    </div>
+				</div>
+                <div class="profilePolje">
+					<input type="text" formControlName="interests" [(ngModel)]="user.interests" class="profileInput" placeholder="interests"/>
+                    <div *ngIf="interests.invalid && (interests.touched || interests.dirty)">
+                        <span style="color: red;" *ngIf="interests.errors?.required">Interests is required</span>
+                        <span style="color: red;" *ngIf="interests.errors?.pattern">Only letters allowed</span>
+                    </div>
+				</div>
+                <div class="profilePolje">
+					<select type="text" formControlName="public" [(ngModel)]="user.public" class="profileInput" placeholder="public">
+                        <option value="true">Public</option>
+                        <option value="false">Private</option>
+                    </select>
+                    <div *ngIf="public.invalid && (public.touched || public.dirty)">
+                        <span style="color: red;" *ngIf="public.errors?.required">Public is required</span>
+                    </div>
+				</div>
+                <button class="button profileSubmit" [disabled]="profileForm.invalid" (click)="editBasic()">
+					<span>Edit Basic</span>
+				</button>	
+                <button class="button profileSubmit" [disabled]="profileForm.invalid" (click)="editAdvanced()">
+					<span>Edit Advanced</span>
+				</button>	
+                <button class="button profileSubmit" [disabled]="profileForm.invalid" (click)="editPersonal()">
+					<span>Edit Personal</span>
+				</button>	
+				<button class="button profileSubmit" [disabled]="profileForm.invalid" (click)="editAll()">
+					<span>Edit All</span>
+				</button>	
+                <div *ngIf="wrongPassword">
+                    <span style="color: red;">Wrong password</span>
+                </div>		
+                <div *ngIf="usernameExists">
+                    <span style="color: red;">Username exists</span>
+                </div>		
+			</form>
+		</div>	
+	</div>
+</div>

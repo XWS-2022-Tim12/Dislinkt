@@ -28,8 +28,9 @@ export class LoginComponent implements OnInit {
 
   submitData()
   {
-      this.userService.login(this.user).subscribe(ret => {   
-          this.router.navigate(['/home']);
+      this.userService.login(this.user).subscribe(ret => { 
+          sessionStorage.setItem("username",this.user.username);  
+          this.router.navigate(['/profile']);
       },
       (error: HttpErrorResponse) => {
         this.userNotFound = true;
