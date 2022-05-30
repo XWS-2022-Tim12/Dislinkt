@@ -1,5 +1,6 @@
 package com.Dislinkt.Dislinkt.Controller;
 
+import com.Dislinkt.Dislinkt.Model.Company;
 import com.Dislinkt.Dislinkt.Model.Job;
 import com.Dislinkt.Dislinkt.Model.User;
 import com.Dislinkt.Dislinkt.Service.UserService;
@@ -26,11 +27,10 @@ import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4201")
-
 public class UserController {
 
     @Autowired
-    private UserService userService ;
+    private UserService userService;
 
     @PostMapping("/user")
     public ResponseEntity<Void> register(@RequestBody User user) {
@@ -46,11 +46,20 @@ public class UserController {
     public ResponseEntity<Void> login(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
         if (userService.login(user)){
             User.Role userRole = userService.getRole(user);
-            if(request.getSession().getAttribute("role") == null){
-                request.getSession(true).setAttribute("role",userRole);
+            String username = user.getUsername();
+
+            if (request.getSession().getAttribute("role") == null){
+                request.getSession(true).setAttribute("role", userRole);
             }
-            else{
-                request.getSession(false).setAttribute("role",userRole);
+            else {
+                request.getSession(false).setAttribute("role", userRole);
+            }
+
+            if (request.getSession().getAttribute("username") == null){
+                request.getSession(true).setAttribute("username", username);
+            }
+            else {
+                request.getSession(false).setAttribute("username", username);
             }
 
             if(userService.getRole(user).equals(User.Role.agent_owner)) {
@@ -258,5 +267,58 @@ public class UserController {
             }
         }
         return new ResponseEntity<Job[]>(HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    @PostMapping("/user/registerCompany")
+    public ResponseEntity<Boolean> registerCompany(@RequestBody Company company, HttpServletRequest request) {
+        if (request.getSession().getAttribute("role") != null && request.getSession().getAttribute("username") != null) {
+            String loggedUserUsername = request.getSession().getAttribute("username").toString();
+
+            if (userService.checkCompanyForRegistration(company, loggedUserUsername)) {
+                userService.registerCompany(company);
+
+                return new ResponseEntity<>(true, HttpStatus.OK);
+            }
+
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(false, HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    @PutMapping("/user/acceptCompanyRegistrationRequest")
+    public ResponseEntity<Boolean> acceptCompanyRegistrationRequest(@RequestBody Company company, HttpServletRequest request) {
+        if (request.getSession().getAttribute("role") != null && request.getSession().getAttribute("username") != null) {
+            if (request.getSession().getAttribute("role").equals(User.Role.admin)) {
+                if (company.getName() != null && userService.checkCompanyName(company.getName())) {
+                    userService.acceptCompanyRegistrationRequest(company.getName());
+
+                    return new ResponseEntity<>(true, HttpStatus.OK);
+                }
+            }
+
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(false, HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    @PutMapping("/user/changeCompanyDescription")
+    public ResponseEntity<Boolean> changeCompanyDescription(@RequestBody Company company, HttpServletRequest request) {
+        if (request.getSession().getAttribute("role") != null && request.getSession().getAttribute("username") != null) {
+            if (request.getSession().getAttribute("role").equals(User.Role.agent_owner)) {
+                String loggedUserUsername = request.getSession().getAttribute("username").toString();
+
+                if (userService.checkCompanyForChange(company, loggedUserUsername)) {
+                    userService.changeCompanyDescription(company);
+
+                    return new ResponseEntity<>(true, HttpStatus.OK);
+                }
+            }
+
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(false, HttpStatus.NOT_ACCEPTABLE);
     }
 }
