@@ -30,6 +30,15 @@ func (store *UserMongoDBStore) Get(id primitive.ObjectID) (*domain.User, error) 
 	return store.filterOne(filter)
 }
 
+func (store *UserMongoDBStore) GetPublicUserByUsername(username string) (*domain.User, error) {
+	user, err := store.GetByUsername(username)
+	if err != nil || user.Public == false {
+		return nil, err
+	}
+
+	return user, nil
+}
+
 func (store *UserMongoDBStore) GetByEmail(email string) (*domain.User, error) {
 	filter := bson.M{"email": email}
 	return store.filterOne(filter)

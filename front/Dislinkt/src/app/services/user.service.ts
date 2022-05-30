@@ -14,6 +14,8 @@ export class UserService {
   private editAdvancedUrl: string;
   private editPersonalUrl: string;
   private editAllUrl: string;
+  private getAllPublicUsersUrl: string;
+  private getPublicUserByUsernameUrl: string;
 
   constructor(private http: HttpClient) {
     this.loginUrl = 'http://localhost:8000/user/login';
@@ -23,6 +25,8 @@ export class UserService {
     this.editAdvancedUrl = 'http://localhost:8000/user/info/advanced';
     this.editPersonalUrl = 'http://localhost:8000/user/info/personal';
     this.editAllUrl = 'http://localhost:8000/user/info/all';
+    this.getAllPublicUsersUrl = 'http://localhost:8000/user/publicUsers';
+    this.getPublicUserByUsernameUrl = 'http://localhost:8000/user/publicUserByUsername';
    }
 
    public login(user: User): Observable<void> {
@@ -33,6 +37,12 @@ export class UserService {
   }
   public getAll(): Observable<object> {
     return this.http.get<object>(this.getAllUrl,{withCredentials: true});
+  }
+  public getPublicUserByUsername(username: string): Observable<object> {
+    return this.http.get<object>(this.getPublicUserByUsernameUrl + '/' + username,{withCredentials: true});
+  }
+  public getAllPublicUsers(): Observable<object> {
+    return this.http.get<object>(this.getAllPublicUsersUrl,{withCredentials: true});
   }
   public editBasic(user: User): Observable<string> {
     return this.http.put<string>(this.editBasicUrl, user,{responseType: 'text' as 'json',withCredentials: true});

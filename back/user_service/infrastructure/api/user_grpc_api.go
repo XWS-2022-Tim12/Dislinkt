@@ -36,6 +36,20 @@ func (handler *UserHandler) Get(ctx context.Context, request *pb.GetRequest) (*p
 	return response, nil
 }
 
+func (handler *UserHandler) GetPublicUserByUsername(ctx context.Context, request *pb.GetPublicUserByUsernameRequest) (*pb.GetPublicUserByUsernameResponse, error) {
+	username := request.Username
+
+	user, err := handler.service.GetPublicUserByUsername(username)
+	if err != nil {
+		return nil, err
+	}
+	userPb := mapUser(user)
+	response := &pb.GetPublicUserByUsernameResponse{
+		User: userPb,
+	}
+	return response, nil
+}
+
 func (handler *UserHandler) GetAll(ctx context.Context, request *pb.GetAllRequest) (*pb.GetAllResponse, error) {
 	users, err := handler.service.GetAll()
 	if err != nil {

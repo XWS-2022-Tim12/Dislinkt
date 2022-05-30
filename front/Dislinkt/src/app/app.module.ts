@@ -8,13 +8,20 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { RegisterComponent } from './components/register/register.component';
 import { ProfileComponent } from './components/profile/profile.component';
+import { HomePageGuestComponent } from './components/home-page-guest/home-page-guest.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MaterialModule } from './material/material.module';
+import { MatNativeDateModule } from '@angular/material/core';
+
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     RegisterComponent,
-    ProfileComponent
+    ProfileComponent,
+    HomePageGuestComponent
   ],
   imports: [
     BrowserModule,
@@ -22,6 +29,10 @@ import { ProfileComponent } from './components/profile/profile.component';
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    NgbModule,
+    BrowserAnimationsModule,
+    MatNativeDateModule,
+    MaterialModule
   ],
   providers: [],
   bootstrap: [AppComponent]

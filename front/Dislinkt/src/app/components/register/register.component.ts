@@ -68,7 +68,7 @@ export class RegisterComponent implements OnInit {
   }
 
   login(){
-    this.router.navigate(['/']);
+    this.router.navigate(['/login']);
   }
 
   get username() {
