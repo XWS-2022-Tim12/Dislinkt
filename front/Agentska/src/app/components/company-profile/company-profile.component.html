@@ -1,0 +1,155 @@
+<div style="background-color: rgb(255, 153, 127);">
+    <label style="font-size: 35px; margin-left: 520px; margin-top: 50px;"> <b> Company: {{company.name}} </b> </label>
+    <div *ngIf="company.comments === null">
+        <label style="margin-left: 600px; font-size: 20px; margin-top: 100px;">
+            Nema komentara za ovu kompaniju!
+        </label>  
+    </div>
+    <div class="container" *ngIf="company.comments !== null">
+        <div class="row" style="margin-top: 50px;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title m-b-0">All comments</h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class="thead-light">
+                                <tr >
+                                    <th scope="col">Text</th>
+                                </tr>
+                            </thead>
+                            <tbody *ngFor="let comment of company.comments;let indexOfelement=index;">
+                                <tr>
+                                    <td scope="col">{{comment}}</td>   
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="company.juniorSalary === null">
+        <label style="margin-left: 600px; font-size: 20px; margin-top: 100px;">
+            Nema juniorskih plata za ovu kompaniju!
+        </label>  
+    </div>
+    <div class="container" *ngIf="company.juniorSalary !== null">
+        <div class="row" style="margin-top: 50px;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title m-b-0">Junior salary</h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class="thead-light">
+                                <tr >
+                                    <th scope="col">In euros</th>
+                                </tr>
+                            </thead>
+                            <tbody *ngFor="let salary of company.juniorSalary;let indexOfelement=index;">
+                                <tr>
+                                    <td scope="col">{{salary}}</td>   
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="company.mediorSalary === null">
+        <label style="margin-left: 600px; font-size: 20px; margin-top: 100px;">
+            Nema seniorskih plata za ovu kompaniju!
+        </label>  
+    </div>
+    <div class="container" *ngIf="company.mediorSalary !== null">
+        <div class="row" style="margin-top: 50px;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title m-b-0">Medior salary</h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class="thead-light">
+                                <tr >
+                                    <th scope="col">In euros</th>
+                                </tr>
+                            </thead>
+                            <tbody *ngFor="let salary of company.mediorSalary;let indexOfelement=index;">
+                                <tr>
+                                    <td scope="col">{{salary}}</td>   
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="company.hrInterviews === null">
+        <label style="margin-left: 600px; font-size: 20px; margin-top: 100px;">
+            Nema iskustava o HR intervjuu za ovu kompaniju!
+        </label>  
+    </div>
+    <div class="container" *ngIf="company.hrInterviews !== null">
+        <div class="row" style="margin-top: 50px;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title m-b-0">HR interviews</h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class="thead-light">
+                                <tr >
+                                    <th scope="col">Experiences</th>
+                                </tr>
+                            </thead>
+                            <tbody *ngFor="let experience of company.hrInterviews;let indexOfelement=index;">
+                                <tr>
+                                    <td scope="col">{{experience}}</td>   
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="company.tehnicalInterviews === null">
+        <label style="margin-left: 600px; font-size: 20px; margin-top: 100px;">
+            Nema iskustava o tehnickom intervjuu za ovu kompaniju!
+        </label>  
+    </div>
+    <div class="container" *ngIf="company.tehnicalInterviews !== null">
+        <div class="row" style="margin-top: 50px;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title m-b-0">Tehnical interviews</h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class="thead-light">
+                                <tr >
+                                    <th scope="col">Experiences</th>
+                                </tr>
+                            </thead>
+                            <tbody *ngFor="let experience of company.tehnicalInterviews;let indexOfelement=index;">
+                                <tr>
+                                    <td scope="col">{{experience}}</td>   
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button style="margin-left: 720px; margin-top: 150px;" class="btn btn-secondary" (click)="backTousersPage()"> Back </button>
+    <div class="row" style="margin-top: 100px;"></div>
+</div>

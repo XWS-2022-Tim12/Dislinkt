@@ -9,6 +9,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { UsersPageComponent } from './components/users-page/users-page.component';
 import { AddCommentToCompanyComponent } from './components/add-comment-to-company/add-comment-to-company.component';
+import { CompanyProfileComponent } from './components/company-profile/company-profile.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { AddCommentToCompanyComponent } from './components/add-comment-to-compan
     RegisterComponent,
     LoginComponent,
     UsersPageComponent,
-    AddCommentToCompanyComponent
+    AddCommentToCompanyComponent,
+    CompanyProfileComponent
   ],
   imports: [
     BrowserModule,

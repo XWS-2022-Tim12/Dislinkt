@@ -30,4 +30,9 @@ export class UsersPageComponent implements OnInit {
     this.router.navigate(['/add-comment']);
   }
 
+  showCompanyProfile(index: number) {
+    let company = this.allCompanies[index]
+    sessionStorage.setItem('name', company.name);
+    this.router.navigate(['/company-profile']);
+  }
 }

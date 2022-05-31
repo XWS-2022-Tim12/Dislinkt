@@ -9,16 +9,12 @@ import { CompanyService } from 'src/app/service/company.service';
   styleUrls: ['./add-comment-to-company.component.css']
 })
 export class AddCommentToCompanyComponent implements OnInit {
-  allCompanies: any;
   company: Company;
   showError: Boolean = false;
 
   constructor(public router: Router, private companyService: CompanyService) { }
 
   ngOnInit(): void {
-    this.companyService.getAllCompanies().subscribe(ret => {
-      this.allCompanies = ret;
-    })
     this.companyService.getCompanyByName().subscribe(ret => {
       this.company = ret;
     })
