@@ -40,7 +40,7 @@ export class AddCommentToCompanyComponent implements OnInit {
       this.company.comments.push(comment.value)
     }
 
-    this.companyService.addCommentToCompany(this.company).subscribe(ret => {
+    this.companyService.editCompany(this.company).subscribe(ret => {
       if(ret)
         this.router.navigate(['/profile']);
     });

@@ -27,7 +27,7 @@ public class CompanyController {
         return new ResponseEntity<>(companyService.getById(id), HttpStatus.OK);
     }
 
-    @PutMapping("/company/addComment")
+    @PutMapping("/company/edit")
     public ResponseEntity<Boolean> addCommentToCompany(@RequestBody Company company) {
         if (companyService.addCommentToCompany(company)) {
             return new ResponseEntity<Boolean>(true, HttpStatus.OK);

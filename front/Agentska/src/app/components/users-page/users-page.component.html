@@ -22,7 +22,7 @@
                                     <td scope="col">{{company.address}}</td>
                                     <td scope="col">{{company.phoneNumber}}</td>
                                     <td> <button class="btn btn-dark" (click)="addComment(indexOfelement)"> Add comment </button> </td>
-                                    <td> <button class="btn btn-warning" > Add salary </button> </td>
+                                    <td> <button class="btn btn-warning" (click)="addSalary(indexOfelement)"> Add salary </button> </td>
                                     <td> <button class="btn btn-secondary" > Add interview </button> </td>
                                     <td> <button class="btn btn-primary" (click)="showCompanyProfile(indexOfelement)"> Open </button> </td>
                                 </tr>

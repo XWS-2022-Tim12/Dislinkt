@@ -35,4 +35,10 @@ export class UsersPageComponent implements OnInit {
     sessionStorage.setItem('name', company.name);
     this.router.navigate(['/company-profile']);
   }
+
+  addSalary(index: number) {
+    let company = this.allCompanies[index]
+    sessionStorage.setItem('name', company.name);
+    this.router.navigate(['/add-salary']);
+  }
 }

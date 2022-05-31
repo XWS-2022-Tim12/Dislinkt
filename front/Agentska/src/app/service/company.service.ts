@@ -8,12 +8,12 @@ import { Company } from '../model/company';
 })
 export class CompanyService {
   private getAllCompaniesUrl: string;
-  private AddCommentToCompanyUrl: string;
+  private EditCompanyUrl: string;
   private getCompanyByNameUrl: string;
 
   constructor(private http: HttpClient) { 
     this.getAllCompaniesUrl = 'http://localhost:8080/company/companies';
-    this.AddCommentToCompanyUrl = 'http://localhost:8080/company/addComment';
+    this.EditCompanyUrl = 'http://localhost:8080/company/edit';
     this.getCompanyByNameUrl = 'http://localhost:8080/company/companyByName'
   }
 
@@ -24,8 +24,8 @@ export class CompanyService {
     return this.http.get<Array<Company>>(this.getAllCompaniesUrl, {headers: headers});
   }
 
-  public addCommentToCompany(company: Company): Observable<Boolean> {
-    return this.http.put<boolean>(this.AddCommentToCompanyUrl, company);
+  public editCompany(company: Company): Observable<Boolean> {
+    return this.http.put<boolean>(this.EditCompanyUrl, company);
   }
 
   public getCompanyByName(): Observable<Company> {

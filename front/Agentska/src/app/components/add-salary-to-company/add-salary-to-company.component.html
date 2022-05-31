@@ -1,0 +1,36 @@
+<div style="background-color: rgb(255, 153, 127);">
+    <div class="row">
+        <div class="col-12">
+            <label style="font-size: 35px; margin-left: 650px; margin-top: 50px;">  Add salary </label>
+        </div>
+        <div class="col-2" style="margin-top: 70px; margin-left: 200px; font-size: 17px;">
+            <label > Select type of salary: </label>
+        </div>
+        <div class="col-8" style="margin-top: 70px;">
+            <select name="type" class="form-control" id="type" style=" width: 130px;">
+                <option value="Junior"> Junior </option>
+                <option value="Medior"> Medior </option>
+              </select>
+        </div>
+        <div class="col-2" style="margin-top: 30px; margin-left: 200px; font-size: 17px;">
+            <label > Type salary: </label>
+        </div>
+        <div class="col-3" style="margin-top: 30px;">
+            <input type="number" name="salary" id="salary" placeholder="Salary" class="form-control">
+        </div>
+        <div class="col-10">
+            <label style="color: red; margin-left: 200px; margin-top: 50px;" *ngIf="showError"> You must to type a salary! </label>
+        </div>
+        <div class="col-4">
+            <button style="margin-left: 200px; margin-top: 50px;" class="btn btn-dark" (click)="addSalaryToCompany()"> Add </button>
+        </div>
+        <div class="col-4">
+            <button style="margin-left: 250px; margin-top: 50px;" class="btn btn-secondary" (click)="backToUsersPage()"> Back </button>
+        </div>
+        
+    </div>
+    <div class="row" style="height: 100px;">
+            
+    </div>
+    
+</div>
