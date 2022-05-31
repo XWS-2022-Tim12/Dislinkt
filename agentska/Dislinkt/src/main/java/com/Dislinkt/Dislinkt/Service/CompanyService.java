@@ -11,4 +11,5 @@ public interface CompanyService {
     void registerCompany(Company company);
     void acceptCompanyRegistrationRequest(String name);
     void changeCompanyDescription(Company company);
+    public Boolean addCommentToCompany(Company company);
 }

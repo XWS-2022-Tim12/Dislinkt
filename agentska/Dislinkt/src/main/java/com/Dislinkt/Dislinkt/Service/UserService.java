@@ -20,4 +20,5 @@ public interface UserService {
     Boolean checkCompanyName(String name);
     boolean checkCompanyForChange(Company company, String loggedUserUsername);
     void changeCompanyDescription(Company company);
+    public User getLoggedUser(String email);
 }

@@ -43,6 +43,12 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    public User getLoggedUser(String username) {
+        User foundUser = userRepository.findByUsername(username);
+
+        return foundUser;
+    }
+
     public List<User> getAll() {
         return userRepository.findAll();
     }

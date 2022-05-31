@@ -7,12 +7,16 @@ import { RegisterComponent } from './components/register/register.component';
 import { LoginComponent } from './components/login/login.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { UsersPageComponent } from './components/users-page/users-page.component';
+import { AddCommentToCompanyComponent } from './components/add-comment-to-company/add-comment-to-company.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     RegisterComponent,
-    LoginComponent
+    LoginComponent,
+    UsersPageComponent,
+    AddCommentToCompanyComponent
   ],
   imports: [
     BrowserModule,

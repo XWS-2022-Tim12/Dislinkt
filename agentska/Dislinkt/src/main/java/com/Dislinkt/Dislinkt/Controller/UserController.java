@@ -91,6 +91,11 @@ public class UserController {
             return new ResponseEntity<List<User>>(userService.getAll(), HttpStatus.OK);
     }
 
+    @GetMapping("/user/getLoggedUser")
+    public ResponseEntity<User> getLoggedUser(@RequestParam("username") String username) {
+        return new ResponseEntity<User>(userService.getLoggedUser(username), HttpStatus.OK);
+    }
+
     @PostMapping("/job")
     public ResponseEntity<String> AddNewJob(@RequestBody Job job, HttpServletRequest request) {
         if(request.getSession().getAttribute("role").equals(User.Role.agent_owner)){

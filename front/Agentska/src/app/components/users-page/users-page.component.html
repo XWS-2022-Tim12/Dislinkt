@@ -1,0 +1,37 @@
+<div style="background-color: rgb(255, 153, 127);">
+    <label style="font-size: 40px; margin-left: 650px; margin-top: 50px;"> <b> Hello {{user.firstName}}! </b></label>
+    <div class="container">
+        <div class="row" style="margin-top: 50px;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title m-b-0">All companies</h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class="thead-light">
+                                <tr >
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Address</th>
+                                    <th scope="col">Phone Number</th>
+                                </tr>
+                            </thead>
+                            <tbody *ngFor="let company of allCompanies;let indexOfelement=index;">
+                                <tr>
+                                    <td scope="col">{{company.name}}</td>
+                                    <td scope="col">{{company.address}}</td>
+                                    <td scope="col">{{company.phoneNumber}}</td>
+                                    <td> <button class="btn btn-dark" (click)="addComment(indexOfelement)"> Add comment </button> </td>
+                                    <td> <button class="btn btn-warning" > Add salary </button> </td>
+                                    <td> <button class="btn btn-secondary" > Add interview </button> </td>
+                                    <td> <button class="btn btn-primary" > Open </button> </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="margin-top: 180px;"></div>
+</div>

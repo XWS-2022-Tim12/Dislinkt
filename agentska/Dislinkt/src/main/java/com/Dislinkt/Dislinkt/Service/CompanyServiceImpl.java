@@ -6,6 +6,7 @@ import com.Dislinkt.Dislinkt.Repository.CompanyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.xml.stream.events.Comment;
 import java.util.List;
 
 @Service
@@ -58,6 +59,17 @@ public class CompanyServiceImpl implements CompanyService {
             companyRepository.save(companyFromDatabase);
         } else {
             throw new IllegalArgumentException("Company doesn't exist or you are not owner!");
+        }
+    }
+
+    public Boolean addCommentToCompany(Company company) {
+        Company foundCompany = companyRepository.getByName(company.getName());
+
+        if(foundCompany != null) {
+            companyRepository.save(company);
+            return true;
+        } else {
+            return false;
         }
     }
 }
