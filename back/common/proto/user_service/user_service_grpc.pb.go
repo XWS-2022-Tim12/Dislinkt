@@ -18,6 +18,7 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
 	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
+	GetByUsername(ctx context.Context, in *GetByUsernameRequest, opts ...grpc.CallOption) (*GetByUsernameResponse, error)
 	GetPublicUserByUsername(ctx context.Context, in *GetPublicUserByUsernameRequest, opts ...grpc.CallOption) (*GetPublicUserByUsernameResponse, error)
 	GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
 	GetAllPublicUsers(ctx context.Context, in *GetAllPublicUsersRequest, opts ...grpc.CallOption) (*GetAllPublicUsersResponse, error)
@@ -43,6 +44,15 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 func (c *userServiceClient) Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error) {
 	out := new(GetResponse)
 	err := c.cc.Invoke(ctx, "/user.UserService/Get", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) GetByUsername(ctx context.Context, in *GetByUsernameRequest, opts ...grpc.CallOption) (*GetByUsernameResponse, error) {
+	out := new(GetByUsernameResponse)
+	err := c.cc.Invoke(ctx, "/user.UserService/GetByUsername", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -162,6 +172,7 @@ func (c *userServiceClient) RejectFollowingRequest(ctx context.Context, in *Reje
 // for forward compatibility
 type UserServiceServer interface {
 	Get(context.Context, *GetRequest) (*GetResponse, error)
+	GetByUsername(context.Context, *GetByUsernameRequest) (*GetByUsernameResponse, error)
 	GetPublicUserByUsername(context.Context, *GetPublicUserByUsernameRequest) (*GetPublicUserByUsernameResponse, error)
 	GetAll(context.Context, *GetAllRequest) (*GetAllResponse, error)
 	GetAllPublicUsers(context.Context, *GetAllPublicUsersRequest) (*GetAllPublicUsersResponse, error)
@@ -183,6 +194,9 @@ type UnimplementedUserServiceServer struct {
 
 func (*UnimplementedUserServiceServer) Get(context.Context, *GetRequest) (*GetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
+}
+func (*UnimplementedUserServiceServer) GetByUsername(context.Context, *GetByUsernameRequest) (*GetByUsernameResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetByUsername not implemented")
 }
 func (*UnimplementedUserServiceServer) GetPublicUserByUsername(context.Context, *GetPublicUserByUsernameRequest) (*GetPublicUserByUsernameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPublicUserByUsername not implemented")
@@ -240,6 +254,24 @@ func _UserService_Get_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).Get(ctx, req.(*GetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetByUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetByUsernameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetByUsername(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/GetByUsername",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetByUsername(ctx, req.(*GetByUsernameRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -467,6 +499,10 @@ var _UserService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Get",
 			Handler:    _UserService_Get_Handler,
+		},
+		{
+			MethodName: "GetByUsername",
+			Handler:    _UserService_GetByUsername_Handler,
 		},
 		{
 			MethodName: "GetPublicUserByUsername",

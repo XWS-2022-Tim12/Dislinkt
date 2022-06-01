@@ -13,6 +13,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material/material.module';
 import { MatNativeDateModule } from '@angular/material/core';
+import { OtherUserProfileComponent } from './components/other-user-profile/other-user-profile.component';
 
 
 @NgModule({
@@ -21,7 +22,8 @@ import { MatNativeDateModule } from '@angular/material/core';
     LoginComponent,
     RegisterComponent,
     ProfileComponent,
-    HomePageGuestComponent
+    HomePageGuestComponent,
+    OtherUserProfileComponent
   ],
   imports: [
     BrowserModule,

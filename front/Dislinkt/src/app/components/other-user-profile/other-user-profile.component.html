@@ -1,0 +1,21 @@
+<div class="head">
+    <div>
+        <h3>User profile</h3>
+    </div>
+    <div class="username">
+        {{ user.username }}
+    </div>
+    <div *ngIf="canFollow" class="following">
+        <button (click)="followUser()" style="width: 100%;">Follow</button>
+    </div>
+    <div *ngIf="following" class="following">
+        <label>Following</label>
+    </div>
+    
+    <div *ngIf="followingRequest" class="following">
+        <label>Following request</label>
+    </div>
+</div>
+<div class="posts">
+    Posts
+</div>
