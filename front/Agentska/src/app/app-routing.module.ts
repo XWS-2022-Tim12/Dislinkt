@@ -1,3 +1,4 @@
+import { RegisterCompanyRequestsComponent } from './components/register-company-requests/register-company-requests.component';
 import { EditCompanyDescriptionComponent } from './components/edit-company-description/edit-company-description.component';
 import { RegisterCompanyComponent } from './components/register-company/register-company.component';
 import { NgModule } from '@angular/core';
@@ -19,7 +20,8 @@ const routes: Routes = [
   { path: 'add-salary', component: AddSalaryToCompanyComponent },
   { path: 'add-experience', component: AddExperiencesOfInterviewToCompanyComponent },
   { path: 'register-company', component: RegisterCompanyComponent },
-  { path: 'edit-company-description/:name', component: EditCompanyDescriptionComponent }
+  { path: 'edit-company-description/:name', component: EditCompanyDescriptionComponent },
+  { path: 'company-requests', component: RegisterCompanyRequestsComponent }
 ];
 
 @NgModule({

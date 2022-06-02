@@ -7,4 +7,11 @@ export class User {
     birthDay: Date;
     username: string;
     password: string;
+    role: Role;
+}
+
+export enum Role {
+    admin,
+    agent_user,
+    agent_owner
 }
