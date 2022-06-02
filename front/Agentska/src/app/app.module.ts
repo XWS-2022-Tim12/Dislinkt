@@ -12,6 +12,8 @@ import { AddCommentToCompanyComponent } from './components/add-comment-to-compan
 import { CompanyProfileComponent } from './components/company-profile/company-profile.component';
 import { AddSalaryToCompanyComponent } from './components/add-salary-to-company/add-salary-to-company.component';
 import { AddExperiencesOfInterviewToCompanyComponent } from './components/add-experiences-of-interview-to-company/add-experiences-of-interview-to-company.component';
+import { RegisterCompanyComponent } from './components/register-company/register-company.component';
+import { EditCompanyDescriptionComponent } from './components/edit-company-description/edit-company-description.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +24,9 @@ import { AddExperiencesOfInterviewToCompanyComponent } from './components/add-ex
     AddCommentToCompanyComponent,
     CompanyProfileComponent,
     AddSalaryToCompanyComponent,
-    AddExperiencesOfInterviewToCompanyComponent
+    AddExperiencesOfInterviewToCompanyComponent,
+    RegisterCompanyComponent,
+    EditCompanyDescriptionComponent
   ],
   imports: [
     BrowserModule,

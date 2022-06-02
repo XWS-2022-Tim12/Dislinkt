@@ -1,0 +1,26 @@
+<p>register-company works!</p>
+<div>
+    <form id="registerCompanyForm" name="registerCompanyForm" (ngSubmit)="registerCompany()" ngNativeValidate>
+        <div>
+            <label>Name:</label>
+            <input [(ngModel)]="company.name" type="text" id="name" name="name" placeholder="Name..." required/>
+        </div>
+        
+        <div>
+            <label>Address:</label>
+            <input [(ngModel)]="company.address" type="text" id="address" name="address" placeholder="Address..." /> 
+        </div>
+        
+        <div>
+            <label>Phone number:</label>
+            <input [(ngModel)]="company.phoneNumber" type="text" id="phoneNumber" name="phoneNumber" placeholder="Phone number..." />
+        </div>
+        
+        <div>
+            <label>Description:</label>
+            <input [(ngModel)]="company.description" type="text" id="description" name="description" placeholder="Description..." />
+        </div>
+
+        <button type="submit">Confirm</button>
+    </form>
+</div>
