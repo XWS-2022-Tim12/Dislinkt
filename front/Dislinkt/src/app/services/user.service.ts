@@ -16,6 +16,10 @@ export class UserService {
   private editAllUrl: string;
   private getAllPublicUsersUrl: string;
   private getPublicUserByUsernameUrl: string;
+  private getUserByUsernameUrl: string;
+  private followUrl: string;
+  private acceptFollowingRequestUrl: string;
+  private rejectFollowingRequestUrl: string;
 
   constructor(private http: HttpClient) {
     this.loginUrl = 'http://localhost:8000/user/login';
@@ -27,6 +31,10 @@ export class UserService {
     this.editAllUrl = 'http://localhost:8000/user/info/all';
     this.getAllPublicUsersUrl = 'http://localhost:8000/user/publicUsers';
     this.getPublicUserByUsernameUrl = 'http://localhost:8000/user/publicUserByUsername';
+    this.getUserByUsernameUrl = 'http://localhost:8000/user/userByUsername';
+    this.followUrl = 'http://localhost:8000/user/follow';
+    this.acceptFollowingRequestUrl = 'http://localhost:8000/user/acceptFollowingRequest';
+    this.rejectFollowingRequestUrl = 'http://localhost:8000/user/rejectFollowingRequest';
    }
 
    public login(user: User): Observable<void> {
@@ -55,5 +63,21 @@ export class UserService {
   }
   public editAll(user: User): Observable<string> {
     return this.http.put<string>(this.editAllUrl, user,{responseType: 'text' as 'json',withCredentials: true});
+  }
+
+  public getUserByUsername(username: string): Observable<object> {
+    return this.http.get<object>(this.getUserByUsernameUrl + '/' + username, { withCredentials: true } );
+  }
+
+  public follow(user: User): Observable<string> {
+    return this.http.put<string>(this.followUrl, user, { responseType: 'text' as 'json', withCredentials: true } );
+  }
+
+  public acceptFollowingRequest(user: User): Observable<string> {
+    return this.http.put<string>(this.acceptFollowingRequestUrl, user, { responseType: 'text' as 'json', withCredentials: true } );
+  }
+
+  public rejectFollowingRequest(user: User): Observable<string> {
+    return this.http.put<string>(this.rejectFollowingRequestUrl, user, { responseType: 'text' as 'json', withCredentials: true } );
   }
 }

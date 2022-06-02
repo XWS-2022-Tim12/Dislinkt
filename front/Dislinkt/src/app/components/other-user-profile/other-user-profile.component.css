@@ -1,0 +1,35 @@
+.head {
+    width: 50%;
+    margin: auto;
+    margin-top: 1%;
+    margin-bottom: 1%;
+    text-align: center;
+    border: 1px solid black;
+}
+
+.posts {
+    width: 80%;
+    margin: auto;
+    text-align: center;
+    border: 1px solid black;
+}
+
+.username {
+    width: 20%;
+    display: inline-block;
+    vertical-align: middle;
+    margin-top: 5%;
+    margin-bottom: 5%;
+    margin-right: 2%;
+    border: 2px solid green;
+}
+
+.following {
+    width: 20%;
+    display: inline-block;
+    vertical-align: middle;
+    margin-top: 5%;
+    margin-bottom: 5%;
+    margin-left: 2%;
+    border: 2px solid green;
+}
