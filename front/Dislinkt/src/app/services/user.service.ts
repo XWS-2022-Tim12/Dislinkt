@@ -18,6 +18,8 @@ export class UserService {
   private getPublicUserByUsernameUrl: string;
   private getUserByUsernameUrl: string;
   private followUrl: string;
+  private acceptFollowingRequestUrl: string;
+  private rejectFollowingRequestUrl: string;
 
   constructor(private http: HttpClient) {
     this.loginUrl = 'http://localhost:8000/user/login';
@@ -31,6 +33,8 @@ export class UserService {
     this.getPublicUserByUsernameUrl = 'http://localhost:8000/user/publicUserByUsername';
     this.getUserByUsernameUrl = 'http://localhost:8000/user/userByUsername';
     this.followUrl = 'http://localhost:8000/user/follow';
+    this.acceptFollowingRequestUrl = 'http://localhost:8000/user/acceptFollowingRequest';
+    this.rejectFollowingRequestUrl = 'http://localhost:8000/user/rejectFollowingRequest';
    }
 
    public login(user: User): Observable<void> {
@@ -67,5 +71,13 @@ export class UserService {
 
   public follow(user: User): Observable<string> {
     return this.http.put<string>(this.followUrl, user, { responseType: 'text' as 'json', withCredentials: true } );
+  }
+
+  public acceptFollowingRequest(user: User): Observable<string> {
+    return this.http.put<string>(this.acceptFollowingRequestUrl, user, { responseType: 'text' as 'json', withCredentials: true } );
+  }
+
+  public rejectFollowingRequest(user: User): Observable<string> {
+    return this.http.put<string>(this.rejectFollowingRequestUrl, user, { responseType: 'text' as 'json', withCredentials: true } );
   }
 }

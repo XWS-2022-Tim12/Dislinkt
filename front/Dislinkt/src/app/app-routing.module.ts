@@ -1,3 +1,4 @@
+import { FollowingRequestsComponent } from './components/following-requests/following-requests.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HomePageGuestComponent } from './components/home-page-guest/home-page-guest.component';
@@ -11,7 +12,8 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'profile', component: ProfileComponent },
   { path: '', component: HomePageGuestComponent },
-  { path: 'user/:username', component: OtherUserProfileComponent }
+  { path: 'user/profile/:username', component: OtherUserProfileComponent },
+  { path: 'user/following-requests', component: FollowingRequestsComponent }
 ];
 
 @NgModule({
