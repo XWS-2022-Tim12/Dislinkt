@@ -36,6 +36,7 @@ export class HomePageGuestComponent implements OnInit {
   goToProfile() {
     this.userService.getPublicUserByUsername(this.searchText).subscribe(
       ret => {
+        this.userNotFound = false;
         this.router.navigate(['/user/profile', this.searchText]);
       },
       err => {this.userNotFound = true;})

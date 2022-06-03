@@ -32,13 +32,11 @@ type Session struct {
 type Post struct {
 	Id           string
 	Text         string
-	Image        string
-	Link         string
 	Likes        int32
 	Dislikes     int32
 	Comments     []string
 	Username     string
-	ImageContent []byte
+	ImageContent string
 }
 
 type Job struct {
