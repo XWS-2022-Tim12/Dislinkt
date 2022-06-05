@@ -10,7 +10,7 @@ import (
 var jobs = []*domain.Job{
 	{
 		Id:                 getObjectId("62fghcc3a34d25d8567f9f22"),
-		UserId:             getObjectId("62fghcc3a34d25d8567f9f82"),
+		UserId:             getObjectId("629d15e1cdfebd707ce8faec"),
 		Position:           "Director",
 		Description:        "Description of job",
 		Requirements:       "Requirements of job",
