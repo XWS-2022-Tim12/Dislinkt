@@ -16,6 +16,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { OtherUserProfileComponent } from './components/other-user-profile/other-user-profile.component';
 import { FollowingRequestsComponent } from './components/following-requests/following-requests.component';
 import { NewPostComponent } from './components/new-post/new-post.component';
+import { LinkyModule } from 'ngx-linky';
 
 
 @NgModule({
@@ -38,7 +39,8 @@ import { NewPostComponent } from './components/new-post/new-post.component';
     NgbModule,
     BrowserAnimationsModule,
     MatNativeDateModule,
-    MaterialModule
+    MaterialModule,
+    LinkyModule
   ],
   providers: [],
   bootstrap: [AppComponent]

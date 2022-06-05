@@ -51,6 +51,24 @@ func (handler *PostHandler) GetAll(ctx context.Context, request *pb.GetAllReques
 	return response, nil
 }
 
+func (handler *PostHandler) GetUserPosts(ctx context.Context, request *pb.GetUserPostsRequest) (*pb.GetUserPostsResponse, error) {
+	username := request.Username
+	
+	posts, err := handler.service.GetUserPosts(username)
+	if err != nil {
+		return nil, err
+	}
+
+	response := &pb.GetUserPostsResponse{
+		Posts: []*pb.Post{},
+	}
+	for _, post := range posts {
+		current := mapPost(post)
+		response.Posts = append(response.Posts, current)
+	}
+	return response, nil
+}
+
 func (handler *PostHandler) AddNewPost(ctx context.Context, request *pb.AddNewPostRequest) (*pb.AddNewPostResponse, error) {
 	post := mapNewPost(request.Post)
 	successs, err := handler.service.AddNewPost(post)

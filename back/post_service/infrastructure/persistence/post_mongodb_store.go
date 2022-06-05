@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"context"
+	"sort"
 
 	"github.com/XWS-2022-Tim12/Dislinkt/back/post_service/domain"
 	"go.mongodb.org/mongo-driver/bson"
@@ -33,6 +34,18 @@ func (store *PostMongoDBStore) Get(id primitive.ObjectID) (*domain.Post, error) 
 func (store *PostMongoDBStore) GetAll() ([]*domain.Post, error) {
 	filter := bson.D{{}}
 	return store.filter(filter)
+}
+
+func (store *PostMongoDBStore) GetUserPosts(username string) ([]*domain.Post, error) {
+	filter := bson.M{"username": username}
+	userPosts, err := store.filter(filter)
+	if err != nil {
+		return nil, err
+	}
+
+	sort.Slice(userPosts, func(i, j int) bool { return userPosts[i].Date.After(userPosts[j].Date) })
+
+	return userPosts, nil
 }
 
 func (store *PostMongoDBStore) Insert(post *domain.Post) (string, error) {
