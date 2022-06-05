@@ -88,8 +88,6 @@ func (store *PostMongoDBStore) UpdatePost(post *domain.Post) (string, error) {
 		return "post doesn't exist", nil
 	}
 	postFromDatabase.Text = post.Text
-	postFromDatabase.Image = post.Image
-	postFromDatabase.Link = post.Link
 	postFromDatabase.Likes = post.Likes
 	postFromDatabase.Dislikes = post.Dislikes
 	postFromDatabase.Comments = post.Comments

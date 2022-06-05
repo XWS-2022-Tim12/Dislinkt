@@ -1,0 +1,25 @@
+<div>
+    <form id="editCompanyForm" name="editCompanyForm" (ngSubmit)="editCompany()" ngNativeValidate>
+        <div>
+            <label>Name:</label>
+            <input [(ngModel)]="company.name" type="text" id="name" name="name" disabled />
+        </div>
+        
+        <div>
+            <label>Address:</label>
+            <input [(ngModel)]="company.address" type="text" id="address" name="address" disabled /> 
+        </div>
+        
+        <div>
+            <label>Phone number:</label>
+            <input [(ngModel)]="company.phoneNumber" type="text" id="phoneNumber" name="phoneNumber" disabled />
+        </div>
+        
+        <div>
+            <label>Description:</label>
+            <input [(ngModel)]="company.description" type="text" id="description" name="description" placeholder="Description..." />
+        </div>
+
+        <button type="submit">Confirm</button>
+    </form>
+</div>

@@ -19,6 +19,10 @@ func (service *UserService) Get(id primitive.ObjectID) (*domain.User, error) {
 	return service.store.Get(id)
 }
 
+func (service *UserService) GetByUsername(username string) (*domain.User, error) {
+	return service.store.GetByUsername(username)
+}
+
 func (service *UserService) GetPublicUserByUsername(username string) (*domain.User, error) {
 	return service.store.GetPublicUserByUsername(username)
 }

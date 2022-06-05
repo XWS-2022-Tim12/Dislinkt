@@ -15,8 +15,8 @@ export class User {
     skills: string;
     interests: string;
     password: string;
-    followingUsers: Array<User>
-    followedByUsers: Array<User>
-    followingRequests: Array<User>
+    followingUsers: Array<string>
+    followedByUsers: Array<string>
+    followingRequests: Array<string>
     public: boolean
 }

@@ -1,3 +1,6 @@
+import { RegisterCompanyRequestsComponent } from './components/register-company-requests/register-company-requests.component';
+import { EditCompanyDescriptionComponent } from './components/edit-company-description/edit-company-description.component';
+import { RegisterCompanyComponent } from './components/register-company/register-company.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AddCommentToJobComponent } from './components/add-comment-to-job/add-comment-to-job.component';
@@ -9,13 +12,16 @@ import { RegisterComponent } from './components/register/register.component';
 import { UsersPageComponent } from './components/users-page/users-page.component';
 
 const routes: Routes = [
-  { path: '', component: LoginComponent},
-  { path: 'register', component: RegisterComponent},
-  { path: 'profile', component: UsersPageComponent},
-  { path: 'add-comment', component: AddCommentToJobComponent},
-  { path: 'add-salary', component: AddSalaryToJobComponent},
-  { path: 'add-experience', component: AddExperiencesOfInterviewToJobComponent},
-  { path: 'job-profile', component: JobProfileComponent}
+  { path: '', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
+  { path: 'profile', component: UsersPageComponent },
+  { path: 'add-comment', component: AddCommentToJobComponent },
+  { path: 'add-salary', component: AddSalaryToJobComponent },
+  { path: 'add-experience', component: AddExperiencesOfInterviewToJobComponent },
+  { path: 'job-profile', component: JobProfileComponent },
+  { path: 'register-company', component: RegisterCompanyComponent },
+  { path: 'edit-company-description/:name', component: EditCompanyDescriptionComponent },
+  { path: 'company-requests', component: RegisterCompanyRequestsComponent }
 ];
 
 @NgModule({

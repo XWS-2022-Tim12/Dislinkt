@@ -13,6 +13,11 @@ service UserService{
 			get: "/user/{id}"
 		};
         }
+        rpc GetByUsername(GetByUsernameRequest) returns(GetByUsernameResponse) {
+                option (google.api.http) = {
+			get: "/user/userByUsername/{username}"
+		};
+        }
         rpc GetPublicUserByUsername(GetPublicUserByUsernameRequest) returns(GetPublicUserByUsernameResponse) {
                 option (google.api.http) = {
 			get: "/user/publicUserByUsername/{username}"
@@ -88,6 +93,14 @@ message GetRequest {
 }
 
 message GetResponse {
+        User user = 1;
+}
+
+message GetByUsernameRequest {
+        string username = 1;
+}
+
+message GetByUsernameResponse {
         User user = 1;
 }
 

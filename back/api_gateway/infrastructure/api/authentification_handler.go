@@ -564,15 +564,12 @@ func (handler *AuthentificationHandler) AddNewPost(w http.ResponseWriter, r *htt
 	postToSend := &post.Post{
 		Id:           reqPost.Id,
 		Text:         reqPost.Text,
-		Image:        reqPost.Image,
-		Link:         reqPost.Link,
 		Likes:        0,
 		Dislikes:     0,
 		Comments:     []string{},
 		Username:     username,
 		ImageContent: reqPost.ImageContent,
 	}
-
 	postResponse, err := postClient.AddNewPost(context.TODO(), &post.AddNewPostRequest{Post: postToSend})
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(postResponse.Success))
@@ -685,8 +682,6 @@ func (handler *AuthentificationHandler) LikePost(w http.ResponseWriter, r *http.
 	postToSend := &post.Post{
 		Id:       reqPost.Id,
 		Text:     reqPost.Text,
-		Image:    reqPost.Image,
-		Link:     reqPost.Link,
 		Likes:    reqPost.Likes + 1,
 		Dislikes: reqPost.Dislikes,
 		Comments: reqPost.Comments,
@@ -731,8 +726,6 @@ func (handler *AuthentificationHandler) DislikePost(w http.ResponseWriter, r *ht
 	postToSend := &post.Post{
 		Id:       reqPost.Id,
 		Text:     reqPost.Text,
-		Image:    reqPost.Image,
-		Link:     reqPost.Link,
 		Likes:    reqPost.Likes,
 		Dislikes: reqPost.Dislikes + 1,
 		Comments: reqPost.Comments,
@@ -777,8 +770,6 @@ func (handler *AuthentificationHandler) CommentPost(w http.ResponseWriter, r *ht
 	postToSend := &post.Post{
 		Id:       reqPost.Id,
 		Text:     reqPost.Text,
-		Image:    reqPost.Image,
-		Link:     reqPost.Link,
 		Likes:    reqPost.Likes,
 		Dislikes: reqPost.Dislikes,
 		Comments: reqPost.Comments,

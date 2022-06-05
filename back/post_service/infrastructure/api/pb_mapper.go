@@ -10,8 +10,6 @@ func mapPost(post *domain.Post) *pb.Post {
 	postPb := &pb.Post{
 		Id:       post.Id.Hex(),
 		Text:     post.Text,
-		Image:    post.Image,
-		Link:     post.Link,
 		Likes:    post.Likes,
 		Dislikes: post.Dislikes,
 		Comments: post.Comments,
@@ -26,8 +24,6 @@ func mapNewPost(postPb *pb.Post) *domain.Post {
 	post := &domain.Post{
 		Id:       primitive.NewObjectID(),
 		Text:     postPb.Text,
-		Image:    postPb.Image,
-		Link:     postPb.Link,
 		Likes:    postPb.Likes,
 		Dislikes: postPb.Dislikes,
 		Comments: postPb.Comments,
@@ -43,8 +39,6 @@ func mapChangesOfPost(postPb *pb.Post) *domain.Post {
 	post := &domain.Post{
 		Id:       id,
 		Text:     postPb.Text,
-		Image:    postPb.Image,
-		Link:     postPb.Link,
 		Likes:    postPb.Likes,
 		Dislikes: postPb.Dislikes,
 		Comments: postPb.Comments,

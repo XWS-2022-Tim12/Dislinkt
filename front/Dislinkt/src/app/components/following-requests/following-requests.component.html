@@ -1,0 +1,22 @@
+<div *ngIf="areRequestsEmpty">
+    <h3>You don't have any following requests!</h3>
+</div>
+<div *ngIf="!areRequestsEmpty">
+    <h3>Your following requests:</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let username of users">
+                <td>{{ username }}</td>
+                <td><button (click)="acceptRequest(username)">Accept</button></td>
+                <td><button (click)="rejectRequest(username)">Reject</button></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

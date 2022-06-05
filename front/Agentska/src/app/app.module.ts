@@ -13,6 +13,11 @@ import { AddCommentToJobComponent } from './components/add-comment-to-job/add-co
 import { AddExperiencesOfInterviewToJobComponent } from './components/add-experiences-of-interview-to-job/add-experiences-of-interview-to-job.component';
 import { AddSalaryToJobComponent } from './components/add-salary-to-job/add-salary-to-job.component';
 
+import { RegisterCompanyComponent } from './components/register-company/register-company.component';
+import { EditCompanyDescriptionComponent } from './components/edit-company-description/edit-company-description.component';
+import { RegisterCompanyRequestsComponent } from './components/register-company-requests/register-company-requests.component';
+
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -22,7 +27,10 @@ import { AddSalaryToJobComponent } from './components/add-salary-to-job/add-sala
     JobProfileComponent,
     AddCommentToJobComponent,
     AddExperiencesOfInterviewToJobComponent,
-    AddSalaryToJobComponent
+    AddSalaryToJobComponent,
+    RegisterCompanyComponent,
+    EditCompanyDescriptionComponent,
+    RegisterCompanyRequestsComponent
   ],
   imports: [
     BrowserModule,
