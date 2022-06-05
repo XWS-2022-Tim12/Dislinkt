@@ -1,6 +1,8 @@
 package startup
 
 import (
+	"time"
+
 	"github.com/XWS-2022-Tim12/Dislinkt/back/post_service/domain"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -8,7 +10,8 @@ import (
 var posts = []*domain.Post{
 	{
 		Id:       getObjectId("523b0cc3a34d25d8567f9f82"),
-		Text:     "Aaaaaaa",
+		Text:     "Pariz",
+		Date:     time.Now(),
 		Likes:    14,
 		Dislikes: 10,
 		Comments: []string{
@@ -21,6 +24,7 @@ var posts = []*domain.Post{
 	{
 		Id:       getObjectId("524b0cc3a34d25d8567f9f82"),
 		Text:     "Bbbbbbb",
+		Date:     time.Now(),
 		Likes:    44,
 		Dislikes: 3,
 		Comments: []string{
@@ -31,6 +35,7 @@ var posts = []*domain.Post{
 	{
 		Id:       getObjectId("524bfksafk4d25d8567f9f82"),
 		Text:     "New here",
+		Date:     time.Now(),
 		Likes:    2,
 		Dislikes: 0,
 		Comments: []string{},
@@ -39,6 +44,7 @@ var posts = []*domain.Post{
 	{
 		Id:       getObjectId("v43cc3a34d25d8567f9f82"),
 		Text:     "Neki tekst",
+		Date:     time.Now(),
 		Likes:    4,
 		Dislikes: 3,
 		Comments: []string{},
@@ -47,6 +53,7 @@ var posts = []*domain.Post{
 	{
 		Id:       getObjectId("t34v0cc3a34d25d8567f9f82"),
 		Text:     "New post",
+		Date:     time.Now(),
 		Likes:    1,
 		Dislikes: 1,
 		Comments: []string{
@@ -58,6 +65,7 @@ var posts = []*domain.Post{
 	{
 		Id:       getObjectId("13410cc3a34d25d8567f9f82"),
 		Text:     "Cao",
+		Date:     time.Now(),
 		Likes:    1,
 		Dislikes: 10,
 		Comments: []string{

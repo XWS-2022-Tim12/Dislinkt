@@ -16,6 +16,41 @@
         <label>Following request</label>
     </div>
 </div>
-<div class="posts">
+<div style="font-weight: bold;" class="posts">
     Posts
+</div>
+<div *ngFor="let post of userPosts;let i = index;">
+    <div style="min-height: 5vh;"></div>
+    <div class="posts">
+        <div style="margin-top: 1%; margin-bottom: 1%;" [innerHTML]="post.text | linky"></div>
+        <div style="margin-top: 1%; margin-bottom: 1%;" *ngIf="post.imageContent"><img [src]="this.sanitizer.bypassSecurityTrustResourceUrl('data:image/jpg;base64,' + post.imageContent)"></div>
+        <button [disabled]="!loggedUser || (!user.public && !following && user.username !== loggedUser.username)" (click)="likePost(post)" style="margin-bottom: 1%;" mat-stroked-button>
+            <mat-icon>thumb_up</mat-icon>
+            Like ({{post.likes}})
+        </button>
+        &nbsp;&nbsp;
+        <button [disabled]="!loggedUser || (!user.public && !following && user.username !== loggedUser.username)" (click)="dislikePost(post)" style="margin-bottom: 1%;" mat-stroked-button>
+            <mat-icon>thumb_down</mat-icon>
+            Dislike ({{post.dislikes}})
+        </button>
+        <div style="min-height: 4vh;"></div>
+        <div style="font-weight: bold;">
+            Komentari
+        </div>
+        <hr>
+        <div *ngFor="let comment of post.comments">
+            {{comment}}
+            <hr>
+        </div>
+        <div *ngIf="!(!loggedUser || (!user.public && !following && user.username !== loggedUser.username))">
+            <mat-form-field class="col-4">
+                <mat-label>Comment</mat-label>
+                <input id="comments[i]" name="comments[i]" matInput [(ngModel)]="comments[i]" />
+            </mat-form-field>
+            &nbsp;&nbsp;
+            <button (click)="commentFunc(post, i)" mat-stroked-button>
+                Send
+            </button>
+        </div>
+    </div>
 </div>

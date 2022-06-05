@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/domain"
 	"github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/infrastructure/services"
@@ -93,7 +94,10 @@ func (handler *AuthentificationHandler) Init(mux *runtime.ServeMux) {
 	if err != nil {
 		panic(err)
 	}
-
+	err = mux.HandlePath("GET", "/user/post/findUserPosts/{username}", handler.FindUserPosts)
+	if err != nil {
+		panic(err)
+	}
 }
 func (handler *AuthentificationHandler) AllInfo(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	usr := &domain.User{}
@@ -564,6 +568,7 @@ func (handler *AuthentificationHandler) AddNewPost(w http.ResponseWriter, r *htt
 	postToSend := &post.Post{
 		Id:           reqPost.Id,
 		Text:         reqPost.Text,
+		Date:		  timestamppb.New(time.Now()),
 		Likes:        0,
 		Dislikes:     0,
 		Comments:     []string{},
@@ -622,6 +627,15 @@ func (handler *AuthentificationHandler) isUserFollowing(id string, username stri
 	userResponse, err := userClient.GetAll(context.TODO(), &user.GetAllRequest{})
 	if err != nil {
 		return false
+	}
+
+	loggedInUserResponse, err := userClient.Get(context.TODO(), &user.GetRequest{Id: success.Session.UserId})
+	if err != nil {
+		return false
+	}
+
+	if loggedInUserResponse.User.Username == username {
+		return true;
 	}
 
 	for _, userInDatabase := range userResponse.Users {
@@ -831,4 +845,126 @@ func (handler *AuthentificationHandler) FindPosts(w http.ResponseWriter, r *http
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(postsByPublicUser)
 	return
+}
+
+func (handler *AuthentificationHandler) FindUserPosts(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	username := pathParams["username"]
+	userClient := services.NewUserClient(handler.userClientAddress)
+
+	userResponse, err := userClient.GetByUsername(context.TODO(), &user.GetByUsernameRequest{Username: username})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	userFromResponse := userResponse.User
+
+	if !userFromResponse.Public {
+		tokenCookie, err := r.Cookie("sessionId")
+		if err != nil {
+			w.WriteHeader(http.StatusNotAcceptable)
+			return
+		}
+
+		id, err := handler.IsUserLoggedIn(tokenCookie.Value)
+		if err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+		if id == "" {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		authentificationClient := services.NewAuthentificationClient(handler.authentificationClientAddress)
+		success, err := authentificationClient.Get(context.TODO(), &authentification.GetRequest{Id: tokenCookie.Value})
+		if err != nil {
+			w.WriteHeader(http.StatusNotAcceptable)
+			return
+		}
+
+		loggedUserResponse, err := userClient.Get(context.TODO(), &user.GetRequest{Id: success.Session.UserId})
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		loggedUser := loggedUserResponse.User
+
+		isFollowingUser := false 
+		for _, followingUsername := range loggedUser.FollowingUsers {
+			if followingUsername == username {
+				isFollowingUser = true
+			}
+		}
+
+		if success.Session.UserId == userFromResponse.Id || isFollowingUser {
+			postClient := services.NewPostClient(handler.postClientAdress)
+
+			postsResponse, err := postClient.GetUserPosts(context.TODO(), &post.GetUserPostsRequest{Username: username})
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
+			var postsToSend []*domain.Post
+			for _, post := range postsResponse.Posts {
+				current := mapPost(post)
+				postsToSend = append(postsToSend, current)
+			}
+
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(postsToSend)
+			return
+		} else {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+	} else {
+		postClient := services.NewPostClient(handler.postClientAdress)
+
+		postsResponse, err := postClient.GetUserPosts(context.TODO(), &post.GetUserPostsRequest{Username: username})
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		var postsToSend []*domain.Post
+		for _, post := range postsResponse.Posts {
+			current := mapPost(post)
+			postsToSend = append(postsToSend, current)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(postsToSend)
+		return
+	}
+}
+
+func mapPost(postPb *post.Post) *domain.Post {
+	if postPb.Date != nil {
+		post := &domain.Post{
+			Id:       postPb.Id,
+			Text:     postPb.Text,
+			Date:	  postPb.Date.AsTime(),
+			Likes:    postPb.Likes,
+			Dislikes: postPb.Dislikes,
+			Comments: postPb.Comments,
+			Username: postPb.Username,
+			ImageContent: postPb.ImageContent,
+		}
+		return post
+	} else {
+		post := &domain.Post{
+			Id:       postPb.Id,
+			Text:     postPb.Text,
+			Date:	  time.Now(),
+			Likes:    postPb.Likes,
+			Dislikes: postPb.Dislikes,
+			Comments: postPb.Comments,
+			Username: postPb.Username,
+			ImageContent: postPb.ImageContent,
+		}
+		return post
+	}
 }

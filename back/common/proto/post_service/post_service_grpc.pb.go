@@ -19,6 +19,7 @@ const _ = grpc.SupportPackageIsVersion6
 type PostServiceClient interface {
 	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
 	GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
+	GetUserPosts(ctx context.Context, in *GetUserPostsRequest, opts ...grpc.CallOption) (*GetUserPostsResponse, error)
 	AddNewPost(ctx context.Context, in *AddNewPostRequest, opts ...grpc.CallOption) (*AddNewPostResponse, error)
 	LikePost(ctx context.Context, in *LikePostRequest, opts ...grpc.CallOption) (*LikePostResponse, error)
 	DislikePost(ctx context.Context, in *DislikePostRequest, opts ...grpc.CallOption) (*DislikePostResponse, error)
@@ -45,6 +46,15 @@ func (c *postServiceClient) Get(ctx context.Context, in *GetRequest, opts ...grp
 func (c *postServiceClient) GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error) {
 	out := new(GetAllResponse)
 	err := c.cc.Invoke(ctx, "/post.PostService/GetAll", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postServiceClient) GetUserPosts(ctx context.Context, in *GetUserPostsRequest, opts ...grpc.CallOption) (*GetUserPostsResponse, error) {
+	out := new(GetUserPostsResponse)
+	err := c.cc.Invoke(ctx, "/post.PostService/GetUserPosts", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -93,6 +103,7 @@ func (c *postServiceClient) CommentPost(ctx context.Context, in *CommentPostRequ
 type PostServiceServer interface {
 	Get(context.Context, *GetRequest) (*GetResponse, error)
 	GetAll(context.Context, *GetAllRequest) (*GetAllResponse, error)
+	GetUserPosts(context.Context, *GetUserPostsRequest) (*GetUserPostsResponse, error)
 	AddNewPost(context.Context, *AddNewPostRequest) (*AddNewPostResponse, error)
 	LikePost(context.Context, *LikePostRequest) (*LikePostResponse, error)
 	DislikePost(context.Context, *DislikePostRequest) (*DislikePostResponse, error)
@@ -109,6 +120,9 @@ func (*UnimplementedPostServiceServer) Get(context.Context, *GetRequest) (*GetRe
 }
 func (*UnimplementedPostServiceServer) GetAll(context.Context, *GetAllRequest) (*GetAllResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAll not implemented")
+}
+func (*UnimplementedPostServiceServer) GetUserPosts(context.Context, *GetUserPostsRequest) (*GetUserPostsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserPosts not implemented")
 }
 func (*UnimplementedPostServiceServer) AddNewPost(context.Context, *AddNewPostRequest) (*AddNewPostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddNewPost not implemented")
@@ -160,6 +174,24 @@ func _PostService_GetAll_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PostServiceServer).GetAll(ctx, req.(*GetAllRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PostService_GetUserPosts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserPostsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).GetUserPosts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/post.PostService/GetUserPosts",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).GetUserPosts(ctx, req.(*GetUserPostsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -247,6 +279,10 @@ var _PostService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAll",
 			Handler:    _PostService_GetAll_Handler,
+		},
+		{
+			MethodName: "GetUserPosts",
+			Handler:    _PostService_GetUserPosts_Handler,
 		},
 		{
 			MethodName: "AddNewPost",

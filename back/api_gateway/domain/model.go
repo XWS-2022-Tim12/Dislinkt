@@ -30,13 +30,14 @@ type Session struct {
 }
 
 type Post struct {
-	Id           string
-	Text         string
-	Likes        int32
-	Dislikes     int32
-	Comments     []string
-	Username     string
-	ImageContent string
+	Id           string	   `json:"id"`
+	Text         string    `json:"text"`
+	Date       	 time.Time `json:"date"`
+	Likes        int32     `json:"likes"`
+	Dislikes     int32     `json:"dislikes"`
+	Comments     []string  `json:"comments"`
+	Username     string    `json:"username"`
+	ImageContent string    `json:"imageContent"`
 }
 
 type Job struct {
