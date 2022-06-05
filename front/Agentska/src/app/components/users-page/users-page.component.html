@@ -24,6 +24,7 @@
                                     <td> <button class="btn btn-warning" (click)="addSalary(indexOfelement)"> Add salary </button> </td>
                                     <td> <button class="btn btn-secondary" (click)="addExperience(indexOfelement)"> Add experience for interview </button> </td>
                                     <td> <button class="btn btn-primary" (click)="showCompanyProfile(indexOfelement)"> Open </button> </td>
+                                    <td *ngIf="user.role.toString() === 'agent_owner'"> <button class="btn btn-success" (click)="addJob()"> Add Job </button> </td>
                                 </tr>
                             </tbody>
                         </table>

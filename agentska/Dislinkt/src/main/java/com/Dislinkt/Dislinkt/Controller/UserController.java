@@ -112,7 +112,7 @@ public class UserController {
             headers.add("Cookie", "ownerSessionId="+cookieValue+"; Path=/job");
             RestTemplate restTemplate = new RestTemplate();
             JSONObject json = new JSONObject();
-            json.put("id", job.getId());
+            //json.put("id", job.getId());
             json.put("userId", job.getUserId());
             json.put("position", job.getPosition());
             json.put("description", job.getDescription());

@@ -67,4 +67,8 @@ export class UsersPageComponent implements OnInit {
     sessionStorage.setItem('id', job.id);
     this.router.navigate(['/add-experience']);
   }
+
+  addJob() {
+    this.router.navigate(['/new-job']);
+  }
 }

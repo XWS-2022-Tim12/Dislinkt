@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Job } from 'src/app/model/job';
@@ -37,10 +38,13 @@ loggedUser: User = new User();
   newJob() {
     if (sessionStorage.getItem('username') != null) {
       this.job.userId = this.loggedUser.id;
+      this.job.creationDay = new Date();
       this.jobService.addNewJob(this.job).subscribe(ret => {
         this.router.navigate(['/profile']);
         alert('Job successfully created!');
-      })
+      }, (error: HttpErrorResponse) => {
+        this.router.navigate(['/profile']);
+        })
     } else {
       this.router.navigate(['']);
       alert('You are not logged in!');

@@ -28,6 +28,7 @@ func mapJob(job *domain.Job) *pb.Job {
 
 func mapNewJob(jobPb *pb.Job) *domain.Job {
 	id, _ := primitive.ObjectIDFromHex(jobPb.UserId)
+
 	job := &domain.Job{
 		Id:                 primitive.NewObjectID(),
 		UserId:             id,
