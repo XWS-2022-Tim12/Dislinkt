@@ -605,11 +605,16 @@ func (handler *AuthentificationHandler) AddNewJob(w http.ResponseWriter, r *http
 	jobClient := services.NewJobClient(handler.jobClientAdress)
 
 	jobToSend := &job.Job{
-		Id:           reqJob.Id,
-		UserId:       reqJob.UserId,
-		Position:     reqJob.Position,
-		Description:  reqJob.Description,
-		Requirements: reqJob.Requirements,
+		Id:                 reqJob.Id,
+		UserId:             reqJob.UserId,
+		Position:           reqJob.Position,
+		Description:        reqJob.Description,
+		Requirements:       reqJob.Requirements,
+		Comments:           reqJob.Comments,
+		JuniorSalary:       reqJob.JuniorSalary,
+		MediorSalary:       reqJob.MediorSalary,
+		HrInterviews:       reqJob.HrInterviews,
+		TehnicalInterviews: reqJob.TehnicalInterviews,
 	}
 	jobResponse, err := jobClient.Add(context.TODO(), &job.AddRequest{Job: jobToSend})
 	w.WriteHeader(http.StatusOK)

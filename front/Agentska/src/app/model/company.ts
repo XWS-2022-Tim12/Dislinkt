@@ -8,9 +8,4 @@ export class Company {
     description: string;
     owner: User;
     approved: boolean;
-    comments: Array<String>;
-    juniorSalary: Array<Number>;
-    mediorSalary: Array<Number>;
-    hrInterviews: Array<String>;
-    tehnicalInterviews: Array<String>;
 }

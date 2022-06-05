@@ -1,26 +1,25 @@
 <div style="background-color: rgb(255, 153, 127);">
     <label style="font-size: 40px; margin-left: 650px; margin-top: 50px;"> <b> Hello {{user.firstName}}! </b></label>
+    <label style="margin-left: 140px; margin-top: 50px; color: red;" *ngIf="showError"> You can't add salary, comments and interview experiences for the jobs you offer!</label>
     <div class="container">
-        <div class="row" style="margin-top: 50px;">
+        <div class="row" style="margin-top: 40px;">
             <div class="col-12">
                 <div class="card">
                     <div class="card-body text-center">
-                        <h5 class="card-title m-b-0">All companies</h5>
+                        <h5 class="card-title m-b-0">All jobs</h5>
                     </div>
                     <div class="table-responsive">
                         <table class="table">
                             <thead class="thead-light">
                                 <tr >
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Address</th>
-                                    <th scope="col">Phone Number</th>
+                                    <th scope="col">Position</th>
+                                    <th scope="col">Requirement</th>
                                 </tr>
                             </thead>
-                            <tbody *ngFor="let company of allCompanies;let indexOfelement=index;">
+                            <tbody *ngFor="let job of allJobs;let indexOfelement=index;">
                                 <tr>
-                                    <td scope="col">{{company.name}}</td>
-                                    <td scope="col">{{company.address}}</td>
-                                    <td scope="col">{{company.phoneNumber}}</td>
+                                    <td scope="col">{{job.position}}</td>
+                                    <td scope="col">{{job.requirements}}</td>
                                     <td> <button class="btn btn-dark" (click)="addComment(indexOfelement)"> Add comment </button> </td>
                                     <td> <button class="btn btn-warning" (click)="addSalary(indexOfelement)"> Add salary </button> </td>
                                     <td> <button class="btn btn-secondary" (click)="addExperience(indexOfelement)"> Add experience for interview </button> </td>

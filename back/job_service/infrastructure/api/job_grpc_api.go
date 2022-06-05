@@ -127,3 +127,12 @@ func (handler *JobHandler) Add(ctx context.Context, request *pb.AddRequest) (*pb
 	}
 	return response, err
 }
+
+func (handler *JobHandler) Edit(ctx context.Context, request *pb.EditRequest) (*pb.EditResponse, error) {
+	job := mapChangesOfJob(request.Job)
+	successs, err := handler.service.Edit(job)
+	response := &pb.EditResponse{
+		Success: successs,
+	}
+	return response, err
+}

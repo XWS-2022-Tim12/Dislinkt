@@ -43,3 +43,8 @@ func (service *JobService) Add(job *domain.Job) (string, error) {
 	success, err := service.store.Insert(job)
 	return success, err
 }
+
+func (service *JobService) Edit(job *domain.Job) (string, error) {
+	success, err := service.store.Edit(job)
+	return success, err
+}

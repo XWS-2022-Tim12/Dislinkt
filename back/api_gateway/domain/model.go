@@ -42,10 +42,15 @@ type Post struct {
 }
 
 type Job struct {
-	Id           string
-	UserId       string
-	CreationDay  time.Time
-	Position     string
-	Description  string
-	Requirements string
+	Id                 string
+	UserId             string
+	CreationDay        time.Time
+	Position           string
+	Description        string
+	Requirements       string
+	Comments           []string
+	JuniorSalary       []int32
+	MediorSalary       []int32
+	HrInterviews       []string
+	TehnicalInterviews []string
 }

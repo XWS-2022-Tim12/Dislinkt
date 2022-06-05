@@ -12,5 +12,6 @@ type JobStore interface {
 	SearchByPosition(content string) ([]*Job, error)
 	SearchByRequirements(content string) ([]*Job, error)
 	Insert(job *Job) (string, error)
+	Edit(job *Job) (string, error)
 	DeleteAll()
 }

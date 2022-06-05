@@ -44,6 +44,12 @@ service JobService{
                         body: "job"
                 };
         }
+        rpc Edit(EditRequest) returns(EditResponse) {
+                option (google.api.http) = {
+                        put: "/job/editJob"
+                        body: "job"
+                };
+        }
 }
 
 message GetRequest {
@@ -102,6 +108,14 @@ message AddResponse {
         string success = 1;
 }
 
+message EditRequest {
+        Job job = 1;
+}
+
+message EditResponse {
+        string success = 1;
+}
+
 message Job {
         string id = 1;
         string userId = 2;
@@ -109,4 +123,9 @@ message Job {
         string description = 4;
         string requirements = 5;
         google.protobuf.Timestamp creationDay = 6;
+        repeated string comments = 7;
+        repeated int32 juniorSalary = 8;
+        repeated int32 mediorSalary = 9;
+        repeated string hrInterviews = 10;
+        repeated string tehnicalInterviews = 11;
 }

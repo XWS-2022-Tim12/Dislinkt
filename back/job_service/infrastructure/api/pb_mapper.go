@@ -11,12 +11,17 @@ import (
 
 func mapJob(job *domain.Job) *pb.Job {
 	jobPb := &pb.Job{
-		Id:           job.Id.Hex(),
-		UserId:       job.UserId.Hex(),
-		Requirements: job.Requirements,
-		Description:  job.Description,
-		Position:     job.Position,
-		CreationDay:  timestamppb.New(job.CreationDay),
+		Id:                 job.Id.Hex(),
+		UserId:             job.UserId.Hex(),
+		Requirements:       job.Requirements,
+		Description:        job.Description,
+		Position:           job.Position,
+		CreationDay:        timestamppb.New(job.CreationDay),
+		Comments:           job.Comments,
+		JuniorSalary:       job.JuniorSalary,
+		MediorSalary:       job.MediorSalary,
+		HrInterviews:       job.HrInterviews,
+		TehnicalInterviews: job.TehnicalInterviews,
 	}
 	return jobPb
 }
@@ -24,12 +29,37 @@ func mapJob(job *domain.Job) *pb.Job {
 func mapNewJob(jobPb *pb.Job) *domain.Job {
 	id, _ := primitive.ObjectIDFromHex(jobPb.UserId)
 	job := &domain.Job{
-		Id:           primitive.NewObjectID(),
-		UserId:       id,
-		Requirements: jobPb.Requirements,
-		Description:  jobPb.Description,
-		Position:     jobPb.Position,
-		CreationDay:  time.Now(),
+		Id:                 primitive.NewObjectID(),
+		UserId:             id,
+		Requirements:       jobPb.Requirements,
+		Description:        jobPb.Description,
+		Position:           jobPb.Position,
+		CreationDay:        time.Now(),
+		Comments:           jobPb.Comments,
+		JuniorSalary:       jobPb.JuniorSalary,
+		MediorSalary:       jobPb.MediorSalary,
+		HrInterviews:       jobPb.HrInterviews,
+		TehnicalInterviews: jobPb.TehnicalInterviews,
+	}
+	return job
+}
+
+func mapChangesOfJob(jobPb *pb.Job) *domain.Job {
+	id, _ := primitive.ObjectIDFromHex(jobPb.Id)
+	userId, _ := primitive.ObjectIDFromHex(jobPb.UserId)
+
+	job := &domain.Job{
+		Id:                 id,
+		UserId:             userId,
+		Requirements:       jobPb.Requirements,
+		Description:        jobPb.Description,
+		Position:           jobPb.Position,
+		CreationDay:        jobPb.CreationDay.AsTime(),
+		Comments:           jobPb.Comments,
+		JuniorSalary:       jobPb.JuniorSalary,
+		MediorSalary:       jobPb.MediorSalary,
+		HrInterviews:       jobPb.HrInterviews,
+		TehnicalInterviews: jobPb.TehnicalInterviews,
 	}
 	return job
 }

@@ -86,6 +86,7 @@ func (store *JobMongoDBStore) Insert(job *domain.Job) (string, error) {
 	if jobInDatabase != nil {
 		return "id exists", nil
 	}
+
 	result, err := store.jobs.InsertOne(context.TODO(), job)
 	if err != nil {
 		return "error while inserting", err
@@ -131,4 +132,33 @@ func RemoveIndex(s []string, index int) []string {
 	ret := make([]string, 0)
 	ret = append(ret, s[:index]...)
 	return append(ret, s[index+1:]...)
+}
+
+func (store *JobMongoDBStore) Edit(job *domain.Job) (string, error) {
+	jobFromDatabase, err := store.Get(job.Id)
+	if jobFromDatabase == nil {
+		return "job doesn't exist", nil
+	}
+	jobFromDatabase.UserId = job.UserId
+	jobFromDatabase.Requirements = job.Requirements
+	jobFromDatabase.Description = job.Description
+	jobFromDatabase.Position = job.Position
+	jobFromDatabase.CreationDay = job.CreationDay
+	jobFromDatabase.Comments = job.Comments
+	jobFromDatabase.JuniorSalary = job.JuniorSalary
+	jobFromDatabase.MediorSalary = job.MediorSalary
+	jobFromDatabase.HrInterviews = job.HrInterviews
+	jobFromDatabase.TehnicalInterviews = job.TehnicalInterviews
+
+	filter := bson.M{"_id": job.Id}
+	update := bson.M{
+		"$set": jobFromDatabase,
+	}
+	_, err = store.jobs.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return "error while updating", err
+	}
+
+	return "success", nil
+
 }

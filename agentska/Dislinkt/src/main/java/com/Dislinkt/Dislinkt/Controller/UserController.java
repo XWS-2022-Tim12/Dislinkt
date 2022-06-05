@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -116,6 +117,11 @@ public class UserController {
             json.put("position", job.getPosition());
             json.put("description", job.getDescription());
             json.put("requirements", job.getRequirements());
+            json.put("comments", Collections.emptyList());
+            json.put("juniorSalary", Collections.emptyList());
+            json.put("mediorSalary", Collections.emptyList());
+            json.put("hrInterviews", Collections.emptyList());
+            json.put("tehnicalInterviews", Collections.emptyList());
             HttpEntity<String> requestt = new HttpEntity<String>(json.toString(), headers);
             ResponseEntity<String> responsee = restTemplate.postForEntity(url, requestt, String.class);
             return new ResponseEntity<String>(responsee.getBody(),HttpStatus.OK);
@@ -149,11 +155,14 @@ public class UserController {
             HttpHeaders headers = new HttpHeaders();
             RestTemplate restTemplate = new RestTemplate();
             HttpEntity requestt = new HttpEntity(headers);
-            String jsonStr = restTemplate.exchange(url, HttpMethod.GET, requestt, String.class, 1).getBody();
-            jsonStr = jsonStr.split("\\[")[1];
-            jsonStr = "[" + jsonStr;
+            String jsonStrFromDislinkt = restTemplate.exchange(url, HttpMethod.GET, requestt, String.class, 1).getBody();
+            String[] jsonStr = jsonStrFromDislinkt.split("\\{");
+            String newJson = "[{" + jsonStr[2];
+            for(int i=3; i<= jsonStr.length-1; i++){
+                newJson = newJson + "{" + jsonStr[i];
+            }
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = mapper.readTree(jsonStr);
+            JsonNode rootNode = mapper.readTree(newJson);
             if (rootNode instanceof ArrayNode) {
                 // Read the json as a list:
                 Job[] jobs = mapper.readValue(rootNode.toString(), Job[].class);
@@ -175,11 +184,14 @@ public class UserController {
             HttpHeaders headers = new HttpHeaders();
             RestTemplate restTemplate = new RestTemplate();
             HttpEntity requestt = new HttpEntity(headers);
-            String jsonStr = restTemplate.exchange(url, HttpMethod.GET, requestt, String.class, 1).getBody();
-            jsonStr = jsonStr.split("\\[")[1];
-            jsonStr = "[" + jsonStr;
+            String jsonStrFromDislinkt = restTemplate.exchange(url, HttpMethod.GET, requestt, String.class, 1).getBody();
+            String[] jsonStr = jsonStrFromDislinkt.split("\\{");
+            String newJson = "[{" + jsonStr[2];
+            for(int i=3; i<= jsonStr.length-1; i++){
+                newJson = newJson + "{" + jsonStr[i];
+            }
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = mapper.readTree(jsonStr);
+            JsonNode rootNode = mapper.readTree(newJson);
             if (rootNode instanceof ArrayNode) {
                 // Read the json as a list:
                 Job[] jobs = mapper.readValue(rootNode.toString(), Job[].class);
@@ -202,11 +214,14 @@ public class UserController {
             HttpHeaders headers = new HttpHeaders();
             RestTemplate restTemplate = new RestTemplate();
             HttpEntity requestt = new HttpEntity(headers);
-            String jsonStr = restTemplate.exchange(url, HttpMethod.GET, requestt, String.class, 1).getBody();
-            jsonStr = jsonStr.split("\\[")[1];
-            jsonStr = "[" + jsonStr;
+            String jsonStrFromDislinkt = restTemplate.exchange(url, HttpMethod.GET, requestt, String.class, 1).getBody();
+            String[] jsonStr = jsonStrFromDislinkt.split("\\{");
+            String newJson = "[{" + jsonStr[2];
+            for(int i=3; i<= jsonStr.length-1; i++){
+                newJson = newJson + "{" + jsonStr[i];
+            }
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = mapper.readTree(jsonStr);
+            JsonNode rootNode = mapper.readTree(newJson);
             if (rootNode instanceof ArrayNode) {
                 // Read the json as a list:
                 Job[] jobs = mapper.readValue(rootNode.toString(), Job[].class);
@@ -228,11 +243,14 @@ public class UserController {
             HttpHeaders headers = new HttpHeaders();
             RestTemplate restTemplate = new RestTemplate();
             HttpEntity requestt = new HttpEntity(headers);
-            String jsonStr = restTemplate.exchange(url, HttpMethod.GET, requestt, String.class, 1).getBody();
-            jsonStr = jsonStr.split("\\[")[1];
-            jsonStr = "[" + jsonStr;
+            String jsonStrFromDislinkt = restTemplate.exchange(url, HttpMethod.GET, requestt, String.class, 1).getBody();
+            String[] jsonStr = jsonStrFromDislinkt.split("\\{");
+            String newJson = "[{" + jsonStr[2];
+            for(int i=3; i<= jsonStr.length-1; i++){
+                newJson = newJson + "{" + jsonStr[i];
+            }
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = mapper.readTree(jsonStr);
+            JsonNode rootNode = mapper.readTree(newJson);
             if (rootNode instanceof ArrayNode) {
                 // Read the json as a list:
                 Job[] jobs = mapper.readValue(rootNode.toString(), Job[].class);
@@ -254,11 +272,14 @@ public class UserController {
             HttpHeaders headers = new HttpHeaders();
             RestTemplate restTemplate = new RestTemplate();
             HttpEntity requestt = new HttpEntity(headers);
-            String jsonStr = restTemplate.exchange(url, HttpMethod.GET, requestt, String.class, 1).getBody();
-            jsonStr = jsonStr.split("\\[")[1];
-            jsonStr = "[" + jsonStr;
+            String jsonStrFromDislinkt = restTemplate.exchange(url, HttpMethod.GET, requestt, String.class, 1).getBody();
+            String[] jsonStr = jsonStrFromDislinkt.split("\\{");
+            String newJson = "[{" + jsonStr[2];
+            for(int i=3; i<= jsonStr.length-1; i++){
+                newJson = newJson + "{" + jsonStr[i];
+            }
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = mapper.readTree(jsonStr);
+            JsonNode rootNode = mapper.readTree(newJson);
             if (rootNode instanceof ArrayNode) {
                 // Read the json as a list:
                 Job[] jobs = mapper.readValue(rootNode.toString(), Job[].class);
@@ -325,5 +346,37 @@ public class UserController {
         }
 
         return new ResponseEntity<>(false, HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    @PutMapping("/job/editJob")
+    public ResponseEntity<Boolean> editJob(@RequestBody Job job, HttpServletRequest request) {
+        if(request.getSession().getAttribute("role") != null){
+            String cookieValue = "";
+            Cookie[] cookies = request.getCookies();
+            for (Cookie c : cookies){
+                if (c.getName().equals("ownerSessionId")){
+                    cookieValue = c.getValue();
+                }
+            }
+            String url = "http://localhost:8000/job/editJob";
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Cookie", "ownerSessionId="+cookieValue+"; Path=/job");
+            RestTemplate restTemplate = new RestTemplate();
+            JSONObject json = new JSONObject();
+            json.put("id", job.getId());
+            json.put("userId", job.getUserId());
+            json.put("position", job.getPosition());
+            json.put("description", job.getDescription());
+            json.put("requirements", job.getRequirements());
+            json.put("comments", job.getComments());
+            json.put("juniorSalary", job.getJuniorSalary());
+            json.put("mediorSalary", job.getMediorSalary());
+            json.put("hrInterviews", job.getHrInterviews());
+            json.put("tehnicalInterviews", job.getTehnicalInterviews());
+            HttpEntity<String> requestt = new HttpEntity<String>(json.toString(), headers);
+            ResponseEntity<String> responsee = restTemplate.exchange(url, HttpMethod.PUT, requestt, String.class);
+            return new ResponseEntity<Boolean>(true,HttpStatus.OK);
+        }
+        return new ResponseEntity<Boolean>(false, HttpStatus.NOT_ACCEPTABLE);
     }
 }
