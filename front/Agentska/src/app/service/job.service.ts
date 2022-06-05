@@ -10,11 +10,13 @@ export class JobService {
   private getAllJobsUrl: string;
   private getJobByIdUrl: string;
   private editJobUrl: string;
+  private addNewJobUrl: string;
 
   constructor(private http: HttpClient) { 
     this.getAllJobsUrl = 'http://localhost:8080/job/jobs';
     this.getJobByIdUrl = 'http://localhost:8080/job';
     this.editJobUrl = 'http://localhost:8080/job/editJob';
+    this.addNewJobUrl = 'http://localhost:8080/job';
   }
 
   public getAllJobs(): Observable<Array<Job>> {
@@ -34,5 +36,9 @@ export class JobService {
 
   public editJob(job: Job): Observable<Boolean> {
     return this.http.put<boolean>(this.editJobUrl, job, {withCredentials: true});
+  }
+
+  public addNewJob(job: Job): Observable<string> {
+    return this.http.post<string>(this.addNewJobUrl, job, {withCredentials: true});
   }
 }

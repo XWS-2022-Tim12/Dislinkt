@@ -16,6 +16,8 @@ import { AddSalaryToJobComponent } from './components/add-salary-to-job/add-sala
 import { RegisterCompanyComponent } from './components/register-company/register-company.component';
 import { EditCompanyDescriptionComponent } from './components/edit-company-description/edit-company-description.component';
 import { RegisterCompanyRequestsComponent } from './components/register-company-requests/register-company-requests.component';
+import { AddNewJobComponent } from './components/add-new-job/add-new-job.component';
+
 
 
 @NgModule({
@@ -30,7 +32,8 @@ import { RegisterCompanyRequestsComponent } from './components/register-company-
     AddSalaryToJobComponent,
     RegisterCompanyComponent,
     EditCompanyDescriptionComponent,
-    RegisterCompanyRequestsComponent
+    RegisterCompanyRequestsComponent,
+    AddNewJobComponent
   ],
   imports: [
     BrowserModule,

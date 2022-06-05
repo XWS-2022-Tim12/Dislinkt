@@ -10,6 +10,7 @@ import { JobProfileComponent } from './components/job-profile/job-profile.compon
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { UsersPageComponent } from './components/users-page/users-page.component';
+import { AddNewJobComponent } from './components/add-new-job/add-new-job.component';
 
 const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -21,7 +22,8 @@ const routes: Routes = [
   { path: 'job-profile', component: JobProfileComponent },
   { path: 'register-company', component: RegisterCompanyComponent },
   { path: 'edit-company-description/:name', component: EditCompanyDescriptionComponent },
-  { path: 'company-requests', component: RegisterCompanyRequestsComponent }
+  { path: 'company-requests', component: RegisterCompanyRequestsComponent },
+  { path: 'new-job', component: AddNewJobComponent }
 ];
 
 @NgModule({
