@@ -251,6 +251,11 @@ func (store *UserMongoDBStore) DeleteAll() {
 	store.users.DeleteMany(context.TODO(), bson.D{{}})
 }
 
+func (store *UserMongoDBStore) Delete(id primitive.ObjectID) error {
+	_, err := store.users.DeleteOne(context.TODO(), bson.M{"_id": id})
+	return err
+}
+
 func (store *UserMongoDBStore) filter(filter interface{}) ([]*domain.User, error) {
 	cursor, err := store.users.Find(context.TODO(), filter)
 	defer cursor.Close(context.TODO())

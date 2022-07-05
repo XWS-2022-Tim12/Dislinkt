@@ -3,6 +3,7 @@ package persistence
 import (
 	"context"
 	"time"
+
 	"github.com/XWS-2022-Tim12/Dislinkt/back/authentification_service/domain"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -88,6 +89,18 @@ func (store *SessionMongoDBStore) DeleteAll() {
 func (store *SessionMongoDBStore) Delete(id primitive.ObjectID) {
 	filter := bson.M{"_id": id}
 	store.sessions.DeleteOne(context.TODO(), filter)
+}
+
+func (store *SessionMongoDBStore) DeleteByUserId(userId string) error {
+	id, _ := primitive.ObjectIDFromHex(userId)
+	filter := bson.M{"_userId": id}
+	_, err := store.sessions.DeleteOne(context.TODO(), filter)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (store *SessionMongoDBStore) filter(filter interface{}) ([]*domain.Session, error) {

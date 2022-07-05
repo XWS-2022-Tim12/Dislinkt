@@ -10,4 +10,5 @@ type SessionStore interface {
 	DeleteAll()
 	GetAll() ([]*Session, error)
 	Delete(id primitive.ObjectID)
+	DeleteByUserId(userId string) error
 }

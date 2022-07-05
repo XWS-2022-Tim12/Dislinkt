@@ -12,6 +12,12 @@ services:
       USER_DB_HOST: ${USER_DB_HOST}
       USER_DB_PORT: ${USER_DB_PORT}
       USER_SERVICE_PORT: ${USER_SERVICE_PORT}
+      NATS_HOST: ${NATS_HOST}
+      NATS_PORT: ${NATS_PORT}
+      NATS_USER: ${NATS_USER}
+      NATS_PASS: ${NATS_PASS}
+      REGISTER_USER_COMMAND_SUBJECT: ${REGISTER_USER_COMMAND_SUBJECT}
+      REGISTER_USER_REPLY_SUBJECT: ${REGISTER_USER_REPLY_SUBJECT}
     depends_on:
       - user_db
     networks:
@@ -60,6 +66,12 @@ services:
       AUTHENTIFICATION_DB_HOST: ${AUTHENTIFICATION_DB_HOST}
       AUTHENTIFICATION_DB_PORT: ${AUTHENTIFICATION_DB_PORT}
       AUTHENTIFICATION_SERVICE_PORT: ${AUTHENTIFICATION_SERVICE_PORT}
+      NATS_HOST: ${NATS_HOST}
+      NATS_PORT: ${NATS_PORT}
+      NATS_USER: ${NATS_USER}
+      NATS_PASS: ${NATS_PASS}
+      REGISTER_USER_COMMAND_SUBJECT: ${REGISTER_USER_COMMAND_SUBJECT}
+      REGISTER_USER_REPLY_SUBJECT: ${REGISTER_USER_REPLY_SUBJECT}
     depends_on:
       - authentification_db
     networks:
@@ -111,6 +123,13 @@ services:
   authentification_db:
     image: mongo
     container_name: authentification_db
+    restart: on-failure
+    networks:
+      - network
+
+  nats:
+    image: nats
+    container_name: nats
     restart: on-failure
     networks:
       - network

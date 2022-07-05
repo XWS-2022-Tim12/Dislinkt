@@ -14,9 +14,10 @@ type UserHandler struct {
 }
 
 func NewUserHandler(service *application.UserService) *UserHandler {
-	return &UserHandler{
+	uh := &UserHandler{
 		service: service,
 	}
+	return uh
 }
 
 func (handler *UserHandler) Get(ctx context.Context, request *pb.GetRequest) (*pb.GetResponse, error) {

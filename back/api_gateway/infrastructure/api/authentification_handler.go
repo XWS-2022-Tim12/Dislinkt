@@ -568,7 +568,7 @@ func (handler *AuthentificationHandler) AddNewPost(w http.ResponseWriter, r *htt
 	postToSend := &post.Post{
 		Id:           reqPost.Id,
 		Text:         reqPost.Text,
-		Date:		  timestamppb.New(time.Now()),
+		Date:         timestamppb.New(time.Now()),
 		Likes:        0,
 		Dislikes:     0,
 		Comments:     []string{},
@@ -640,7 +640,7 @@ func (handler *AuthentificationHandler) isUserFollowing(id string, username stri
 	}
 
 	if loggedInUserResponse.User.Username == username {
-		return true;
+		return true
 	}
 
 	for _, userInDatabase := range userResponse.Users {
@@ -894,7 +894,7 @@ func (handler *AuthentificationHandler) FindUserPosts(w http.ResponseWriter, r *
 		}
 		loggedUser := loggedUserResponse.User
 
-		isFollowingUser := false 
+		isFollowingUser := false
 		for _, followingUsername := range loggedUser.FollowingUsers {
 			if followingUsername == username {
 				isFollowingUser = true
@@ -949,25 +949,25 @@ func (handler *AuthentificationHandler) FindUserPosts(w http.ResponseWriter, r *
 func mapPost(postPb *post.Post) *domain.Post {
 	if postPb.Date != nil {
 		post := &domain.Post{
-			Id:       postPb.Id,
-			Text:     postPb.Text,
-			Date:	  postPb.Date.AsTime(),
-			Likes:    postPb.Likes,
-			Dislikes: postPb.Dislikes,
-			Comments: postPb.Comments,
-			Username: postPb.Username,
+			Id:           postPb.Id,
+			Text:         postPb.Text,
+			Date:         postPb.Date.AsTime(),
+			Likes:        postPb.Likes,
+			Dislikes:     postPb.Dislikes,
+			Comments:     postPb.Comments,
+			Username:     postPb.Username,
 			ImageContent: postPb.ImageContent,
 		}
 		return post
 	} else {
 		post := &domain.Post{
-			Id:       postPb.Id,
-			Text:     postPb.Text,
-			Date:	  time.Now(),
-			Likes:    postPb.Likes,
-			Dislikes: postPb.Dislikes,
-			Comments: postPb.Comments,
-			Username: postPb.Username,
+			Id:           postPb.Id,
+			Text:         postPb.Text,
+			Date:         time.Now(),
+			Likes:        postPb.Likes,
+			Dislikes:     postPb.Dislikes,
+			Comments:     postPb.Comments,
+			Username:     postPb.Username,
 			ImageContent: postPb.ImageContent,
 		}
 		return post

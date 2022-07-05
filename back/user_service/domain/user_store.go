@@ -23,4 +23,5 @@ type UserStore interface {
 	FollowPublicProfile(user *User) (string, error)
 	AcceptFollowingRequest(user *User) (string, error)
 	RejectFollowingRequest(user *User) (string, error)
+	Delete(id primitive.ObjectID) error
 }

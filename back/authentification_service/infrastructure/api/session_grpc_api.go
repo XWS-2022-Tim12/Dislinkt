@@ -3,8 +3,8 @@ package api
 import (
 	"context"
 
-	pb "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
 	"github.com/XWS-2022-Tim12/Dislinkt/back/authentification_service/application"
+	pb "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -14,9 +14,10 @@ type SessionHandler struct {
 }
 
 func NewSessionHandler(service *application.SessionService) *SessionHandler {
-	return &SessionHandler{
+	sh := &SessionHandler{
 		service: service,
 	}
+	return sh
 }
 
 func (handler *SessionHandler) Get(ctx context.Context, request *pb.GetRequest) (*pb.GetResponse, error) {

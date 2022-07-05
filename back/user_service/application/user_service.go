@@ -6,12 +6,14 @@ import (
 )
 
 type UserService struct {
-	store domain.UserStore
+	store        domain.UserStore
+	orchestrator *AddUserOrchestrator
 }
 
-func NewUserService(store domain.UserStore) *UserService {
+func NewUserService(store domain.UserStore, orchestrator *AddUserOrchestrator) *UserService {
 	return &UserService{
-		store: store,
+		store:        store,
+		orchestrator: orchestrator,
 	}
 }
 
@@ -41,6 +43,14 @@ func (service *UserService) GetAllPublicUsersByUsername(username string) ([]*dom
 
 func (service *UserService) Register(user *domain.User) (string, error) {
 	success, err := service.store.Insert(user)
+	if success != "success" {
+		return success, err
+	}
+	err = service.orchestrator.Start(user)
+	if err != nil {
+		return success, nil
+	}
+
 	return success, err
 }
 
@@ -77,4 +87,8 @@ func (service *UserService) AcceptFollowingRequest(user *domain.User) (string, e
 func (service *UserService) RejectFollowingRequest(user *domain.User) (string, error) {
 	success, err := service.store.RejectFollowingRequest(user)
 	return success, err
+}
+
+func (service *UserService) Delete(id primitive.ObjectID) error {
+	return service.store.Delete(id)
 }

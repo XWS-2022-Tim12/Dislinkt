@@ -23,3 +23,8 @@ func (service *SessionService) Add(session *domain.Session) (string, error) {
 	success, err := service.store.Insert(session)
 	return success, err
 }
+
+func (service *SessionService) DeleteByUserId(userId string) error {
+	err := service.store.DeleteByUserId(userId)
+	return err
+}
