@@ -223,7 +223,7 @@ func (store *UserMongoDBStore) Insert(user *domain.User) (string, error) {
 		return "error while inserting", err
 	}
 	user.Id = result.InsertedID.(primitive.ObjectID)
-	return "success", nil
+	return user.Id.Hex(), nil
 }
 
 func (store *UserMongoDBStore) InsertClassic(user *domain.User) (string, error) {

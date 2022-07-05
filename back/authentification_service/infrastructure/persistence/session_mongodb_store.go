@@ -31,6 +31,11 @@ func (store *SessionMongoDBStore) Get(id primitive.ObjectID) (*domain.Session, e
 	return store.filterOne(filter)
 }
 
+func (store *SessionMongoDBStore) GetByUserId(id primitive.ObjectID) (*domain.Session, error) {
+	filter := bson.M{"userId": id}
+	return store.filterOne(filter)
+}
+
 func (store *SessionMongoDBStore) GetAll() ([]*domain.Session, error) {
 	filter := bson.D{{}}
 	return store.filter(filter)
@@ -93,7 +98,7 @@ func (store *SessionMongoDBStore) Delete(id primitive.ObjectID) {
 
 func (store *SessionMongoDBStore) DeleteByUserId(userId string) error {
 	id, _ := primitive.ObjectIDFromHex(userId)
-	filter := bson.M{"_userId": id}
+	filter := bson.M{"userId": id}
 	_, err := store.sessions.DeleteOne(context.TODO(), filter)
 
 	if err != nil {

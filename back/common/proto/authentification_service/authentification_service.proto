@@ -13,6 +13,16 @@ service AuthentificationService{
 			get: "/session/{id}"
 		};
         }
+        rpc GetAll(GetAllRequest) returns(GetAllResponse) {
+        	option (google.api.http) = {
+			get: "/session/getAll"
+		};
+        }
+        rpc GetByUserId(GetByUserIdRequest) returns(GetByUserIdResponse) {
+        	option (google.api.http) = {
+			get: "/session/user/{userId}"
+		};
+        }
         rpc Add(AddRequest) returns(AddResponse) {
                 option (google.api.http) = {
                         post: "/session/add"
@@ -26,6 +36,20 @@ message GetRequest {
 }
 
 message GetResponse {
+        Session session = 1;
+}
+message GetAllRequest {
+}
+
+message GetAllResponse {
+       repeated Session sessions = 1;
+}
+
+message GetByUserIdRequest {
+        string userId = 1;
+}
+
+message GetByUserIdResponse {
         Session session = 1;
 }
 

@@ -37,6 +37,38 @@ func (handler *SessionHandler) Get(ctx context.Context, request *pb.GetRequest) 
 	return response, nil
 }
 
+func (handler *SessionHandler) GetAll(ctx context.Context, request *pb.GetAllRequest) (*pb.GetAllResponse, error) {
+	sessions, err := handler.service.GetAll()
+	if err != nil {
+		return nil, err
+	}
+	response := &pb.GetAllResponse{
+		Sessions: []*pb.Session{},
+	}
+	for _, session := range sessions {
+		current := mapSession(session)
+		response.Sessions = append(response.Sessions, current)
+	}
+	return response, nil
+}
+
+func (handler *SessionHandler) GetByUserId(ctx context.Context, request *pb.GetByUserIdRequest) (*pb.GetByUserIdResponse, error) {
+	id := request.UserId
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+	session, err := handler.service.GetByUserId(objectId)
+	if err != nil {
+		return nil, err
+	}
+	sessionPb := mapSession(session)
+	response := &pb.GetByUserIdResponse{
+		Session: sessionPb,
+	}
+	return response, nil
+}
+
 func (handler *SessionHandler) Add(ctx context.Context, request *pb.AddRequest) (*pb.AddResponse, error) {
 	session := mapNewSession(request.Session)
 	successs, err := handler.service.Add(session)

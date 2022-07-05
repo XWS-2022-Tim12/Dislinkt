@@ -18,6 +18,12 @@ func NewSessionService(store domain.SessionStore) *SessionService {
 func (service *SessionService) Get(id primitive.ObjectID) (*domain.Session, error) {
 	return service.store.Get(id)
 }
+func (service *SessionService) GetAll() ([]*domain.Session, error) {
+	return service.store.GetAll()
+}
+func (service *SessionService) GetByUserId(id primitive.ObjectID) (*domain.Session, error) {
+	return service.store.GetByUserId(id)
+}
 
 func (service *SessionService) Add(session *domain.Session) (string, error) {
 	success, err := service.store.Insert(session)

@@ -58,6 +58,10 @@ func (handler *AuthentificationHandler) Init(mux *runtime.ServeMux) {
 	if err != nil {
 		panic(err)
 	}
+	err = mux.HandlePath("POST", "/user/register", handler.Register)
+	if err != nil {
+		panic(err)
+	}
 	err = mux.HandlePath("PUT", "/user/follow", handler.FollowPublicProfile)
 	if err != nil {
 		panic(err)
@@ -99,6 +103,46 @@ func (handler *AuthentificationHandler) Init(mux *runtime.ServeMux) {
 		panic(err)
 	}
 }
+
+func (handler *AuthentificationHandler) Register(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	usr := &domain.User{}
+	errr := json.NewDecoder(r.Body).Decode(&usr)
+	if errr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	userClient := services.NewUserClient(handler.userClientAddress)
+	userToSend := &user.User{
+		Id:           usr.Id,
+		Firstname:    usr.Firstname,
+		Email:        usr.Email,
+		MobileNumber: usr.MobileNumber,
+		Gender:       mapGender(usr.Gender),
+		BirthDay:     timestamppb.New(usr.BirthDay),
+		Username:     usr.Username,
+		Biography:    usr.Biography,
+		Experience:   usr.Experience,
+		Education:    mapEducation(usr.Education),
+		Skills:       usr.Skills,
+		Interests:    usr.Interests,
+		Password:     usr.Password,
+		Public:       usr.Public,
+	}
+
+	idUser, err := userClient.Register(context.TODO(), &user.RegisterRequest{User: userToSend}) //ovdje vratiti userID
+	authentificationClient := services.NewAuthentificationClient(handler.authentificationClientAddress)
+	if err != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+	time.Sleep(4 * time.Second)
+	success, err := authentificationClient.GetByUserId(context.TODO(), &authentification.GetByUserIdRequest{UserId: idUser.Success})
+	cookie := &http.Cookie{Name: "sessionId", Value: success.Session.Id, HttpOnly: false}
+	http.SetCookie(w, cookie)
+	w.WriteHeader(http.StatusOK)
+	return
+}
+
 func (handler *AuthentificationHandler) AllInfo(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	usr := &domain.User{}
 	errr := json.NewDecoder(r.Body).Decode(&usr)

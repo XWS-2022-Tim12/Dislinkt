@@ -43,7 +43,7 @@ func (service *UserService) GetAllPublicUsersByUsername(username string) ([]*dom
 
 func (service *UserService) Register(user *domain.User) (string, error) {
 	success, err := service.store.Insert(user)
-	if success != "success" {
+	if err != nil {
 		return success, err
 	}
 	err = service.orchestrator.Start(user)
