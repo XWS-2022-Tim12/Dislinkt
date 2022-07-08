@@ -17,6 +17,7 @@ import { OtherUserProfileComponent } from './components/other-user-profile/other
 import { FollowingRequestsComponent } from './components/following-requests/following-requests.component';
 import { NewPostComponent } from './components/new-post/new-post.component';
 import { LinkyModule } from 'ngx-linky';
+import { ShowUsersComponent } from './components/show-users/show-users.component';
 
 
 @NgModule({
@@ -28,7 +29,8 @@ import { LinkyModule } from 'ngx-linky';
     HomePageGuestComponent,
     OtherUserProfileComponent,
     FollowingRequestsComponent,
-    NewPostComponent
+    NewPostComponent,
+    ShowUsersComponent
   ],
   imports: [
     BrowserModule,

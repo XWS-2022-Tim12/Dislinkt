@@ -20,6 +20,7 @@ type User struct {
 	FollowedByUsers   []string
 	FollowingRequests []string
 	Public            bool
+	BlockedUsers      []string
 }
 
 type Session struct {
@@ -30,9 +31,9 @@ type Session struct {
 }
 
 type Post struct {
-	Id           string	   `json:"id"`
+	Id           string    `json:"id"`
 	Text         string    `json:"text"`
-	Date       	 time.Time `json:"date"`
+	Date         time.Time `json:"date"`
 	Likes        int32     `json:"likes"`
 	Dislikes     int32     `json:"dislikes"`
 	Comments     []string  `json:"comments"`

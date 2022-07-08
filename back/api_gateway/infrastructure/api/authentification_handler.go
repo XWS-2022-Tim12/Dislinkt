@@ -74,6 +74,10 @@ func (handler *AuthentificationHandler) Init(mux *runtime.ServeMux) {
 	if err != nil {
 		panic(err)
 	}
+	err = mux.HandlePath("PUT", "/user/blockUser", handler.BlockUser)
+	if err != nil {
+		panic(err)
+	}
 	err = mux.HandlePath("POST", "/user/post/newPost", handler.AddNewPost)
 	if err != nil {
 		panic(err)
@@ -168,20 +172,21 @@ func (handler *AuthentificationHandler) AllInfo(w http.ResponseWriter, r *http.R
 	userClient := services.NewUserClient(handler.userClientAddress)
 
 	userToSend := &user.User{
-		Id:           usr.Id,
-		Firstname:    usr.Firstname,
-		Email:        usr.Email,
-		MobileNumber: usr.MobileNumber,
-		Gender:       mapGender(usr.Gender),
-		BirthDay:     timestamppb.New(usr.BirthDay),
-		Username:     usr.Username,
-		Biography:    usr.Biography,
-		Experience:   usr.Experience,
-		Education:    mapEducation(usr.Education),
-		Skills:       usr.Skills,
-		Interests:    usr.Interests,
-		Password:     usr.Password,
-		Public:       usr.Public,
+		Id:              usr.Id,
+		Firstname:       usr.Firstname,
+		Email:           usr.Email,
+		MobileNumber:    usr.MobileNumber,
+		Gender:          mapGender(usr.Gender),
+		BirthDay:        timestamppb.New(usr.BirthDay),
+		Username:        usr.Username,
+		Biography:       usr.Biography,
+		Experience:      usr.Experience,
+		Education:       mapEducation(usr.Education),
+		Skills:          usr.Skills,
+		Interests:       usr.Interests,
+		FollowedByUsers: usr.FollowedByUsers,
+		Password:        usr.Password,
+		Public:          usr.Public,
 	}
 
 	userResponse, err := userClient.UpdateAllInfo(context.TODO(), &user.UpdateAllInfoRequest{User: userToSend})
@@ -574,6 +579,43 @@ func (handler *AuthentificationHandler) RejectFollowingRequest(w http.ResponseWr
 	}
 
 	userResponse, err := userClient.RejectFollowingRequest(context.TODO(), &user.RejectFollowingRequestRequest{User: userToSend})
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(userResponse.Success))
+	return
+}
+
+func (handler *AuthentificationHandler) BlockUser(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	usr := &domain.User{}
+	errr := json.NewDecoder(r.Body).Decode(&usr)
+	if errr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	tokenCookie, err := r.Cookie("sessionId")
+	if err != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	id, err := handler.IsUserLoggedIn(tokenCookie.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	userClient := services.NewUserClient(handler.userClientAddress)
+
+	userToSend := &user.User{
+		Id:             usr.Id,
+		Username:       usr.Username,
+		FollowingUsers: usr.FollowingUsers,
+		BlockedUsers:   usr.BlockedUsers,
+	}
+
+	userResponse, err := userClient.BlockUser(context.TODO(), &user.BlockUserRequest{User: userToSend})
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(userResponse.Success))
 	return

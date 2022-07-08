@@ -28,6 +28,7 @@ func mapUser(user *domain.User) *pb.User {
 		FollowedByUsers:   user.FollowedByUsers,
 		FollowingRequests: user.FollowingRequests,
 		Public:            user.Public,
+		BlockedUsers:      user.BlockedUsers,
 	}
 	return userPb
 }
@@ -50,6 +51,7 @@ func mapNewUser(userPb *pb.User) *domain.User {
 			Interests:    userPb.Interests,
 			Password:     userPb.Password,
 			Public:       userPb.Public,
+			BlockedUsers: []string{},
 		}
 		return user
 	} else {
@@ -68,6 +70,7 @@ func mapNewUser(userPb *pb.User) *domain.User {
 			Interests:    userPb.Interests,
 			Password:     userPb.Password,
 			Public:       userPb.Public,
+			BlockedUsers: []string{},
 		}
 		return user
 	}
@@ -135,20 +138,21 @@ func mapAllInfoUser(userPb *pb.User) *domain.User {
 
 	if userPb.BirthDay != nil {
 		user := &domain.User{
-			Id:           id,
-			Firstname:    userPb.Firstname,
-			Email:        userPb.Email,
-			MobileNumber: userPb.MobileNumber,
-			Gender:       mapNewGender(userPb.Gender),
-			BirthDay:     userPb.BirthDay.AsTime(),
-			Username:     userPb.Username,
-			Biography:    userPb.Biography,
-			Experience:   userPb.Experience,
-			Education:    mapNewEducation(userPb.Education),
-			Skills:       userPb.Skills,
-			Interests:    userPb.Interests,
-			Password:     userPb.Password,
-			Public:       userPb.Public,
+			Id:              id,
+			Firstname:       userPb.Firstname,
+			Email:           userPb.Email,
+			MobileNumber:    userPb.MobileNumber,
+			Gender:          mapNewGender(userPb.Gender),
+			BirthDay:        userPb.BirthDay.AsTime(),
+			Username:        userPb.Username,
+			Biography:       userPb.Biography,
+			Experience:      userPb.Experience,
+			Education:       mapNewEducation(userPb.Education),
+			Skills:          userPb.Skills,
+			Interests:       userPb.Interests,
+			FollowedByUsers: userPb.FollowedByUsers,
+			Password:        userPb.Password,
+			Public:          userPb.Public,
 		}
 		return user
 	} else {
@@ -230,6 +234,19 @@ func mapUserToFollow(userPb *pb.User) *domain.User {
 	user := &domain.User{
 		Id:       id,
 		Username: userPb.Username,
+	}
+	return user
+
+}
+
+func mapUserToBlock(userPb *pb.User) *domain.User {
+	id, _ := primitive.ObjectIDFromHex(userPb.Id)
+
+	user := &domain.User{
+		Id:             id,
+		Username:       userPb.Username,
+		FollowingUsers: userPb.FollowingUsers,
+		BlockedUsers:   userPb.BlockedUsers,
 	}
 	return user
 

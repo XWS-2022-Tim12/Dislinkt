@@ -1,6 +1,18 @@
 <div class="container">
 	<div class="ekran">
 		<div class="ekranSadrzaj">
+            <label style="margin-top: 70px; margin-left: 30px"> <b> Search users: </b></label>
+            <div class="row">
+                <div class="col-4">
+                    <input type="text" name="searchText" placeholder="Search user" style="margin-left: 30px" [(ngModel)]="searchText"/>
+                </div>
+                <div class="col-2">
+                    <button class="btn btn-dark" style="width: 70px;" (click)="searchUser()"> Search </button>
+                </div>
+            </div>
+            <button class="btn btn-primary" (click)="showUsers()" style="margin-top: 20px; margin-left: 30px; width: 150px;">
+                <span>Show all users</span>
+            </button>
 			<form class="profile" [formGroup]="profileForm">
 				<div class="profilePolje">
 					<input type="text" formControlName="username" [(ngModel)]="user.username" class="profileInput" placeholder="username"/>
@@ -113,7 +125,7 @@
 				</button>	
 				<button class="button profileSubmit" [disabled]="profileForm.invalid" (click)="editAll()">
 					<span>Edit All</span>
-				</button>	
+				</button>		
                 <div *ngIf="wrongPassword">
                     <span style="color: red;">Wrong password</span>
                 </div>		

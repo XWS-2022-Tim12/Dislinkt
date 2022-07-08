@@ -17,6 +17,7 @@ export class ProfileComponent implements OnInit {
   usernameExists: boolean;
   profileForm:any;
   date: string;
+  searchText: string;
   constructor(private userService: UserService, public router: Router) {
    }
 
@@ -49,6 +50,16 @@ export class ProfileComponent implements OnInit {
       "interests": new FormControl(null, [Validators.required,Validators.pattern('[a-zšđčćžA-ZŠĐČĆŽ ]*')]),
       "public": new FormControl(null, [Validators.required])
     });
+  }
+
+  searchUser() {
+    for(let user of this.user.blockedUsers) {
+      if(user === this.searchText){
+        alert('This user is blocked!')
+        return;
+      }
+    }
+    this.router.navigate(['/user/profile/' + this.searchText]);
   }
 
   editBasic()
@@ -203,6 +214,10 @@ export class ProfileComponent implements OnInit {
       },
       (error: HttpErrorResponse) => {
       });
+  }
+
+  showUsers() {
+    this.router.navigate(['/showUsers']);
   }
 
   get username() {

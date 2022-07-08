@@ -92,3 +92,8 @@ func (service *UserService) RejectFollowingRequest(user *domain.User) (string, e
 func (service *UserService) Delete(id primitive.ObjectID) error {
 	return service.store.Delete(id)
 }
+
+func (service *UserService) BlockUser(user *domain.User) (string, error) {
+	success, err := service.store.BlockUser(user)
+	return success, err
+}

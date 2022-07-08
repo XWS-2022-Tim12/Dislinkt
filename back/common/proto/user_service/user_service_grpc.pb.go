@@ -31,6 +31,7 @@ type UserServiceClient interface {
 	FollowPublicProfile(ctx context.Context, in *FollowPublicProfileRequest, opts ...grpc.CallOption) (*FollowPublicProfileResponse, error)
 	AcceptFollowingRequest(ctx context.Context, in *AcceptFollowingRequestRequest, opts ...grpc.CallOption) (*AcceptFollowingRequestResponse, error)
 	RejectFollowingRequest(ctx context.Context, in *RejectFollowingRequestRequest, opts ...grpc.CallOption) (*RejectFollowingRequestResponse, error)
+	BlockUser(ctx context.Context, in *BlockUserRequest, opts ...grpc.CallOption) (*BlockUserResponse, error)
 }
 
 type userServiceClient struct {
@@ -167,6 +168,15 @@ func (c *userServiceClient) RejectFollowingRequest(ctx context.Context, in *Reje
 	return out, nil
 }
 
+func (c *userServiceClient) BlockUser(ctx context.Context, in *BlockUserRequest, opts ...grpc.CallOption) (*BlockUserResponse, error) {
+	out := new(BlockUserResponse)
+	err := c.cc.Invoke(ctx, "/user.UserService/BlockUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -185,6 +195,7 @@ type UserServiceServer interface {
 	FollowPublicProfile(context.Context, *FollowPublicProfileRequest) (*FollowPublicProfileResponse, error)
 	AcceptFollowingRequest(context.Context, *AcceptFollowingRequestRequest) (*AcceptFollowingRequestResponse, error)
 	RejectFollowingRequest(context.Context, *RejectFollowingRequestRequest) (*RejectFollowingRequestResponse, error)
+	BlockUser(context.Context, *BlockUserRequest) (*BlockUserResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -233,6 +244,9 @@ func (*UnimplementedUserServiceServer) AcceptFollowingRequest(context.Context, *
 }
 func (*UnimplementedUserServiceServer) RejectFollowingRequest(context.Context, *RejectFollowingRequestRequest) (*RejectFollowingRequestResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RejectFollowingRequest not implemented")
+}
+func (*UnimplementedUserServiceServer) BlockUser(context.Context, *BlockUserRequest) (*BlockUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BlockUser not implemented")
 }
 func (*UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -492,6 +506,24 @@ func _UserService_RejectFollowingRequest_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_BlockUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BlockUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).BlockUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/BlockUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).BlockUser(ctx, req.(*BlockUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _UserService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "user.UserService",
 	HandlerType: (*UserServiceServer)(nil),
@@ -551,6 +583,10 @@ var _UserService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RejectFollowingRequest",
 			Handler:    _UserService_RejectFollowingRequest_Handler,
+		},
+		{
+			MethodName: "BlockUser",
+			Handler:    _UserService_BlockUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

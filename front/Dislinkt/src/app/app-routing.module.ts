@@ -7,6 +7,7 @@ import { OtherUserProfileComponent } from './components/other-user-profile/other
 import { NewPostComponent } from './components/new-post/new-post.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { RegisterComponent } from './components/register/register.component';
+import { ShowUsersComponent } from './components/show-users/show-users.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -15,7 +16,8 @@ const routes: Routes = [
   { path: '', component: HomePageGuestComponent },
   { path: 'user/profile/:username', component: OtherUserProfileComponent },
   { path: 'user/following-requests', component: FollowingRequestsComponent },
-  { path: 'createPost', component: NewPostComponent}
+  { path: 'createPost', component: NewPostComponent},
+  { path: 'showUsers', component: ShowUsersComponent}
 ];
 
 @NgModule({

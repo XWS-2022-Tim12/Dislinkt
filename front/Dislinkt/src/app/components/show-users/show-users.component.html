@@ -1,0 +1,35 @@
+<div style=" background-color: rgba(128, 150, 240, 0.278);">
+    <label style="margin-left: 600px; font-size: 35px; margin-top: 50px;"> <b>All users</b> </label>
+    <div class="container">
+        <div class="row" style="margin-top: 30px;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class="thead-light">
+                                <tr >
+                                    <th scope="col">Username</th>
+                                    <th scope="col">First Name</th>
+                                    <th scope="col">Public</th>
+                                    <th scope="col">Following</th>
+                                    <th scope="col">Blocked</th>
+                                </tr>
+                            </thead>
+                            <tbody *ngFor="let user of allUsers;let indexOfelement=index;">
+                                <tr>
+                                    <td scope="col">{{user.username}}</td>
+                                    <td scope="col">{{user.firstname}}</td>
+                                    <td scope="col">{{user.public}}</td>
+                                    <td scope="col">{{isUserFollowing(user.username)}}</td>
+                                    <td scope="col">{{isUserBlocked(user.username)}}</td>
+                                    <td> <button class="btn btn-danger" *ngIf="isUserBlocked(user.username) === false" (click)="blockUser(user.username)"> Block </button> </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="height: 150px;"></div>
+</div>

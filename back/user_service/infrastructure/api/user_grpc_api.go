@@ -183,3 +183,12 @@ func (handler *UserHandler) RejectFollowingRequest(ctx context.Context, request 
 	}
 	return response, err
 }
+
+func (handler *UserHandler) BlockUser(ctx context.Context, request *pb.BlockUserRequest) (*pb.BlockUserResponse, error) {
+	user := mapUserToBlock(request.User)
+	successs, err := handler.service.BlockUser(user)
+	response := &pb.BlockUserResponse{
+		Success: successs,
+	}
+	return response, err
+}

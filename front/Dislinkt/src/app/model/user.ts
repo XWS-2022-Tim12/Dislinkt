@@ -19,4 +19,5 @@ export class User {
     followedByUsers: Array<string>
     followingRequests: Array<string>
     public: boolean
+    blockedUsers: Array<string>
 }

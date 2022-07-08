@@ -24,4 +24,5 @@ type UserStore interface {
 	AcceptFollowingRequest(user *User) (string, error)
 	RejectFollowingRequest(user *User) (string, error)
 	Delete(id primitive.ObjectID) error
+	BlockUser(user *User) (string, error)
 }

@@ -190,6 +190,7 @@ func (store *UserMongoDBStore) UpdateAllInfo(user *domain.User) (string, error) 
 	userInDatabase.Education = user.Education
 	userInDatabase.Skills = user.Skills
 	userInDatabase.Interests = user.Interests
+	userInDatabase.FollowedByUsers = user.FollowedByUsers
 	userInDatabase.Public = user.Public
 	filter := bson.M{"_id": userInDatabase.Id}
 	update := bson.M{
@@ -202,6 +203,24 @@ func (store *UserMongoDBStore) UpdateAllInfo(user *domain.User) (string, error) 
 
 	return "success", nil
 
+}
+
+func (store *UserMongoDBStore) BlockUser(user *domain.User) (string, error) {
+	userInDatabase, err := store.Get(user.Id)
+
+	userInDatabase.FollowingUsers = user.FollowingUsers
+	userInDatabase.BlockedUsers = user.BlockedUsers
+
+	filter := bson.M{"_id": userInDatabase.Id}
+	update := bson.M{
+		"$set": userInDatabase,
+	}
+	_, err = store.users.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return "error while updating", err
+	}
+
+	return "success", nil
 }
 
 func (store *UserMongoDBStore) Insert(user *domain.User) (string, error) {

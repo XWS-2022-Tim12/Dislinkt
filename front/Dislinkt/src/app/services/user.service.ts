@@ -20,6 +20,7 @@ export class UserService {
   private followUrl: string;
   private acceptFollowingRequestUrl: string;
   private rejectFollowingRequestUrl: string;
+  private blockUserUrl: string;
 
   constructor(private http: HttpClient) {
     this.loginUrl = 'http://localhost:8000/user/login';
@@ -35,6 +36,7 @@ export class UserService {
     this.followUrl = 'http://localhost:8000/user/follow';
     this.acceptFollowingRequestUrl = 'http://localhost:8000/user/acceptFollowingRequest';
     this.rejectFollowingRequestUrl = 'http://localhost:8000/user/rejectFollowingRequest';
+    this.blockUserUrl = 'http://localhost:8000/user/blockUser';
    }
 
    public login(user: User): Observable<void> {
@@ -79,5 +81,9 @@ export class UserService {
 
   public rejectFollowingRequest(user: User): Observable<string> {
     return this.http.put<string>(this.rejectFollowingRequestUrl, user, { responseType: 'text' as 'json', withCredentials: true } );
+  }
+
+  public blockUser(user: User): Observable<string> {
+    return this.http.put<string>(this.blockUserUrl, user,{responseType: 'text' as 'json',withCredentials: true});
   }
 }
