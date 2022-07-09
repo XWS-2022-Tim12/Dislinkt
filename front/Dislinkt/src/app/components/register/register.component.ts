@@ -53,15 +53,7 @@ export class RegisterComponent implements OnInit {
     let dateTimeUTC = new Date(this.user.birthDay+"T12:00:00Z");
     this.user.birthDay = dateTimeUTC;
       this.userService.register(this.user).subscribe(ret => {   
-        if (Object.values(ret)[0] == "email exists"){
-          this.emailExists = true;
-        }
-        else if (Object.values(ret)[0] == "username exists"){
-          this.usernameExists = true;
-        }
-        else {
           this.router.navigate(['/profile']);
-        } 
       },
       (error: HttpErrorResponse) => {
       });
