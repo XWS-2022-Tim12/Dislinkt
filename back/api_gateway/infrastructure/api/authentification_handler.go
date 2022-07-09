@@ -89,11 +89,11 @@ func (handler *AuthentificationHandler) Init(mux *runtime.ServeMux) {
 	if err != nil {
 		panic(err)
 	}
-	err = mux.HandlePath("POST", "/notification", handler.AddNewNotification)
+	err = mux.HandlePath("POST", "/user/notification", handler.AddNewNotification)
 	if err != nil {
 		panic(err)
 	}
-	err = mux.HandlePath("PUT", "/notification/editNotification", handler.EditNotification)
+	err = mux.HandlePath("PUT", "/user/notification/editNotification", handler.EditNotification)
 	if err != nil {
 		panic(err)
 	}

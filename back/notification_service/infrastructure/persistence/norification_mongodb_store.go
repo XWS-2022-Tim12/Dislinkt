@@ -135,11 +135,7 @@ func (store *NotificationMongoDBStore) Edit(notification *domain.Notification) (
 	if notificationFromDatabase == nil {
 		return "notification doesn't exist", nil
 	}
-	/*notificationFromDatabase.Sender = notification.Sender
-	notificationFromDatabase.Receiver = notification.Receiver
-	notificationFromDatabase.CreationDate = notification.CreationDate
-	notificationFromDatabase.NotificationType = notification.NotificationType
-	notificationFromDatabase.Description = notification.Description*/
+	
 	notificationFromDatabase.IsRead = notification.IsRead
 
 	filter := bson.M{"_id": notification.Id}

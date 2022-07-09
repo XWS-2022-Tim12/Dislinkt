@@ -1,3 +1,4 @@
+import { NotificationsComponent } from './components/notifications/notifications.component';
 import { FollowingRequestsComponent } from './components/following-requests/following-requests.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
@@ -17,7 +18,8 @@ const routes: Routes = [
   { path: 'user/profile/:username', component: OtherUserProfileComponent },
   { path: 'user/following-requests', component: FollowingRequestsComponent },
   { path: 'createPost', component: NewPostComponent},
-  { path: 'showUsers', component: ShowUsersComponent}
+  { path: 'showUsers', component: ShowUsersComponent},
+  { path: 'notifications', component: NotificationsComponent }
 ];
 
 @NgModule({
