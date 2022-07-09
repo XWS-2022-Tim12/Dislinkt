@@ -13,6 +13,7 @@ import (
 	job "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/job_service"
 	post "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/post_service"
 	user "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_service"
+	userSuggestion "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_suggestions_service"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -22,14 +23,16 @@ type AuthentificationHandler struct {
 	userClientAddress             string
 	postClientAdress              string
 	jobClientAdress               string
+	userSuggestionClientAddress   string
 }
 
-func NewAuthentificationHandler(authentificationClientAddress, userClientAddress, postClientAdress, jobClientAdress string) Handler {
+func NewAuthentificationHandler(authentificationClientAddress, userClientAddress, postClientAdress, jobClientAdress string, userSuggestionClientAddress string) Handler {
 	return &AuthentificationHandler{
 		authentificationClientAddress: authentificationClientAddress,
 		userClientAddress:             userClientAddress,
 		postClientAdress:              postClientAdress,
 		jobClientAdress:               jobClientAdress,
+		userSuggestionClientAddress:   userSuggestionClientAddress,
 	}
 }
 
@@ -134,6 +137,18 @@ func (handler *AuthentificationHandler) Register(w http.ResponseWriter, r *http.
 	}
 
 	idUser, err := userClient.Register(context.TODO(), &user.RegisterRequest{User: userToSend}) //ovdje vratiti userID
+	userSuggestionsClient := services.NewUserSuggestionsClient(handler.userSuggestionClientAddress)
+	suggestionToSend := &userSuggestion.User{
+		FirstName: usr.Firstname,
+		Email:     usr.Email,
+		Username:  usr.Username,
+		Interests: usr.Interests,
+	}
+	idSuggestion, err := userSuggestionsClient.Register(context.TODO(), &userSuggestion.RegisterRequest{User: suggestionToSend})
+	if idSuggestion == nil {
+		return
+	}
+
 	authentificationClient := services.NewAuthentificationClient(handler.authentificationClientAddress)
 	if err != nil {
 		w.WriteHeader(http.StatusNotAcceptable)

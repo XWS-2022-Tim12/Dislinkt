@@ -7,6 +7,7 @@ import (
 	job "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/job_service"
 	post "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/post_service"
 	user "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_service"
+	userSuggestions "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_suggestions_service"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -38,9 +39,17 @@ func NewPostClient(address string) post.PostServiceClient {
 func NewJobClient(address string) job.JobServiceClient {
 	conn, err := getConnection(address)
 	if err != nil {
-		log.Fatalf("Failed to start gRPC connection to Post service: %v", err)
+		log.Fatalf("Failed to start gRPC connection to Job service: %v", err)
 	}
 	return job.NewJobServiceClient(conn)
+}
+
+func NewUserSuggestionsClient(address string) userSuggestions.UserSuggestionsServiceClient {
+	conn, err := getConnection(address)
+	if err != nil {
+		log.Fatalf("Failed to start gRPC connection to User Suggestions service: %v", err)
+	}
+	return userSuggestions.NewUserSuggestionsServiceClient(conn)
 }
 
 func getConnection(address string) (*grpc.ClientConn, error) {

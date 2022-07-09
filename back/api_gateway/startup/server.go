@@ -12,6 +12,7 @@ import (
 	jobGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/job_service"
 	postGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/post_service"
 	userGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_service"
+	userSuggestionsGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_suggestions_service"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/rs/cors"
 	"google.golang.org/grpc"
@@ -58,6 +59,12 @@ func (server *Server) initHandlers() {
 	if err != nil {
 		panic(err)
 	}
+
+	userSuggestionsEndpoint := fmt.Sprintf("%s:%s", server.config.UserSuggestionsHost, server.config.UserSuggestionsPort)
+	err = userSuggestionsGw.RegisterUserSuggestionsServiceHandlerFromEndpoint(context.TODO(), server.mux, userSuggestionsEndpoint, opts)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (server *Server) initCustomHandlers() {
@@ -65,7 +72,8 @@ func (server *Server) initCustomHandlers() {
 	postEndpoint := fmt.Sprintf("%s:%s", server.config.PostHost, server.config.PostPort)
 	authentificationEndpoint := fmt.Sprintf("%s:%s", server.config.AuthentificationHost, server.config.AuthentificationPort)
 	jobEndpoint := fmt.Sprintf("%s:%s", server.config.JobHost, server.config.JobPort)
-	authentificationHandler := api.NewAuthentificationHandler(authentificationEndpoint, userEndpoint, postEndpoint, jobEndpoint)
+	userSuggestionsEndpoint := fmt.Sprintf("%s:%s", server.config.UserSuggestionsHost, server.config.UserSuggestionsPort)
+	authentificationHandler := api.NewAuthentificationHandler(authentificationEndpoint, userEndpoint, postEndpoint, jobEndpoint, userSuggestionsEndpoint)
 	authentificationHandler.Init(server.mux)
 }
 
