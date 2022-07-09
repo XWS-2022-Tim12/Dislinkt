@@ -1,0 +1,114 @@
+syntax = "proto3";
+
+option go_package = "github.com/XWS-2022-Tim12/Dislinkt/back/common/notification";
+
+package notification;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+service NotificationService{
+        rpc Get(GetRequest) returns(GetResponse) {
+        	option (google.api.http) = {
+			get: "/notification/{id}"
+		};
+        }
+        rpc GetAll(GetAllRequest) returns(GetAllResponse) {
+        	option (google.api.http) = {
+			get: "/notification/notifications"
+		};
+        }
+        rpc SearchBySender(SearchBySenderRequest) returns(SearchBySenderResponse) {
+        	option (google.api.http) = {
+			get: "/notification/searchBySender/{sender}"
+		};
+        }
+        rpc SearchByReceiver(SearchByReceiverRequest) returns(SearchByReceiverResponse) {
+        	option (google.api.http) = {
+			get: "/notification/searchByReceiver/{receiver}"
+		};
+        }
+        rpc SearchByNotificationType(SearchByNotificationTypeRequest) returns(SearchByNotificationTypeResponse) {
+        	option (google.api.http) = {
+			get: "/notification/searchByNotificationType/{notificationType}"
+		};
+        }
+        rpc Add(AddRequest) returns(AddResponse) {
+                option (google.api.http) = {
+                        post: "/notification"
+                        body: "notification"
+                };
+        }
+        rpc Edit(EditRequest) returns(EditResponse) {
+                option (google.api.http) = {
+                        put: "/notification/editNotification"
+                        body: "notification"
+                };
+        }
+}
+
+message GetRequest {
+        string id = 1;
+}
+
+message GetResponse {
+        Notification notification = 1;
+}
+
+message SearchBySenderRequest {
+        string sender = 1;
+}
+
+message SearchBySenderResponse {
+        repeated Notification notifications = 1;
+}
+
+message SearchByReceiverRequest {
+        string receiver = 1;
+}
+
+message SearchByReceiverResponse {
+        repeated Notification notifications = 1;
+}
+
+message SearchByNotificationTypeRequest {
+        string notificationType = 1;
+}
+
+message SearchByNotificationTypeResponse {
+        repeated Notification notifications = 1;
+}
+
+message GetAllRequest {
+
+}
+
+message GetAllResponse {
+        repeated Notification notifications = 1;
+}
+
+message AddRequest {
+        Notification notification = 1;
+}
+
+message AddResponse {
+        string success = 1;
+}
+
+message EditRequest {
+        Notification notification = 1;
+}
+
+message EditResponse {
+        string success = 1;
+}
+
+message Notification {
+        string id = 1;
+        string sender = 2;
+        string receiver = 3;
+        google.protobuf.Timestamp creationDate = 4;
+        string notificationType = 5;
+        string description = 6;
+        bool isRead = 7;
+}

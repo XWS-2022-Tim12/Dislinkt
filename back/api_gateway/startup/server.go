@@ -9,6 +9,7 @@ import (
 	"github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/infrastructure/api"
 	cfg "github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/startup/config"
 	authentificationGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
+	notificationGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/notification_service"
 	jobGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/job_service"
 	postGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/post_service"
 	userGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_service"
@@ -58,6 +59,12 @@ func (server *Server) initHandlers() {
 	if err != nil {
 		panic(err)
 	}
+
+	notificationEndpoint := fmt.Sprintf("%s:%s", server.config.NotificationHost, server.config.NotificationPort)
+	err = notificationGw.RegisterNotificationServiceHandlerFromEndpoint(context.TODO(), server.mux, notificationEndpoint, opts)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (server *Server) initCustomHandlers() {
@@ -65,7 +72,8 @@ func (server *Server) initCustomHandlers() {
 	postEndpoint := fmt.Sprintf("%s:%s", server.config.PostHost, server.config.PostPort)
 	authentificationEndpoint := fmt.Sprintf("%s:%s", server.config.AuthentificationHost, server.config.AuthentificationPort)
 	jobEndpoint := fmt.Sprintf("%s:%s", server.config.JobHost, server.config.JobPort)
-	authentificationHandler := api.NewAuthentificationHandler(authentificationEndpoint, userEndpoint, postEndpoint, jobEndpoint)
+	notificationEndpoint := fmt.Sprintf("%s:%s", server.config.NotificationHost, server.config.NotificationPort)
+	authentificationHandler := api.NewAuthentificationHandler(authentificationEndpoint, userEndpoint, postEndpoint, jobEndpoint, notificationEndpoint)
 	authentificationHandler.Init(server.mux)
 }
 

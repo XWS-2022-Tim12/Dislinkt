@@ -10,6 +10,7 @@ import (
 	"github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/infrastructure/services"
 	authentification "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
 	pb "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
+	notification "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/notification_service"
 	job "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/job_service"
 	post "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/post_service"
 	user "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_service"
@@ -22,14 +23,16 @@ type AuthentificationHandler struct {
 	userClientAddress             string
 	postClientAdress              string
 	jobClientAdress               string
+	notificationClientAdress	  string
 }
 
-func NewAuthentificationHandler(authentificationClientAddress, userClientAddress, postClientAdress, jobClientAdress string) Handler {
+func NewAuthentificationHandler(authentificationClientAddress, userClientAddress, postClientAdress, jobClientAdress, notificationClientAdress string) Handler {
 	return &AuthentificationHandler{
 		authentificationClientAddress: authentificationClientAddress,
 		userClientAddress:             userClientAddress,
 		postClientAdress:              postClientAdress,
 		jobClientAdress:               jobClientAdress,
+		notificationClientAdress:	   notificationClientAdress,
 	}
 }
 
@@ -83,6 +86,14 @@ func (handler *AuthentificationHandler) Init(mux *runtime.ServeMux) {
 		panic(err)
 	}
 	err = mux.HandlePath("POST", "/job", handler.AddNewJob)
+	if err != nil {
+		panic(err)
+	}
+	err = mux.HandlePath("POST", "/notification", handler.AddNewNotification)
+	if err != nil {
+		panic(err)
+	}
+	err = mux.HandlePath("PUT", "/notification/editNotification", handler.EditNotification)
 	if err != nil {
 		panic(err)
 	}
@@ -707,6 +718,81 @@ func (handler *AuthentificationHandler) AddNewJob(w http.ResponseWriter, r *http
 	jobResponse, err := jobClient.Add(context.TODO(), &job.AddRequest{Job: jobToSend})
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(jobResponse.Success))
+	return
+}
+
+func (handler *AuthentificationHandler) AddNewNotification(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	reqNotification := &domain.Notification{}
+	errr := json.NewDecoder(r.Body).Decode(&reqNotification)
+	if errr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	tokenCookie, err := r.Cookie("sessionId")
+	if err != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	id, err := handler.IsUserLoggedIn(tokenCookie.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	notificationClient := services.NewNotificationClient(handler.notificationClientAdress)
+
+	notificationToSend := &notification.Notification{
+		Id:                 reqNotification.Id,
+		Sender:             reqNotification.Sender,
+		Receiver:           reqNotification.Receiver,
+		CreationDate:       timestamppb.New(time.Now()),
+		NotificationType:   reqNotification.NotificationType,
+		Description:        reqNotification.Description,
+		IsRead: 			false,
+	}
+	notificationResponse, err := notificationClient.Add(context.TODO(), &notification.AddRequest{Notification: notificationToSend})
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(notificationResponse.Success))
+	return
+}
+
+func (handler *AuthentificationHandler) EditNotification(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	not := &domain.Notification{}
+	errr := json.NewDecoder(r.Body).Decode(&not)
+	if errr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	tokenCookie, err := r.Cookie("sessionId")
+	if err != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	id, err := handler.IsUserLoggedIn(tokenCookie.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	notificationClient := services.NewNotificationClient(handler.notificationClientAdress)
+
+	notificationToSend := &notification.Notification {
+		Id:           not.Id,
+		IsRead:       not.IsRead,
+	}
+
+	notificationResponse, err := notificationClient.Edit(context.TODO(), &notification.EditRequest{Notification: notificationToSend})
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(notificationResponse.Success))
 	return
 }
 

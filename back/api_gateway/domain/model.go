@@ -54,3 +54,13 @@ type Job struct {
 	HrInterviews       []string
 	TehnicalInterviews []string
 }
+
+type Notification struct {
+	Id                 string
+	Sender             string
+	Receiver           string
+	CreationDate       time.Time
+	NotificationType   string
+	Description        string
+	IsRead		       bool
+}
