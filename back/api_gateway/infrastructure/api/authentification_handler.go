@@ -81,6 +81,18 @@ func (handler *AuthentificationHandler) Init(mux *runtime.ServeMux) {
 	if err != nil {
 		panic(err)
 	}
+	err = mux.HandlePath("PUT", "/user/changeNotifications", handler.ChangeNotifications)
+	if err != nil {
+		panic(err)
+	}
+	err = mux.HandlePath("PUT", "/user/changeNotificationsUsers", handler.ChangeNotificationsUsers)
+	if err != nil {
+		panic(err)
+	}
+	err = mux.HandlePath("PUT", "/user/changeNotificationsMessages", handler.ChangeNotificationsMessages)
+	if err != nil {
+		panic(err)
+	}
 	err = mux.HandlePath("POST", "/user/post/newPost", handler.AddNewPost)
 	if err != nil {
 		panic(err)
@@ -627,6 +639,111 @@ func (handler *AuthentificationHandler) BlockUser(w http.ResponseWriter, r *http
 	}
 
 	userResponse, err := userClient.BlockUser(context.TODO(), &user.BlockUserRequest{User: userToSend})
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(userResponse.Success))
+	return
+}
+
+func (handler *AuthentificationHandler) ChangeNotifications(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	usr := &domain.User{}
+	errr := json.NewDecoder(r.Body).Decode(&usr)
+	if errr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	tokenCookie, err := r.Cookie("sessionId")
+	if err != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	id, err := handler.IsUserLoggedIn(tokenCookie.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	userClient := services.NewUserClient(handler.userClientAddress)
+
+	userToSend := &user.User{
+		Id:       		usr.Id,
+		Notifications: 	usr.Notifications,
+	}
+
+	userResponse, err := userClient.ChangeNotifications(context.TODO(), &user.ChangeNotificationsRequest{User: userToSend})
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(userResponse.Success))
+	return
+}
+
+func (handler *AuthentificationHandler) ChangeNotificationsUsers(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	usr := &domain.User{}
+	errr := json.NewDecoder(r.Body).Decode(&usr)
+	if errr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	tokenCookie, err := r.Cookie("sessionId")
+	if err != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	id, err := handler.IsUserLoggedIn(tokenCookie.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	userClient := services.NewUserClient(handler.userClientAddress)
+
+	userToSend := &user.User{
+		Id:       		usr.Id,
+		Username: 		usr.Username,
+	}
+
+	userResponse, err := userClient.ChangeNotificationsUsers(context.TODO(), &user.ChangeNotificationsUsersRequest{User: userToSend})
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(userResponse.Success))
+	return
+}
+
+func (handler *AuthentificationHandler) ChangeNotificationsMessages(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	usr := &domain.User{}
+	errr := json.NewDecoder(r.Body).Decode(&usr)
+	if errr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	tokenCookie, err := r.Cookie("sessionId")
+	if err != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	id, err := handler.IsUserLoggedIn(tokenCookie.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	userClient := services.NewUserClient(handler.userClientAddress)
+
+	userToSend := &user.User{
+		Id:       		usr.Id,
+		Username: 		usr.Username,
+	}
+
+	userResponse, err := userClient.ChangeNotificationsMessages(context.TODO(), &user.ChangeNotificationsMessagesRequest{User: userToSend})
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(userResponse.Success))
 	return

@@ -71,4 +71,7 @@ type User struct {
 	FollowingRequests []string           `bson:"followingRequests"`
 	Public            bool               `bson:"public"`
 	BlockedUsers      []string           `bson:"blockedUsers"`
+	Notifications	  		bool		 `bson:"notifications"`
+	NotificationOffUsers    []string     `bson:"notificationOffUsers"`
+	NotificationOffMessages	[]string     `bson:"notificationOffMessages"`
 }

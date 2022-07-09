@@ -29,6 +29,8 @@ var users = []*domain.User{
 		FollowedByUsers:   []string{},
 		FollowingRequests: []string{},
 		Public:            true,
+		BlockedUsers:	   []string{},
+		Notifications:	   true,
 	},
 	{
 		Id:             getObjectId("62fsfag3a34d25d8567f9f83"),
@@ -50,6 +52,8 @@ var users = []*domain.User{
 		},
 		FollowingRequests: []string{},
 		Public:            true,
+		BlockedUsers:	   []string{},
+		Notifications:	   true,
 	},
 	{
 		Id:             getObjectId("62Ssafc3a34d25d8567f9f84"),
@@ -71,6 +75,8 @@ var users = []*domain.User{
 		},
 		FollowingRequests: []string{},
 		Public:            false,
+		BlockedUsers:	   []string{},
+		Notifications:	   true,
 	},
 	{
 		Id:                getObjectId("6fds7c3a34d251f567f9f85"),
@@ -90,6 +96,8 @@ var users = []*domain.User{
 		FollowedByUsers:   []string{},
 		FollowingRequests: []string{},
 		Public:            false,
+		BlockedUsers:	   []string{},
+		Notifications:	   true,
 	},
 	{
 		Id:                getObjectId("fdf34d25d8567f9f86"),
@@ -109,6 +117,8 @@ var users = []*domain.User{
 		FollowedByUsers:   []string{},
 		FollowingRequests: []string{},
 		Public:            false,
+		BlockedUsers:	   []string{},
+		Notifications:	   true,
 	},
 	{
 		Id:                getObjectId("4ds834d25d8567f9f87"),
@@ -128,6 +138,8 @@ var users = []*domain.User{
 		FollowedByUsers:   []string{},
 		FollowingRequests: []string{},
 		Public:            false,
+		BlockedUsers:	   []string{},
+		Notifications:	   true,
 	},
 }
 

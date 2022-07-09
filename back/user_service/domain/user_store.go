@@ -25,4 +25,7 @@ type UserStore interface {
 	RejectFollowingRequest(user *User) (string, error)
 	Delete(id primitive.ObjectID) error
 	BlockUser(user *User) (string, error)
+	ChangeNotifications(user *User) (string, error)
+	ChangeNotificationsUsers(user *User) (string, error)
+	ChangeNotificationsMessages(user *User) (string, error)
 }

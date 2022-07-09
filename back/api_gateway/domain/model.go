@@ -21,6 +21,9 @@ type User struct {
 	FollowingRequests []string
 	Public            bool
 	BlockedUsers      []string
+	Notifications	  bool
+	NotificationOffUsers    []string
+	NotificationOffMessages   []string
 }
 
 type Session struct {

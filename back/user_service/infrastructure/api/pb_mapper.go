@@ -29,6 +29,9 @@ func mapUser(user *domain.User) *pb.User {
 		FollowingRequests: user.FollowingRequests,
 		Public:            user.Public,
 		BlockedUsers:      user.BlockedUsers,
+		Notifications:	   user.Notifications,
+		NotificationOffUsers: user.NotificationOffUsers,
+		NotificationOffMessages: user.NotificationOffMessages,
 	}
 	return userPb
 }
@@ -250,4 +253,15 @@ func mapUserToBlock(userPb *pb.User) *domain.User {
 	}
 	return user
 
+}
+
+func mapUserToChangeNotifications(userPb *pb.User) *domain.User {
+	id, _ := primitive.ObjectIDFromHex(userPb.Id)
+
+	user := &domain.User {
+		Id:   		id,
+		Username: 	userPb.Username,
+	}
+
+	return user
 }

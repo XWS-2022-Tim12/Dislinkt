@@ -192,3 +192,30 @@ func (handler *UserHandler) BlockUser(ctx context.Context, request *pb.BlockUser
 	}
 	return response, err
 }
+
+func (handler *UserHandler) ChangeNotifications(ctx context.Context, request *pb.ChangeNotificationsRequest) (*pb.ChangeNotificationsResponse, error) {
+	user := mapUserToChangeNotifications(request.User)
+	successs, err := handler.service.ChangeNotifications(user)
+	response := &pb.ChangeNotificationsResponse{
+		Success: successs,
+	}
+	return response, err
+}
+
+func (handler *UserHandler) ChangeNotificationsUsers(ctx context.Context, request *pb.ChangeNotificationsUsersRequest) (*pb.ChangeNotificationsUsersResponse, error) {
+	user := mapUserToChangeNotifications(request.User)
+	successs, err := handler.service.ChangeNotificationsUsers(user)
+	response := &pb.ChangeNotificationsUsersResponse{
+		Success: successs,
+	}
+	return response, err
+}
+
+func (handler *UserHandler) ChangeNotificationsMessages(ctx context.Context, request *pb.ChangeNotificationsMessagesRequest) (*pb.ChangeNotificationsMessagesResponse, error) {
+	user := mapUserToChangeNotifications(request.User)
+	successs, err := handler.service.ChangeNotificationsMessages(user)
+	response := &pb.ChangeNotificationsMessagesResponse{
+		Success: successs,
+	}
+	return response, err
+}

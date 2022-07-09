@@ -519,3 +519,118 @@ func (store *UserMongoDBStore) SendMessage(user *domain.User) (string, error) {
 
 	return "Message successfully sent!", nil
 }
+
+func (store *UserMongoDBStore) ChangeNotifications(user *domain.User) (string, error) {
+	userInDatabase, err := store.Get(user.Id)
+	if userInDatabase == nil {
+		return "user doesn't exist", nil
+	}
+	if err != nil {
+		return "Error", err
+	}
+
+	userInDatabase.Notifications = !userInDatabase.Notifications;
+
+	filter := bson.M{"_id": userInDatabase.Id}
+	update := bson.M{
+		"$set": userInDatabase,
+	}
+	_, err = store.users.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return "error while updating", err
+	}
+
+	return "Notification settings changed!", nil
+}
+
+func (store *UserMongoDBStore) ChangeNotificationsUsers(user *domain.User) (string, error) {
+	userWhoChange, err := store.Get(user.Id)
+	if userWhoChange == nil {
+		return "user with given id doesn't exist", nil
+	}
+	if err != nil {
+		return "Error", err
+	}
+
+	userWhoIsChanged, err := store.GetByUsername(user.Username)
+	if userWhoIsChanged == nil {
+		return "user with given username (" + user.Username + ") doesn't exist", nil
+	}
+	if err != nil {
+		return "Error", err
+	}
+
+	length := len(userWhoChange.NotificationOffUsers)
+	found := false
+	index := 0
+	for i := 0; i < length; i++ {
+		if userWhoChange.NotificationOffUsers[i] == userWhoIsChanged.Username {
+			found = true
+			index = i
+			break
+		}
+	}
+
+	if found == true {
+		userWhoChange.NotificationOffUsers = RemoveIndex(userWhoChange.NotificationOffUsers, index)
+	} else {
+		userWhoChange.NotificationOffUsers = append(userWhoChange.NotificationOffUsers, userWhoIsChanged.Username)
+	}
+
+	filter := bson.M{"_id": userWhoChange.Id}
+	update := bson.M{
+		"$set": userWhoChange,
+	}
+	_, err = store.users.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return "error while updating", err
+	}
+
+	return "Notification settings changed!", nil
+}
+
+func (store *UserMongoDBStore) ChangeNotificationsMessages(user *domain.User) (string, error) {
+	userWhoChange, err := store.Get(user.Id)
+	if userWhoChange == nil {
+		return "user with given id doesn't exist", nil
+	}
+	if err != nil {
+		return "Error", err
+	}
+
+	userWhoIsChanged, err := store.GetByUsername(user.Username)
+	if userWhoIsChanged == nil {
+		return "user with given username (" + user.Username + ") doesn't exist", nil
+	}
+	if err != nil {
+		return "Error", err
+	}
+
+	length := len(userWhoChange.NotificationOffMessages)
+	found := false
+	index := 0
+	for i := 0; i < length; i++ {
+		if userWhoChange.NotificationOffMessages[i] == userWhoIsChanged.Username {
+			found = true
+			index = i
+			break
+		}
+	}
+
+	if found == true {
+		userWhoChange.NotificationOffMessages = RemoveIndex(userWhoChange.NotificationOffMessages, index)
+	} else {
+		userWhoChange.NotificationOffMessages = append(userWhoChange.NotificationOffMessages, userWhoIsChanged.Username)
+	}
+
+	filter := bson.M{"_id": userWhoChange.Id}
+	update := bson.M{
+		"$set": userWhoChange,
+	}
+	_, err = store.users.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return "error while updating", err
+	}
+
+	return "Notification settings changed!", nil
+}
