@@ -77,6 +77,25 @@ services:
     networks:
       - network
 
+  user_suggestions_service:
+    image: user_suggestions_service
+    container_name: user_suggestions_service
+    build:
+      context: .
+      dockerfile: ./user_suggestions_service/Dockerfile
+    restart: on-failure
+    environment:
+        - USER_SUGGESTIONS_DB_HOST=${USER_SUGGESTIONS_DB_HOST}
+        - USER_SUGGESTIONS_DB_PORT=${USER_SUGGESTIONS_DB_PORT}
+        - USER_SUGGESTIONS_SERVICE_PORT=${USER_SUGGESTIONS_SERVICE_PORT}
+        - USER_SUGGESTIONS_DB_USER=${USER_SUGGESTIONS_DB_USER}
+        - USER_SUGGESTIONS_DB_PASS=${USER_SUGGESTIONS_DB_PASS}
+    depends_on:
+      - neo4j
+    networks:
+      - network
+
+
   api_gateway:
     image: api_gateway
     container_name: api_gateway
@@ -96,6 +115,8 @@ services:
       POST_SERVICE_PORT: ${POST_SERVICE_PORT}
       JOB_SERVICE_HOST: ${JOB_SERVICE_HOST}
       JOB_SERVICE_PORT: ${JOB_SERVICE_PORT}
+      USER_SUGGESTIONS_SERVICE_HOST: ${USER_SUGGESTIONS_SERVICE_HOST}
+      USER_SUGGESTIONS_SERVICE_PORT: ${USER_SUGGESTIONS_SERVICE_PORT}
     networks:
       - network
 
@@ -133,6 +154,18 @@ services:
     restart: on-failure
     networks:
       - network
+
+  neo4j:
+    image: neo4j:4.3.3-community
+    container_name: neo4j
+    ports:
+      - "27474:7474"
+      - "27687:7687"
+    networks:
+      - network
+    environment:
+      - NEO4J_AUTH=none
+      - NEO4J_dbms_memory_pagecache_size=512M
 
 networks:
   network:
