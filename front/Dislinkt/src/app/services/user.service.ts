@@ -24,7 +24,7 @@ export class UserService {
 
   constructor(private http: HttpClient) {
     this.loginUrl = 'http://localhost:8000/user/login';
-    this.registerUrl = 'http://localhost:8000/user';
+    this.registerUrl = 'http://localhost:8000/user/register';
     this.getAllUrl = 'http://localhost:8000/user/users';
     this.editBasicUrl = 'http://localhost:8000/user/info/basic';
     this.editAdvancedUrl = 'http://localhost:8000/user/info/advanced';

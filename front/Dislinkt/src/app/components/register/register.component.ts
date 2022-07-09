@@ -60,7 +60,7 @@ export class RegisterComponent implements OnInit {
           this.usernameExists = true;
         }
         else {
-          this.router.navigate(['/']);
+          this.router.navigate(['/profile']);
         } 
       },
       (error: HttpErrorResponse) => {
