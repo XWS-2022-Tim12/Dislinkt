@@ -1,4 +1,10 @@
 <div class="container">
+    <div *ngIf="blockedNotifications">
+        <button (click)="blockNotifications(user.username)">Turn on message notifications</button>
+    </div>
+    <div *ngIf="!blockedNotifications">
+        <button (click)="blockNotifications(user.username)">Turn off message notifications</button>
+    </div>
     <div class="row">
         <div class="col-6 offset-3" style="border-style: solid; margin-top: 3%; border-width: 2px; height: 480px; overflow-y: scroll;">
             <div *ngFor="let message of messages">

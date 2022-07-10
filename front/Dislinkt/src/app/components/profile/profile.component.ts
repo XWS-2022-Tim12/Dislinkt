@@ -38,9 +38,13 @@ export class ProfileComponent implements OnInit {
             let notifications = nots['notifications'];
             for (let not of notifications) {
               if (this.user.notificationOffUsers.includes(not.sender)) {
-                continue;
+                if (not.notificationType != 'message') {
+                  continue;
+                }
               } else if (this.user.notificationOffMessages.includes(not.sender)) {
-                continue;
+                if (not.notificationType == 'message') {
+                  continue;
+                }
               } 
               if (!not.isRead) {
                 alert(not.creationDate + ': ' + not.description);
