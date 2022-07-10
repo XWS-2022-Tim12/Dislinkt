@@ -16,13 +16,14 @@
                                 </tr>
                             </thead>
                             <tbody *ngFor="let user of allUsers;let indexOfelement=index;">
-                                <tr>
+                                <tr *ngIf="user.username !== loggedUser.username">
                                     <td scope="col">{{user.username}}</td>
                                     <td scope="col">{{user.firstname}}</td>
                                     <td scope="col">{{user.public}}</td>
                                     <td scope="col">{{isUserFollowing(user.username)}}</td>
                                     <td scope="col">{{isUserBlocked(user.username)}}</td>
-                                    <td> <button class="btn btn-danger" *ngIf="isUserBlocked(user.username) === false" (click)="blockUser(user.username)"> Block </button> </td>
+                                    <td> <button class="btn btn-danger" *ngIf="isUserBlocked(user.username) === false" (click)="blockUser(user.username)"> Block </button> 
+                                     <button class="btn btn-warning" *ngIf="isUserBlocked(user.username) === true" (click)="unblockUser(user.username)"> Unblock </button> </td>
                                 </tr>
                             </tbody>
                         </table>

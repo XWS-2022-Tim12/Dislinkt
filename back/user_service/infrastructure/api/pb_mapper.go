@@ -153,6 +153,7 @@ func mapAllInfoUser(userPb *pb.User) *domain.User {
 			FollowedByUsers: userPb.FollowedByUsers,
 			Password:        userPb.Password,
 			Public:          userPb.Public,
+			BlockedUsers:    userPb.BlockedUsers,
 		}
 		return user
 	} else {
@@ -171,6 +172,7 @@ func mapAllInfoUser(userPb *pb.User) *domain.User {
 			Interests:    userPb.Interests,
 			Password:     userPb.Password,
 			Public:       userPb.Public,
+			BlockedUsers: userPb.BlockedUsers,
 		}
 		return user
 	}

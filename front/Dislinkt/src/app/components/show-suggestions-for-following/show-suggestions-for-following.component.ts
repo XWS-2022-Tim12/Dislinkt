@@ -17,6 +17,7 @@ export class ShowSuggestionsForFollowingComponent implements OnInit {
   ngOnInit(): void {
     this.userService.getSuggestions().subscribe(ret => {
       this.suggestedUsers = ret;
+      this.checkUsers()
     })
     this.userService.getUserByUsername(sessionStorage.getItem("username")).subscribe(user => {
       this.loggedUser = Object.values(user)[0];
@@ -41,6 +42,19 @@ export class ShowSuggestionsForFollowingComponent implements OnInit {
       })
   }
 
+  checkUsers() {
+    for(let suggest of this.suggestedUsers) {
+      for(let user of this.loggedUser.blockedUsers) {
+        if(suggest.username === user) {
+          this.suggestedUsers.splice(this.suggestedUsers.indexOf(suggest), 1)
+        }
+      }
+      if(suggest.username === this.loggedUser.username) {
+        this.suggestedUsers.splice(this.suggestedUsers.indexOf(suggest), 1)
+      }
+    }
+  }
+
   isUserFollowing(username: string): Boolean {
     for(let user of this.loggedUser.followingUsers) {
       if(user === username) {
@@ -49,11 +63,9 @@ export class ShowSuggestionsForFollowingComponent implements OnInit {
             this.suggestedUsers.splice(this.suggestedUsers.indexOf(suggestedUser), 1)
           }
         }
-
         return true
       }
     }
-
     return false
   }
 }

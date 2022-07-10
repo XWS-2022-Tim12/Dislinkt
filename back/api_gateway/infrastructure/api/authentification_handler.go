@@ -218,6 +218,7 @@ func (handler *AuthentificationHandler) AllInfo(w http.ResponseWriter, r *http.R
 		FollowedByUsers: usr.FollowedByUsers,
 		Password:        usr.Password,
 		Public:          usr.Public,
+		BlockedUsers:    usr.BlockedUsers,
 	}
 
 	userResponse, err := userClient.UpdateAllInfo(context.TODO(), &user.UpdateAllInfoRequest{User: userToSend})

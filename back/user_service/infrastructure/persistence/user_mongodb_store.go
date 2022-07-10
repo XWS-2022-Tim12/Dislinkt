@@ -192,6 +192,7 @@ func (store *UserMongoDBStore) UpdateAllInfo(user *domain.User) (string, error) 
 	userInDatabase.Interests = user.Interests
 	userInDatabase.FollowedByUsers = user.FollowedByUsers
 	userInDatabase.Public = user.Public
+	userInDatabase.BlockedUsers = user.BlockedUsers
 	filter := bson.M{"_id": userInDatabase.Id}
 	update := bson.M{
 		"$set": userInDatabase,

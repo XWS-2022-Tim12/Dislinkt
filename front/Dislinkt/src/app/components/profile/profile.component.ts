@@ -18,13 +18,14 @@ export class ProfileComponent implements OnInit {
   profileForm:any;
   date: string;
   searchText: string;
+  users: any;
   constructor(private userService: UserService, public router: Router) {
    }
 
   ngOnInit(): void {
     this.userService.getAll().subscribe(ret => {
-      let users = Object.values(ret)[0]
-      for (let u of users){
+      this.users = Object.values(ret)[0]
+      for (let u of this.users){
         if(u.username == sessionStorage.getItem("username")){
           this.user = u;
           this.user.password = "";
@@ -53,6 +54,16 @@ export class ProfileComponent implements OnInit {
   }
 
   searchUser() {
+    for(let user of this.users) {
+      if(user.username === this.searchText){
+        for(let block of user.blockedUsers) {
+          if(block === this.user.username) {
+            alert('Unknown user!')
+            return;
+          }
+        }
+      }
+    }
     for(let user of this.user.blockedUsers) {
       if(user === this.searchText){
         alert('This user is blocked!')
