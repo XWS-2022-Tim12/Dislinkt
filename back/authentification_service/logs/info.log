@@ -1,0 +1,3 @@
+INFO: 2022/07/10 21:04:32 session_grpc_api.go:105: Action: 2, Message: Session added successfully!
+INFO: 2022/07/10 21:09:41 session_grpc_api.go:105: Action: 2, Message: Session added successfully!
+INFO: 2022/07/10 21:10:43 session_grpc_api.go:105: Action: 2, Message: Session added successfully!

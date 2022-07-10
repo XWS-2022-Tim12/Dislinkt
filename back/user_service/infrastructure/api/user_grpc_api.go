@@ -2,10 +2,20 @@ package api
 
 import (
 	"context"
+	"log"
+	"os"
 
+	"github.com/XWS-2022-Tim12/Dislinkt/back/user_service/tracer"
 	pb "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_service"
 	"github.com/XWS-2022-Tim12/Dislinkt/back/user_service/application"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	otgo "github.com/opentracing/opentracing-go"
+)
+
+var (
+    InfoLogger  *log.Logger
+	ErrorLogger *log.Logger
+    trace       otgo.Tracer
 )
 
 type UserHandler struct {
@@ -20,6 +30,22 @@ func NewUserHandler(service *application.UserService) *UserHandler {
 	return uh
 }
 
+func init() {
+    trace, _ = tracer.Init("user-service")
+    otgo.SetGlobalTracer(trace)
+    infoFile, err := os.OpenFile("info.log", os.O_APPEND|os.O_WRONLY, 0666)
+    if err != nil {
+        log.Fatal(err)
+    }
+    InfoLogger = log.New(infoFile, "INFO: ", log.LstdFlags|log.Lshortfile)
+
+    errFile, err1 := os.OpenFile("error.log", os.O_APPEND|os.O_WRONLY, 0666)
+    if err1 != nil {
+        log.Fatal(err1)
+    }
+    ErrorLogger = log.New(errFile, "ERROR: ", log.LstdFlags|log.Lshortfile)
+}
+
 func (handler *UserHandler) Get(ctx context.Context, request *pb.GetRequest) (*pb.GetResponse, error) {
 	id := request.Id
 	objectId, err := primitive.ObjectIDFromHex(id)
@@ -28,8 +54,10 @@ func (handler *UserHandler) Get(ctx context.Context, request *pb.GetRequest) (*p
 	}
 	user, err := handler.service.Get(objectId)
 	if err != nil {
+		ErrorLogger.Println("Action: 23, Message: Can not retrieve user!")
 		return nil, err
 	}
+	InfoLogger.Println("Action: 24, Message: User retrieved successfully!")
 	userPb := mapUser(user)
 	response := &pb.GetResponse{
 		User: userPb,
@@ -132,6 +160,11 @@ func (handler *UserHandler) GetFollowingNotBlockedUsers(ctx context.Context, req
 func (handler *UserHandler) Register(ctx context.Context, request *pb.RegisterRequest) (*pb.RegisterResponse, error) {
 	user := mapNewUser(request.User)
 	successs, err := handler.service.Register(user)
+	if err != nil {
+		ErrorLogger.Println("Action: 25, Message: Can not register user!")
+		return nil, err
+	}
+	InfoLogger.Println("Action: 26, Message: User registered successfully!")
 	response := &pb.RegisterResponse{
 		Success: successs,
 	}
@@ -141,6 +174,11 @@ func (handler *UserHandler) Register(ctx context.Context, request *pb.RegisterRe
 func (handler *UserHandler) UpdateBasicInfo(ctx context.Context, request *pb.UpdateBasicInfoRequest) (*pb.UpdateBasicInfoResponse, error) {
 	user := mapBasicInfoUser(request.User)
 	successs, err := handler.service.UpdateBasicInfo(user)
+	if err != nil {
+		ErrorLogger.Println("Action: 27, Message: Can not update user basic info!")
+		return nil, err
+	}
+	InfoLogger.Println("Action: 28, Message: User basic info updated successfully!")
 	response := &pb.UpdateBasicInfoResponse{
 		Success: successs,
 	}
@@ -150,6 +188,11 @@ func (handler *UserHandler) UpdateBasicInfo(ctx context.Context, request *pb.Upd
 func (handler *UserHandler) UpdateAdvancedInfo(ctx context.Context, request *pb.UpdateAdvancedInfoRequest) (*pb.UpdateAdvancedInfoResponse, error) {
 	user := mapAdvancedInfoUser(request.User)
 	successs, err := handler.service.UpdateAdvancedInfo(user)
+	if err != nil {
+		ErrorLogger.Println("Action: 29, Message: Can not update user advanced info!")
+		return nil, err
+	}
+	InfoLogger.Println("Action: 30, Message: User advanced info updated successfully!")
 	response := &pb.UpdateAdvancedInfoResponse{
 		Success: successs,
 	}
@@ -159,6 +202,11 @@ func (handler *UserHandler) UpdateAdvancedInfo(ctx context.Context, request *pb.
 func (handler *UserHandler) UpdatePersonalInfo(ctx context.Context, request *pb.UpdatePersonalInfoRequest) (*pb.UpdatePersonalInfoResponse, error) {
 	user := mapPersonalInfoUser(request.User)
 	successs, err := handler.service.UpdatePersonalInfo(user)
+	if err != nil {
+		ErrorLogger.Println("Action: 31, Message: Can not update user personal info!")
+		return nil, err
+	}
+	InfoLogger.Println("Action: 32, Message: User personal info updated successfully!")
 	response := &pb.UpdatePersonalInfoResponse{
 		Success: successs,
 	}
@@ -168,6 +216,11 @@ func (handler *UserHandler) UpdatePersonalInfo(ctx context.Context, request *pb.
 func (handler *UserHandler) UpdateAllInfo(ctx context.Context, request *pb.UpdateAllInfoRequest) (*pb.UpdateAllInfoResponse, error) {
 	user := mapAllInfoUser(request.User)
 	successs, err := handler.service.UpdateAllInfo(user)
+	if err != nil {
+		ErrorLogger.Println("Action: 33, Message: Can not update user info!")
+		return nil, err
+	}
+	InfoLogger.Println("Action: 34, Message: User info updated successfully!")
 	response := &pb.UpdateAllInfoResponse{
 		Success: successs,
 	}
@@ -177,6 +230,11 @@ func (handler *UserHandler) UpdateAllInfo(ctx context.Context, request *pb.Updat
 func (handler *UserHandler) FollowPublicProfile(ctx context.Context, request *pb.FollowPublicProfileRequest) (*pb.FollowPublicProfileResponse, error) {
 	user := mapUserToFollow(request.User)
 	successs, err := handler.service.FollowPublicProfile(user)
+	if err != nil {
+		ErrorLogger.Println("Action: 35, Message: Can not follow public user!")
+		return nil, err
+	}
+	InfoLogger.Println("Action: 36, Message: Public user followed successfully!")
 	response := &pb.FollowPublicProfileResponse{
 		Success: successs,
 	}
@@ -186,6 +244,11 @@ func (handler *UserHandler) FollowPublicProfile(ctx context.Context, request *pb
 func (handler *UserHandler) AcceptFollowingRequest(ctx context.Context, request *pb.AcceptFollowingRequestRequest) (*pb.AcceptFollowingRequestResponse, error) {
 	user := mapUserToFollow(request.User)
 	successs, err := handler.service.AcceptFollowingRequest(user)
+	if err != nil {
+		ErrorLogger.Println("Action: 37, Message: Can not accept following request!")
+		return nil, err
+	}
+	InfoLogger.Println("Action: 38, Message: Following request accepted successfully!")
 	response := &pb.AcceptFollowingRequestResponse{
 		Success: successs,
 	}
@@ -195,6 +258,11 @@ func (handler *UserHandler) AcceptFollowingRequest(ctx context.Context, request 
 func (handler *UserHandler) RejectFollowingRequest(ctx context.Context, request *pb.RejectFollowingRequestRequest) (*pb.RejectFollowingRequestResponse, error) {
 	user := mapUserToFollow(request.User)
 	successs, err := handler.service.RejectFollowingRequest(user)
+	if err != nil {
+		ErrorLogger.Println("Action: 39, Message: Can not reject following request!")
+		return nil, err
+	}
+	InfoLogger.Println("Action: 40, Message: Following request rejected successfully!")
 	response := &pb.RejectFollowingRequestResponse{
 		Success: successs,
 	}
@@ -204,6 +272,11 @@ func (handler *UserHandler) RejectFollowingRequest(ctx context.Context, request 
 func (handler *UserHandler) BlockUser(ctx context.Context, request *pb.BlockUserRequest) (*pb.BlockUserResponse, error) {
 	user := mapUserToBlock(request.User)
 	successs, err := handler.service.BlockUser(user)
+	if err != nil {
+		ErrorLogger.Println("Action: 41, Message: Can not block user!")
+		return nil, err
+	}
+	InfoLogger.Println("Action: 42, Message: User blocked successfully!")
 	response := &pb.BlockUserResponse{
 		Success: successs,
 	}
