@@ -5,6 +5,7 @@ import (
 
 	authentification "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
 	job "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/job_service"
+	jobSuggestions "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/job_suggestions_service"
 	post "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/post_service"
 	user "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_service"
 	userSuggestions "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_suggestions_service"
@@ -42,6 +43,14 @@ func NewJobClient(address string) job.JobServiceClient {
 		log.Fatalf("Failed to start gRPC connection to Job service: %v", err)
 	}
 	return job.NewJobServiceClient(conn)
+}
+
+func NewJobSuggestionsClient(address string) jobSuggestions.JobSuggestionsServiceClient {
+	conn, err := getConnection(address)
+	if err != nil {
+		log.Fatalf("Failed to start gRPC connection to Post service: %v", err)
+	}
+	return jobSuggestions.NewJobSuggestionsServiceClient(conn)
 }
 
 func NewUserSuggestionsClient(address string) userSuggestions.UserSuggestionsServiceClient {

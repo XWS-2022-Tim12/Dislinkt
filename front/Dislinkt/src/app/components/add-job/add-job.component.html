@@ -1,0 +1,20 @@
+<div>
+    <form id="newJobForm" name="newJobForm" (ngSubmit)="newJob()" ngNativeValidate>
+        <div>
+            <label>Requirements:</label>
+            <input [(ngModel)]="job.requirements" type="text" id="requirements" name="requirements" placeholder="Requirements..." required/>
+        </div>
+        
+        <div>
+            <label>Position:</label>
+            <input [(ngModel)]="job.position" type="text" id="position" name="position" placeholder="Position..." required/> 
+        </div>
+        
+        <div>
+            <label>Description:</label>
+            <input [(ngModel)]="job.description" type="text" id="description" name="description" placeholder="Description..." required/>
+        </div>
+
+        <button type="submit">Confirm</button>
+    </form>
+</div>

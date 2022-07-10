@@ -19,6 +19,8 @@ import { NewPostComponent } from './components/new-post/new-post.component';
 import { LinkyModule } from 'ngx-linky';
 import { ShowUsersComponent } from './components/show-users/show-users.component';
 import { ShowSuggestionsForFollowingComponent } from './components/show-suggestions-for-following/show-suggestions-for-following.component';
+import { AddJobComponent } from './components/add-job/add-job.component';
+import { ShowJobsComponent } from './components/show-jobs/show-jobs.component';
 
 
 @NgModule({
@@ -32,7 +34,9 @@ import { ShowSuggestionsForFollowingComponent } from './components/show-suggesti
     FollowingRequestsComponent,
     NewPostComponent,
     ShowUsersComponent,
-    ShowSuggestionsForFollowingComponent
+    ShowSuggestionsForFollowingComponent,
+    AddJobComponent,
+    ShowJobsComponent
   ],
   imports: [
     BrowserModule,

@@ -95,6 +95,24 @@ services:
     networks:
       - network
 
+  job_suggestions_service:
+    image: job_suggestions_service
+    container_name: job_suggestions_service
+    build:
+      context: .
+      dockerfile: ./job_suggestions_service/Dockerfile
+    restart: on-failure
+    environment:
+        - JOB_SUGGESTIONS_DB_HOST=${JOB_SUGGESTIONS_DB_HOST}
+        - JOB_SUGGESTIONS_DB_PORT=${JOB_SUGGESTIONS_DB_PORT}
+        - JOB_SUGGESTIONS_SERVICE_PORT=${JOB_SUGGESTIONS_SERVICE_PORT}
+        - JOB_SUGGESTIONS_DB_USER=${JOB_SUGGESTIONS_DB_USER}
+        - JOB_SUGGESTIONS_DB_PASS=${JOB_SUGGESTIONS_DB_PASS}
+    depends_on:
+      - neo4ja
+    networks:
+      - network
+
 
   api_gateway:
     image: api_gateway
@@ -117,6 +135,8 @@ services:
       JOB_SERVICE_PORT: ${JOB_SERVICE_PORT}
       USER_SUGGESTIONS_SERVICE_HOST: ${USER_SUGGESTIONS_SERVICE_HOST}
       USER_SUGGESTIONS_SERVICE_PORT: ${USER_SUGGESTIONS_SERVICE_PORT}
+      JOB_SUGGESTIONS_SERVICE_HOST: ${JOB_SUGGESTIONS_SERVICE_HOST}
+      JOB_SUGGESTIONS_SERVICE_PORT: ${JOB_SUGGESTIONS_SERVICE_PORT}
     networks:
       - network
 
@@ -161,6 +181,18 @@ services:
     ports:
       - "27474:7474"
       - "27687:7687"
+    networks:
+      - network
+    environment:
+      - NEO4J_AUTH=none
+      - NEO4J_dbms_memory_pagecache_size=512M
+
+  neo4ja:
+    image: neo4j:4.3.3-community
+    container_name: neo4ja
+    ports:
+      - "7474:7474"
+      - "7687:7687"
     networks:
       - network
     environment:

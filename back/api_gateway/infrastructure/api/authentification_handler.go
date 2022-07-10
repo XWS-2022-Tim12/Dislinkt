@@ -12,6 +12,7 @@ import (
 	authentification "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
 	pb "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
 	job "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/job_service"
+	jobSuggestions "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/job_suggestions_service"
 	post "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/post_service"
 	user "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_service"
 	userSuggestion "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_suggestions_service"
@@ -24,15 +25,17 @@ type AuthentificationHandler struct {
 	userClientAddress             string
 	postClientAdress              string
 	jobClientAdress               string
+	jobSuggestionsClientAdress    string
 	userSuggestionClientAddress   string
 }
 
-func NewAuthentificationHandler(authentificationClientAddress, userClientAddress, postClientAdress, jobClientAdress string, userSuggestionClientAddress string) Handler {
+func NewAuthentificationHandler(authentificationClientAddress, userClientAddress, postClientAdress, jobClientAdress, userSuggestionClientAddress, jobSuggestionsClientAdress string) Handler {
 	return &AuthentificationHandler{
 		authentificationClientAddress: authentificationClientAddress,
 		userClientAddress:             userClientAddress,
 		postClientAdress:              postClientAdress,
 		jobClientAdress:               jobClientAdress,
+		jobSuggestionsClientAdress:    jobSuggestionsClientAdress,
 		userSuggestionClientAddress:   userSuggestionClientAddress,
 	}
 }
@@ -87,6 +90,14 @@ func (handler *AuthentificationHandler) Init(mux *runtime.ServeMux) {
 		panic(err)
 	}
 	err = mux.HandlePath("POST", "/job", handler.AddNewJob)
+	if err != nil {
+		panic(err)
+	}
+	err = mux.HandlePath("POST", "/user/jobDislinkt", handler.AddNewJobFromDislinkt)
+	if err != nil {
+		panic(err)
+	}
+	err = mux.HandlePath("GET", "/user/jobDislinktSearch", handler.SearchJobFromDislinkt)
 	if err != nil {
 		panic(err)
 	}
@@ -490,6 +501,23 @@ func mapEducation(status string) user.User_EducationEnum {
 
 }
 
+func mapEducationInverse(status user.User_EducationEnum) string {
+	switch status {
+	case user.User_PrimaryEducation:
+		return "Primary education"
+	case user.User_LowerSecondaryEducation:
+		return "Lower secondary education"
+	case user.User_UpperSecondaryEducation:
+		return "Upper secondary education"
+	case user.User_Bachelor:
+		return "Bachelor"
+	case user.User_Master:
+		return "Master"
+	}
+	return "Doctorate"
+
+}
+
 func mapGender(status string) user.User_GenderEnum {
 	switch status {
 	case "Male":
@@ -684,6 +712,91 @@ func (handler *AuthentificationHandler) AddNewPost(w http.ResponseWriter, r *htt
 	postResponse, err := postClient.AddNewPost(context.TODO(), &post.AddNewPostRequest{Post: postToSend})
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(postResponse.Success))
+	return
+}
+
+func (handler *AuthentificationHandler) AddNewJobFromDislinkt(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	reqJob := &domain.Job{}
+	errr := json.NewDecoder(r.Body).Decode(&reqJob)
+	if errr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	tokenCookie, err := r.Cookie("sessionId")
+	if err != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+	_, err = handler.IsUserLoggedIn(tokenCookie.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	jobClient := services.NewJobClient(handler.jobClientAdress)
+	jobSuggestionsClient := services.NewJobSuggestionsClient(handler.jobSuggestionsClientAdress)
+
+	jobToSend := &job.Job{
+		Id:                 reqJob.Id,
+		UserId:             reqJob.UserId,
+		Position:           reqJob.Position,
+		Description:        reqJob.Description,
+		Requirements:       reqJob.Requirements,
+		Comments:           reqJob.Comments,
+		JuniorSalary:       reqJob.JuniorSalary,
+		MediorSalary:       reqJob.MediorSalary,
+		HrInterviews:       reqJob.HrInterviews,
+		TehnicalInterviews: reqJob.TehnicalInterviews,
+	}
+	jobToSendSugg := &jobSuggestions.Job{
+		Id:           reqJob.Id,
+		UserId:       reqJob.UserId,
+		Position:     reqJob.Position,
+		Description:  reqJob.Description,
+		Requirements: reqJob.Requirements,
+	}
+	jobResponse, err := jobClient.Add(context.TODO(), &job.AddRequest{Job: jobToSend})
+	_, err = jobSuggestionsClient.Register(context.TODO(), &jobSuggestions.RegisterRequest{Job: jobToSendSugg})
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(jobResponse.Success))
+	return
+}
+
+func (handler *AuthentificationHandler) SearchJobFromDislinkt(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	tokenCookie, err := r.Cookie("sessionId")
+	if err != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+	_, err = handler.IsUserLoggedIn(tokenCookie.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	authentificationClient := services.NewAuthentificationClient(handler.authentificationClientAddress)
+	success, err := authentificationClient.Get(context.TODO(), &authentification.GetRequest{Id: tokenCookie.Value})
+	userId := success.Session.UserId
+	userClient := services.NewUserClient(handler.userClientAddress)
+	user, err := userClient.Get(context.TODO(), &user.GetRequest{Id: userId})
+	jobSuggestionsClient := services.NewJobSuggestionsClient(handler.jobSuggestionsClientAdress)
+	jobs, err := jobSuggestionsClient.GetAll(context.TODO(), &jobSuggestions.GetAllRequest{})
+	newJobs := make([]*jobSuggestions.Job, 0)
+	for _, jobInDatabase := range jobs.Jobs {
+		if jobInDatabase.UserId != userId {
+			if strings.Contains(strings.ToLower(mapEducationInverse(user.User.Education)), strings.ToLower(jobInDatabase.Description)) || strings.Contains(strings.ToLower(mapEducationInverse(user.User.Education)), strings.ToLower(jobInDatabase.Requirements)) || strings.Contains(strings.ToLower(mapEducationInverse(user.User.Education)), strings.ToLower(jobInDatabase.Position)) {
+				newJobs = append(newJobs, jobInDatabase)
+			} else if strings.Contains(strings.ToLower(user.User.Experience), strings.ToLower(jobInDatabase.Description)) || strings.Contains(strings.ToLower(user.User.Experience), strings.ToLower(jobInDatabase.Requirements)) || strings.Contains(strings.ToLower(user.User.Experience), strings.ToLower(jobInDatabase.Position)) {
+				newJobs = append(newJobs, jobInDatabase)
+			} else if strings.Contains(strings.ToLower(user.User.Skills), strings.ToLower(jobInDatabase.Description)) || strings.Contains(strings.ToLower(user.User.Skills), strings.ToLower(jobInDatabase.Requirements)) || strings.Contains(strings.ToLower(user.User.Skills), strings.ToLower(jobInDatabase.Position)) {
+				newJobs = append(newJobs, jobInDatabase)
+			} else if strings.Contains(strings.ToLower(user.User.Interests), strings.ToLower(jobInDatabase.Description)) || strings.Contains(strings.ToLower(user.User.Interests), strings.ToLower(jobInDatabase.Requirements)) || strings.Contains(strings.ToLower(user.User.Interests), strings.ToLower(jobInDatabase.Position)) {
+				newJobs = append(newJobs, jobInDatabase)
+			}
+		}
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(newJobs)
 	return
 }
 

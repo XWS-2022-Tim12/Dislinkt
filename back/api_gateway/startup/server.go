@@ -10,6 +10,7 @@ import (
 	cfg "github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/startup/config"
 	authentificationGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
 	jobGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/job_service"
+	jobSuggestionsGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/job_suggestions_service"
 	postGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/post_service"
 	userGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_service"
 	userSuggestionsGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_suggestions_service"
@@ -59,9 +60,14 @@ func (server *Server) initHandlers() {
 	if err != nil {
 		panic(err)
 	}
-
+	jobSuggestionsEndpoint := fmt.Sprintf("%s:%s", server.config.JobSuggestionsHost, server.config.JobSuggestionsPort)
+	err = jobSuggestionsGw.RegisterJobSuggestionsServiceHandlerFromEndpoint(context.TODO(), server.mux, jobSuggestionsEndpoint, opts)
+	if err != nil {
+		panic(err)
+	}
 	userSuggestionsEndpoint := fmt.Sprintf("%s:%s", server.config.UserSuggestionsHost, server.config.UserSuggestionsPort)
 	err = userSuggestionsGw.RegisterUserSuggestionsServiceHandlerFromEndpoint(context.TODO(), server.mux, userSuggestionsEndpoint, opts)
+
 	if err != nil {
 		panic(err)
 	}
@@ -72,8 +78,9 @@ func (server *Server) initCustomHandlers() {
 	postEndpoint := fmt.Sprintf("%s:%s", server.config.PostHost, server.config.PostPort)
 	authentificationEndpoint := fmt.Sprintf("%s:%s", server.config.AuthentificationHost, server.config.AuthentificationPort)
 	jobEndpoint := fmt.Sprintf("%s:%s", server.config.JobHost, server.config.JobPort)
+	jobSuggestionsEndpoint := fmt.Sprintf("%s:%s", server.config.JobSuggestionsHost, server.config.JobSuggestionsPort)
 	userSuggestionsEndpoint := fmt.Sprintf("%s:%s", server.config.UserSuggestionsHost, server.config.UserSuggestionsPort)
-	authentificationHandler := api.NewAuthentificationHandler(authentificationEndpoint, userEndpoint, postEndpoint, jobEndpoint, userSuggestionsEndpoint)
+	authentificationHandler := api.NewAuthentificationHandler(authentificationEndpoint, userEndpoint, postEndpoint, jobEndpoint, userSuggestionsEndpoint, jobSuggestionsEndpoint)
 	authentificationHandler.Init(server.mux)
 }
 
