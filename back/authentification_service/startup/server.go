@@ -2,6 +2,7 @@ package startup
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"net"
 
@@ -10,15 +11,21 @@ import (
 	"github.com/XWS-2022-Tim12/Dislinkt/back/authentification_service/infrastructure/api"
 	"github.com/XWS-2022-Tim12/Dislinkt/back/authentification_service/infrastructure/persistence"
 	"github.com/XWS-2022-Tim12/Dislinkt/back/authentification_service/startup/config"
+	"github.com/XWS-2022-Tim12/Dislinkt/back/authentification_service/tracer"
 	session "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
 	saga "github.com/XWS-2022-Tim12/Dislinkt/back/common/saga/messaging"
 	"github.com/XWS-2022-Tim12/Dislinkt/back/common/saga/messaging/nats"
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_opentracing "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
+	otgo "github.com/opentracing/opentracing-go"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
 )
 
 type Server struct {
 	config *config.Config
+	tracer otgo.Tracer
+	closer io.Closer
 }
 
 const (
@@ -26,8 +33,12 @@ const (
 )
 
 func NewServer(config *config.Config) *Server {
+	tracer, closer := tracer.Init("authentication-service")
+	otgo.SetGlobalTracer(tracer)
 	return &Server{
 		config: config,
+		tracer: tracer,
+		closer: closer,
 	}
 }
 
@@ -81,7 +92,13 @@ func (server *Server) startGrpcServer(sessionHandler *api.SessionHandler) {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(
+		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
+			grpc_opentracing.UnaryServerInterceptor(
+				grpc_opentracing.WithTracer(otgo.GlobalTracer()),
+			),
+		)),
+	)
 	session.RegisterAuthentificationServiceServer(grpcServer, sessionHandler)
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %s", err)

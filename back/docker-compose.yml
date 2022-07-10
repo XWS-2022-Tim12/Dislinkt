@@ -12,6 +12,12 @@ services:
       USER_DB_HOST: ${USER_DB_HOST}
       USER_DB_PORT: ${USER_DB_PORT}
       USER_SERVICE_PORT: ${USER_SERVICE_PORT}
+      JAEGER_SERVICE_NAME: user-service
+      JAEGER_AGENT_HOST: jaeger
+      JAEGER_AGENT_PORT: 6831
+      JAEGER_SAMPLER_MANAGER_HOST_PORT: jaeger:5778
+      JAEGER_SAMPLER_TYPE: const
+      JAEGER_SAMPLER_PARAM: 1
       NATS_HOST: ${NATS_HOST}
       NATS_PORT: ${NATS_PORT}
       NATS_USER: ${NATS_USER}
@@ -20,8 +26,10 @@ services:
       REGISTER_USER_REPLY_SUBJECT: ${REGISTER_USER_REPLY_SUBJECT}
     depends_on:
       - user_db
+      - jaeger
     networks:
       - network
+      - public
       
   post_service:
     image: post_service
@@ -34,10 +42,18 @@ services:
       POST_DB_HOST: ${POST_DB_HOST}
       POST_DB_PORT: ${POST_DB_PORT}
       POST_SERVICE_PORT: ${POST_SERVICE_PORT}
+      JAEGER_SERVICE_NAME: post-service
+      JAEGER_AGENT_HOST: jaeger
+      JAEGER_AGENT_PORT: 6831
+      JAEGER_SAMPLER_MANAGER_HOST_PORT: jaeger:5778
+      JAEGER_SAMPLER_TYPE: const
+      JAEGER_SAMPLER_PARAM: 1
     depends_on:
       - post_db
+      - jaeger
     networks:
       - network
+      - public
 
   job_service:
     image: job_service
@@ -50,10 +66,18 @@ services:
       JOB_DB_HOST: ${JOB_DB_HOST}
       JOB_DB_PORT: ${JOB_DB_PORT}
       JOB_SERVICE_PORT: ${JOB_SERVICE_PORT}
+      JAEGER_SERVICE_NAME: job-service
+      JAEGER_AGENT_HOST: jaeger
+      JAEGER_AGENT_PORT: 6831
+      JAEGER_SAMPLER_MANAGER_HOST_PORT: jaeger:5778
+      JAEGER_SAMPLER_TYPE: const
+      JAEGER_SAMPLER_PARAM: 1
     depends_on:
       - job_db
+      - jaeger
     networks:
       - network
+      - public
 
   authentification_service:
     image: authentification_service
@@ -66,6 +90,12 @@ services:
       AUTHENTIFICATION_DB_HOST: ${AUTHENTIFICATION_DB_HOST}
       AUTHENTIFICATION_DB_PORT: ${AUTHENTIFICATION_DB_PORT}
       AUTHENTIFICATION_SERVICE_PORT: ${AUTHENTIFICATION_SERVICE_PORT}
+      JAEGER_SERVICE_NAME: authentification-service
+      JAEGER_AGENT_HOST: jaeger
+      JAEGER_AGENT_PORT: 6831
+      JAEGER_SAMPLER_MANAGER_HOST_PORT: jaeger:5778
+      JAEGER_SAMPLER_TYPE: const
+      JAEGER_SAMPLER_PARAM: 1
       NATS_HOST: ${NATS_HOST}
       NATS_PORT: ${NATS_PORT}
       NATS_USER: ${NATS_USER}
@@ -74,8 +104,10 @@ services:
       REGISTER_USER_REPLY_SUBJECT: ${REGISTER_USER_REPLY_SUBJECT}
     depends_on:
       - authentification_db
+      - jaeger
     networks:
       - network
+      - public
 
   user_suggestions_service:
     image: user_suggestions_service
@@ -90,10 +122,18 @@ services:
         - USER_SUGGESTIONS_SERVICE_PORT=${USER_SUGGESTIONS_SERVICE_PORT}
         - USER_SUGGESTIONS_DB_USER=${USER_SUGGESTIONS_DB_USER}
         - USER_SUGGESTIONS_DB_PASS=${USER_SUGGESTIONS_DB_PASS}
+        - JAEGER_SERVICE_NAME= user-suggestions-service
+        - JAEGER_AGENT_HOST=${JAEGER_AGENT_HOST}
+        - JAEGER_AGENT_PORT=${JAEGER_AGENT_PORT}
+        - JAEGER_SAMPLER_MANAGER_HOST_PORT=${JAEGER_SAMPLER_MANAGER_HOST_PORT}
+        - JAEGER_SAMPLER_TYPE=${JAEGER_SAMPLER_TYPE}
+        - JAEGER_SAMPLER_PARAM=${JAEGER_SAMPLER_PARAM}
     depends_on:
       - neo4j
+      - jaeger
     networks:
       - network
+      - public
 
   job_suggestions_service:
     image: job_suggestions_service
@@ -108,10 +148,18 @@ services:
         - JOB_SUGGESTIONS_SERVICE_PORT=${JOB_SUGGESTIONS_SERVICE_PORT}
         - JOB_SUGGESTIONS_DB_USER=${JOB_SUGGESTIONS_DB_USER}
         - JOB_SUGGESTIONS_DB_PASS=${JOB_SUGGESTIONS_DB_PASS}
+        - JAEGER_SERVICE_NAME= job-suggestions-service
+        - JAEGER_AGENT_HOST=${JAEGER_AGENT_HOST}
+        - JAEGER_AGENT_PORT=${JAEGER_AGENT_PORT}
+        - JAEGER_SAMPLER_MANAGER_HOST_PORT=${JAEGER_SAMPLER_MANAGER_HOST_PORT}
+        - JAEGER_SAMPLER_TYPE=${JAEGER_SAMPLER_TYPE}
+        - JAEGER_SAMPLER_PARAM=${JAEGER_SAMPLER_PARAM}
     depends_on:
       - neo4ja
+      - jaeger
     networks:
       - network
+      - public
 
 
   api_gateway:
@@ -199,6 +247,17 @@ services:
       - NEO4J_AUTH=none
       - NEO4J_dbms_memory_pagecache_size=512M
 
+  jaeger:
+    image: jaegertracing/all-in-one
+    container_name: jaeger
+    ports:
+      - "6831:6831/udp"
+      - "16686:16686"
+    networks:
+      - public
+
 networks:
   network:
     driver: bridge
+  public:
+    name: public

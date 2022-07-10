@@ -2,6 +2,7 @@ package startup
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"net"
 
@@ -11,17 +12,27 @@ import (
 	"github.com/XWS-2022-Tim12/Dislinkt/back/job_suggestions_service/infrastructure/api"
 	"github.com/XWS-2022-Tim12/Dislinkt/back/job_suggestions_service/infrastructure/persistence"
 	"github.com/XWS-2022-Tim12/Dislinkt/back/job_suggestions_service/startup/config"
+	"github.com/XWS-2022-Tim12/Dislinkt/back/job_suggestions_service/tracer"
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_opentracing "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
+	otgo "github.com/opentracing/opentracing-go"
 	"google.golang.org/grpc"
 )
 
 type Server struct {
 	config *config.Config
+	tracer otgo.Tracer
+	closer io.Closer
 }
 
 func NewServer(config *config.Config) *Server {
+	tracer, closer := tracer.Init("job-suggestions-service")
+	otgo.SetGlobalTracer(tracer)
 	return &Server{
 		config: config,
+		tracer: tracer,
+		closer: closer,
 	}
 }
 
@@ -66,7 +77,13 @@ func (server *Server) startGrpcServer(jobSuggestionsHandler *api.JobSuggestionsH
 		log.Fatalf("Failed to listen: %v", err)
 	}
 
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(
+		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
+			grpc_opentracing.UnaryServerInterceptor(
+				grpc_opentracing.WithTracer(otgo.GlobalTracer()),
+			),
+		)),
+	)
 
 	job_suggestions_service.RegisterJobSuggestionsServiceServer(grpcServer, jobSuggestionsHandler)
 
