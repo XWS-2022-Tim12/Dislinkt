@@ -12,6 +12,8 @@ type Config struct {
 	PostPort             string
 	JobHost              string
 	JobPort              string
+	JobSuggestionsHost   string
+	JobSuggestionsPort   string
 }
 
 func NewConfig() *Config {
@@ -25,5 +27,7 @@ func NewConfig() *Config {
 		PostPort:             os.Getenv("POST_SERVICE_PORT"),
 		JobHost:              os.Getenv("JOB_SERVICE_HOST"),
 		JobPort:              os.Getenv("JOB_SERVICE_PORT"),
+		JobSuggestionsHost:   os.Getenv("JOB_SUGGESTIONS_SERVICE_HOST"),
+		JobSuggestionsPort:   os.Getenv("JOB_SUGGESTIONS_SERVICE_PORT"),
 	}
 }

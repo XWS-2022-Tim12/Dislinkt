@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+option go_package = "module/common/job_suggestions";
+
+package job_suggestions;
+
+import "google/api/annotations.proto";
+
+service JobSuggestionsService{
+  rpc Register(RegisterRequest) returns (RegisterResponse) {
+    option (google.api.http) = {
+      post: "/suggestions/job"
+      body: "job"
+    };
+  }
+
+  rpc GetAll(GetAllRequest) returns (GetAllResponse){
+    option (google.api.http) = {
+      get: "/suggestions/job"
+    };
+  }
+}
+
+message RegisterRequest {
+  Job job = 1;
+}
+
+message RegisterResponse{
+  int64 id = 1;
+}
+
+message GetAllRequest {
+
+}
+
+message GetAllResponse{
+  repeated Job jobs = 1;
+}
+
+message Job{
+  string Id = 1;
+  string position = 2;
+  string description = 3;
+  string requirements = 4;
+}
