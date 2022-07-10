@@ -39,7 +39,8 @@ message GetAllResponse{
 
 message Job{
   string Id = 1;
-  string position = 2;
-  string description = 3;
-  string requirements = 4;
+  string UserId = 2;
+  string position = 3;
+  string description = 4;
+  string requirements = 5;
 }

@@ -11,6 +11,7 @@ func mapJob(jobPb *domain.Job) *pb.Job {
 	x := int(jobPb.Id)
 	job := &pb.Job{
 		Id:           strconv.Itoa(x),
+		UserId:       jobPb.UserId,
 		Position:     jobPb.Position,
 		Description:  jobPb.Description,
 		Requirements: jobPb.Requirements,
@@ -20,6 +21,7 @@ func mapJob(jobPb *domain.Job) *pb.Job {
 
 func mapNewJob(jobPb *pb.Job) *domain.Job {
 	job := &domain.Job{
+		UserId:       jobPb.UserId,
 		Position:     jobPb.Position,
 		Description:  jobPb.Description,
 		Requirements: jobPb.Requirements,

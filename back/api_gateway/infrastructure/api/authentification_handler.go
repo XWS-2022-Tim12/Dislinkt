@@ -746,6 +746,7 @@ func (handler *AuthentificationHandler) AddNewJobFromDislinkt(w http.ResponseWri
 	}
 	jobToSendSugg := &jobSuggestions.Job{
 		Id:           reqJob.Id,
+		UserId:       reqJob.UserId,
 		Position:     reqJob.Position,
 		Description:  reqJob.Description,
 		Requirements: reqJob.Requirements,
@@ -777,14 +778,16 @@ func (handler *AuthentificationHandler) SearchJobFromDislinkt(w http.ResponseWri
 	jobs, err := jobSuggestionsClient.GetAll(context.TODO(), &jobSuggestions.GetAllRequest{})
 	newJobs := make([]*jobSuggestions.Job, 0)
 	for _, jobInDatabase := range jobs.Jobs {
-		if strings.Contains(strings.ToLower(mapEducationInverse(user.User.Education)), strings.ToLower(jobInDatabase.Description)) || strings.Contains(strings.ToLower(mapEducationInverse(user.User.Education)), strings.ToLower(jobInDatabase.Requirements)) || strings.Contains(strings.ToLower(mapEducationInverse(user.User.Education)), strings.ToLower(jobInDatabase.Position)) {
-			newJobs = append(newJobs, jobInDatabase)
-		} else if strings.Contains(strings.ToLower(user.User.Experience), strings.ToLower(jobInDatabase.Description)) || strings.Contains(strings.ToLower(user.User.Experience), strings.ToLower(jobInDatabase.Requirements)) || strings.Contains(strings.ToLower(user.User.Experience), strings.ToLower(jobInDatabase.Position)) {
-			newJobs = append(newJobs, jobInDatabase)
-		} else if strings.Contains(strings.ToLower(user.User.Skills), strings.ToLower(jobInDatabase.Description)) || strings.Contains(strings.ToLower(user.User.Skills), strings.ToLower(jobInDatabase.Requirements)) || strings.Contains(strings.ToLower(user.User.Skills), strings.ToLower(jobInDatabase.Position)) {
-			newJobs = append(newJobs, jobInDatabase)
-		} else if strings.Contains(strings.ToLower(user.User.Interests), strings.ToLower(jobInDatabase.Description)) || strings.Contains(strings.ToLower(user.User.Interests), strings.ToLower(jobInDatabase.Requirements)) || strings.Contains(strings.ToLower(user.User.Interests), strings.ToLower(jobInDatabase.Position)) {
-			newJobs = append(newJobs, jobInDatabase)
+		if jobInDatabase.UserId != userId {
+			if strings.Contains(strings.ToLower(mapEducationInverse(user.User.Education)), strings.ToLower(jobInDatabase.Description)) || strings.Contains(strings.ToLower(mapEducationInverse(user.User.Education)), strings.ToLower(jobInDatabase.Requirements)) || strings.Contains(strings.ToLower(mapEducationInverse(user.User.Education)), strings.ToLower(jobInDatabase.Position)) {
+				newJobs = append(newJobs, jobInDatabase)
+			} else if strings.Contains(strings.ToLower(user.User.Experience), strings.ToLower(jobInDatabase.Description)) || strings.Contains(strings.ToLower(user.User.Experience), strings.ToLower(jobInDatabase.Requirements)) || strings.Contains(strings.ToLower(user.User.Experience), strings.ToLower(jobInDatabase.Position)) {
+				newJobs = append(newJobs, jobInDatabase)
+			} else if strings.Contains(strings.ToLower(user.User.Skills), strings.ToLower(jobInDatabase.Description)) || strings.Contains(strings.ToLower(user.User.Skills), strings.ToLower(jobInDatabase.Requirements)) || strings.Contains(strings.ToLower(user.User.Skills), strings.ToLower(jobInDatabase.Position)) {
+				newJobs = append(newJobs, jobInDatabase)
+			} else if strings.Contains(strings.ToLower(user.User.Interests), strings.ToLower(jobInDatabase.Description)) || strings.Contains(strings.ToLower(user.User.Interests), strings.ToLower(jobInDatabase.Requirements)) || strings.Contains(strings.ToLower(user.User.Interests), strings.ToLower(jobInDatabase.Position)) {
+				newJobs = append(newJobs, jobInDatabase)
+			}
 		}
 	}
 	w.Header().Set("Content-Type", "application/json")

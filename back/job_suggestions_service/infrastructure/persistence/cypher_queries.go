@@ -9,9 +9,10 @@ func Register(session neo4j.Session, job *domain.Job) (int64, error) {
 	var jobId int64
 	session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 		var result, err = tx.Run(
-			"CREATE (job:JOB {position: $position, description: $description, requirements: $requirements})"+
-				"RETURN ID(job), job.position",
+			"CREATE (job:JOB {userId: $userId, position: $position, description: $description, requirements: $requirements})"+
+				"RETURN ID(job), job.userId",
 			map[string]interface{}{
+				"userId":       job.UserId,
 				"position":     job.Position,
 				"description":  job.Description,
 				"requirements": job.Requirements})
@@ -39,14 +40,15 @@ func DeleteAll(session neo4j.Session) {
 
 func GetAll(session neo4j.Session) (jobs []*domain.Job, err1 error) {
 	_, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
-		records, err := tx.Run("MATCH (job:JOB) RETURN ID(job), job.position, job.description, job.requirements", map[string]interface{}{})
+		records, err := tx.Run("MATCH (job:JOB) RETURN ID(job),job.userId, job.position, job.description, job.requirements", map[string]interface{}{})
 
 		for records.Next() {
 			job := domain.Job{
 				Id:           records.Record().Values[0].(int64),
-				Position:     records.Record().Values[1].(string),
-				Description:  records.Record().Values[2].(string),
-				Requirements: records.Record().Values[3].(string),
+				UserId:       records.Record().Values[1].(string),
+				Position:     records.Record().Values[2].(string),
+				Description:  records.Record().Values[3].(string),
+				Requirements: records.Record().Values[4].(string),
 			}
 			jobs = append(jobs, &job)
 		}
