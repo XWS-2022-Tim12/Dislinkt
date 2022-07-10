@@ -9,9 +9,9 @@ func Register(session neo4j.Session, user *domain.User) (int64, error) {
 	var userId int64
 	session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 		var result, err = tx.Run(
-			"CREATE (user:USER {Id: $Id, username: $username, firstName: $firstName, email: $email, interests: $interests})"+
-				"RETURN ID(user), username",
-			map[string]interface{}{"Id": user.Id,
+			"CREATE (user:USER {username: $username, firstName: $firstName, email: $email, interests: $interests})"+
+				"RETURN ID(user), user.username",
+			map[string]interface{}{
 				"username": user.Username, "firstName": user.FirstName,
 				"email": user.Email, "interests": user.Interests})
 
@@ -29,7 +29,7 @@ func Register(session neo4j.Session, user *domain.User) (int64, error) {
 
 func GetAll(session neo4j.Session) (users []*domain.User, err1 error) {
 	_, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
-		records, err := tx.Run("MATCH (user:USER) RETURN ID(user),user.Id, user.username, user.firstName, user.email, user.interests", map[string]interface{}{})
+		records, err := tx.Run("MATCH (user:USER) RETURN ID(user), user.username, user.firstName, user.email, user.interests", map[string]interface{}{})
 
 		for records.Next() {
 			user := domain.User{
