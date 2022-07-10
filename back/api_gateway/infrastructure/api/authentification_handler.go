@@ -1420,8 +1420,23 @@ func (handler *AuthentificationHandler) GetUsersInInbox(w http.ResponseWriter, r
 		users[i], users[j] = users[j], users[i]
 	}
 
-	var usersToSend []*domain.User
+	var usersWithoutBlocked []*domain.User
+	exist := false
 	for _, user := range users {
+		exist = false
+		for _, usr := range user.BlockedUsers {
+			if usr == username {
+				exist = true
+			}
+		}
+
+		if !exist {
+			usersWithoutBlocked = append(usersWithoutBlocked, user)
+		}
+	}
+
+	var usersToSend []*domain.User
+	for _, user := range usersWithoutBlocked {
 		usersToSend = append(usersToSend, user)
 	}
 
