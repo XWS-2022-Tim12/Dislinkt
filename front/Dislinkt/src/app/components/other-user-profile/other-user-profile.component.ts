@@ -6,6 +6,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Post } from 'src/app/model/post';
 import { PostService } from 'src/app/services/post.service';
 import { MessageService } from 'src/app/services/message.service';
+import { NotificationService } from 'src/app/services/notification.service';
+import { Notification } from 'src/app/model/notification';
 
 @Component({
   selector: 'app-other-user-profile',
@@ -25,7 +27,9 @@ export class OtherUserProfileComponent implements OnInit {
   followingRequest: boolean;
   inboxOpen: boolean = false;
 
-  constructor(private route: ActivatedRoute,  private postService: PostService, private userService: UserService, public sanitizer: DomSanitizer, public router: Router) { }
+  blockedNotifications: boolean;
+
+  constructor(private route: ActivatedRoute, private postService: PostService, private userService: UserService, private notificationService: NotificationService, public sanitizer: DomSanitizer, private router: Router) { }
 
   ngOnInit(): void {
     this.userService.getUserByUsername(sessionStorage.getItem("username")).subscribe(user => {
@@ -55,6 +59,7 @@ export class OtherUserProfileComponent implements OnInit {
             this.canFollow = false;
             this.following = false;
             this.followingRequest = false;
+            this.blockedNotifications = false;
             return
           }
           if (sessionStorage.getItem("username") != null) {
@@ -78,8 +83,14 @@ export class OtherUserProfileComponent implements OnInit {
               break;
             }
           }
-        })
-      })
+          for (let u of this.loggedUser.notificationOffUsers) {
+            if (u == this.username) {
+              this.blockedNotifications = true;
+              break;
+            }
+          }
+        });
+      });
     });
   }
 
@@ -88,6 +99,16 @@ export class OtherUserProfileComponent implements OnInit {
     userToSend.id = this.loggedUser.id;
     userToSend.username = this.user.username;
     this.userService.follow(userToSend).subscribe(ret => {
+      let notification = new Notification();
+      notification.sender = this.loggedUser.username;
+      notification.receiver = this.user.username;
+      notification.creationDate = new Date();
+      notification.notificationType = "follow";
+      notification.description = "User " + this.loggedUser.username + " wants to follow " + this.user.username + ".";
+      notification.isRead = false;
+      this.notificationService.addNewNotification(notification).subscribe(ret => {
+
+      });
       window.location.reload();
     })
   }
@@ -95,12 +116,32 @@ export class OtherUserProfileComponent implements OnInit {
   likePost(post: Post): void {
     this.postService.likePost(post).subscribe(
       ret => {
+      let notification = new Notification();
+      notification.sender = this.loggedUser.username;
+      notification.receiver = post.username;
+      notification.creationDate = new Date();
+      notification.notificationType = "like";
+      notification.description = "User " + this.loggedUser.username + " liked post from " + post.username + ".";
+      notification.isRead = false;
+      this.notificationService.addNewNotification(notification).subscribe(ret => {
+
+      });
         window.location.reload();
       })
   }
 
   dislikePost(post: Post): void {
     this.postService.dislikePost(post).subscribe(ret => {
+      let notification = new Notification();
+      notification.sender = this.loggedUser.username;
+      notification.receiver = post.username;
+      notification.creationDate = new Date();
+      notification.notificationType = "dislike";
+      notification.description = "User " + this.loggedUser.username + " disliked post from " + post.username + ".";
+      notification.isRead = false;
+      this.notificationService.addNewNotification(notification).subscribe(ret => {
+
+      });
       window.location.reload();
     })
   }
@@ -112,7 +153,16 @@ export class OtherUserProfileComponent implements OnInit {
 
       post.comments.push(this.comments[i])
       this.postService.commentPost(post).subscribe(ret => {
+        let notification = new Notification();
+        notification.sender = this.loggedUser.username;
+        notification.receiver = post.username;
+        notification.creationDate = new Date();
+        notification.notificationType = "comment";
+        notification.description = "User " + this.loggedUser.username + " commented post from " + post.username + ".";
+        notification.isRead = false;
+        this.notificationService.addNewNotification(notification).subscribe(ret => {
 
+        });
       })
     }
   }
@@ -127,5 +177,14 @@ export class OtherUserProfileComponent implements OnInit {
     } else {
       this.inboxOpen = true;
     }
+  }
+  
+  blockNotifications(username: string) {
+    let user = new User();
+    user.id = this.loggedUser.id;
+    user.username = username;
+    this.userService.changeNotificationsUsers(user).subscribe(ret => {
+      window.location.reload();
+    })
   }
 }

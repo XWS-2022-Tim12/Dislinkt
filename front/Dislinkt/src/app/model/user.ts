@@ -20,4 +20,8 @@ export class User {
     followingRequests: Array<string>
     public: boolean
     blockedUsers: Array<string>
+    notifications: boolean;
+    notificationOffUsers: Array<string>;
+    notificationOffMessages: Array<string>;
+    role: string;
 }

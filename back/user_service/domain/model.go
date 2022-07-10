@@ -10,6 +10,8 @@ type EducationEnum int8
 
 type GenderEnum int8
 
+type RoleEnum int8
+
 const (
 	PrimaryEducation EducationEnum = iota
 	LowerSecondaryEducation
@@ -22,6 +24,11 @@ const (
 const (
 	Male GenderEnum = iota
 	Female
+)
+
+const (
+	Client RoleEnum = iota
+	Admin
 )
 
 func (status EducationEnum) String() string {
@@ -52,6 +59,16 @@ func (status GenderEnum) String() string {
 	return "Unknown"
 }
 
+func (status RoleEnum) String() string {
+	switch status {
+	case Client:
+		return "Client"
+	case Admin:
+		return "Admin"
+	}
+	return "Unknown"
+}
+
 type User struct {
 	Id                primitive.ObjectID `bson:"_id"`
 	Firstname         string             `bson:"firstname"`
@@ -71,4 +88,8 @@ type User struct {
 	FollowingRequests []string           `bson:"followingRequests"`
 	Public            bool               `bson:"public"`
 	BlockedUsers      []string           `bson:"blockedUsers"`
+	Notifications	  		bool		 `bson:"notifications"`
+	NotificationOffUsers    []string     `bson:"notificationOffUsers"`
+	NotificationOffMessages	[]string     `bson:"notificationOffMessages"`
+	Role			  RoleEnum		     `bson:"role"`
 }

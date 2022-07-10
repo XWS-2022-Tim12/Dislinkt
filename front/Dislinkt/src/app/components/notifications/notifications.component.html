@@ -1,0 +1,27 @@
+<div *ngIf="areNotificationsEmpty">
+    <h3>You don't have any notifications!</h3>
+</div>
+<div *ngIf="!areNotificationsEmpty">
+    <h3>Your notifications:</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Sender</th>
+                <th>Type</th>
+                <th>Date</th>
+                <th>Description</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let notification of notifications">
+                <td>{{ notification.sender }}</td>
+                <td>{{ notification.notificationType }}</td>
+                <td>{{ notification.creationDate }}</td>
+                <td>{{ notification.description }}</td>
+                <td *ngIf="!notification.isRead"><button (click)="readNotification(notification)">Mark as read</button></td>
+                <td *ngIf="notification.isRead">Read</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

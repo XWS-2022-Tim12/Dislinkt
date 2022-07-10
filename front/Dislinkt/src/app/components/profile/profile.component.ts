@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { User } from 'src/app/model/user';
+import { NotificationService } from 'src/app/services/notification.service';
 import { UserService } from 'src/app/services/user.service';
 
 @Component({
@@ -19,7 +20,8 @@ export class ProfileComponent implements OnInit {
   date: string;
   searchText: string;
   users: any;
-  constructor(private userService: UserService, public router: Router) {
+
+  constructor(private userService: UserService, private notificationService: NotificationService, public router: Router) {
    }
 
   ngOnInit(): void {
@@ -31,6 +33,25 @@ export class ProfileComponent implements OnInit {
           this.user.password = "";
           this.user.birthDay = new Date(this.user.birthDay);
           this.date =this.user.birthDay.toISOString().split("T")[0];
+
+          this.notificationService.getNotificationsByReceiver(u.username).subscribe(nots => {
+            let notifications = nots['notifications'];
+            for (let not of notifications) {
+              if (this.user.notificationOffUsers.includes(not.sender)) {
+                continue;
+              } else if (this.user.notificationOffMessages.includes(not.sender)) {
+                continue;
+              } 
+              if (!not.isRead) {
+                alert(not.creationDate + ': ' + not.description);
+                not.isRead = true;
+                this.notificationService.editNotification(not).subscribe(ret => {
+
+                });
+              }
+            }
+          })
+
         }
       }
     })

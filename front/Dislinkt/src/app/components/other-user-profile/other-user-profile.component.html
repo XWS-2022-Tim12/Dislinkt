@@ -17,6 +17,15 @@
             <label>Following request</label>
         </div>
 
+        <div *ngIf="following" class="notificationSettings">
+            <div *ngIf="blockedNotifications">
+                <button (click)="blockNotifications(user.username)">Turn on notifications</button>
+            </div>
+            <div *ngIf="!blockedNotifications">
+                <button (click)="blockNotifications(user.username)">Turn off notifications</button>
+            </div>
+        </div>
+
         <div *ngIf="loggedUser.username === user.username" style="display: inline-block; margin-left: 2%;">
             <button (click)="inbox()" mat-stroked-button>
                 <mat-icon>email</mat-icon>

@@ -97,6 +97,24 @@ service UserService{
                         body: "user"
                 };
         }
+        rpc ChangeNotifications(ChangeNotificationsRequest) returns(ChangeNotificationsResponse) {
+                option (google.api.http) = {
+                        put: "/user/changeNotifications"
+                        body: "user"
+                };
+        }
+        rpc ChangeNotificationsUsers(ChangeNotificationsUsersRequest) returns(ChangeNotificationsUsersResponse) {
+                option (google.api.http) = {
+                        put: "/user/changeNotificationsUsers"
+                        body: "user"
+                };
+        }
+        rpc ChangeNotificationsMessages(ChangeNotificationsMessagesRequest) returns(ChangeNotificationsMessagesResponse) {
+                option (google.api.http) = {
+                        put: "/user/changeNotificationsMessages"
+                        body: "user"
+                };
+        }
 }
 
 message GetRequest {
@@ -225,6 +243,30 @@ message BlockUserResponse {
         string success = 1;
 }
 
+message ChangeNotificationsRequest {
+        User user = 1;
+}
+
+message ChangeNotificationsResponse {
+        string success = 1;
+}
+
+message ChangeNotificationsUsersRequest {
+        User user = 1;
+}
+
+message ChangeNotificationsUsersResponse {
+        string success = 1;
+}
+
+message ChangeNotificationsMessagesRequest {
+        User user = 1;
+}
+
+message ChangeNotificationsMessagesResponse {
+        string success = 1;
+}
+
 message User {
         string id = 1;
         string firstname = 2;
@@ -256,4 +298,12 @@ message User {
         repeated string followingRequests = 16;
         bool public = 17;
         repeated string blockedUsers = 18;
+        bool notifications = 19;
+        repeated string notificationOffUsers = 20;
+        repeated string notificationOffMessages = 21;
+        enum RoleEnum {
+                Client = 0;
+                Admin = 1;
+        }
+        RoleEnum role = 22;
 }

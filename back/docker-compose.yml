@@ -95,6 +95,22 @@ services:
       - network
       - public
 
+  notification_service:
+    image: notification_service
+    container_name: notification_service
+    build:
+      context: .
+      dockerfile: ./notification_service/Dockerfile
+    restart: on-failure
+    environment:
+      NOTIFICATION_DB_HOST: ${NOTIFICATION_DB_HOST}
+      NOTIFICATION_DB_PORT: ${NOTIFICATION_DB_PORT}
+      NOTIFICATION_SERVICE_PORT: ${NOTIFICATION_SERVICE_PORT}
+    depends_on:
+      - notification_db
+    networks:
+      - network
+
   authentification_service:
     image: authentification_service
     container_name: authentification_service
@@ -203,6 +219,8 @@ services:
       USER_SUGGESTIONS_SERVICE_PORT: ${USER_SUGGESTIONS_SERVICE_PORT}
       JOB_SUGGESTIONS_SERVICE_HOST: ${JOB_SUGGESTIONS_SERVICE_HOST}
       JOB_SUGGESTIONS_SERVICE_PORT: ${JOB_SUGGESTIONS_SERVICE_PORT}
+      NOTIFICATION_SERVICE_HOST: ${NOTIFICATION_SERVICE_HOST}
+      NOTIFICATION_SERVICE_PORT: ${NOTIFICATION_SERVICE_PORT}
     networks:
       - network
 
@@ -230,6 +248,13 @@ services:
   job_db:
     image: mongo
     container_name: job_db
+    restart: on-failure
+    networks:
+      - network
+
+  notification_db:
+    image: mongo
+    container_name: notification_db
     restart: on-failure
     networks:
       - network

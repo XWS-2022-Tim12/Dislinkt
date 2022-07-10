@@ -29,6 +29,10 @@ func mapUser(user *domain.User) *pb.User {
 		FollowingRequests: user.FollowingRequests,
 		Public:            user.Public,
 		BlockedUsers:      user.BlockedUsers,
+		Notifications:	   user.Notifications,
+		NotificationOffUsers: user.NotificationOffUsers,
+		NotificationOffMessages: user.NotificationOffMessages,
+		Role:			   mapRole(user.Role),
 	}
 	return userPb
 }
@@ -230,6 +234,14 @@ func mapNewGender(status pb.User_GenderEnum) domain.GenderEnum {
 
 }
 
+func mapRole(status domain.RoleEnum) pb.User_RoleEnum {
+	switch status {
+		case domain.Client:
+			return pb.User_Client
+	}
+	return pb.User_Admin
+}
+
 func mapUserToFollow(userPb *pb.User) *domain.User {
 	id, _ := primitive.ObjectIDFromHex(userPb.Id)
 
@@ -252,4 +264,15 @@ func mapUserToBlock(userPb *pb.User) *domain.User {
 	}
 	return user
 
+}
+
+func mapUserToChangeNotifications(userPb *pb.User) *domain.User {
+	id, _ := primitive.ObjectIDFromHex(userPb.Id)
+
+	user := &domain.User {
+		Id:   		id,
+		Username: 	userPb.Username,
+	}
+
+	return user
 }

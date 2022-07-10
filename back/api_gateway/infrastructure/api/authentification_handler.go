@@ -11,6 +11,7 @@ import (
 	"github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/infrastructure/services"
 	authentification "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
 	pb "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
+	notification "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/notification_service"
 	job "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/job_service"
 	jobSuggestions "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/job_suggestions_service"
 	post "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/post_service"
@@ -25,13 +26,14 @@ type AuthentificationHandler struct {
 	authentificationClientAddress string
 	userClientAddress             string
 	postClientAdress              string
-	messageClientAdress              string
+	messageClientAdress           string
 	jobClientAdress               string
 	jobSuggestionsClientAdress    string
 	userSuggestionClientAddress   string
+	notificationClientAdress	  string
 }
 
-func NewAuthentificationHandler(authentificationClientAddress, userClientAddress, postClientAdress, jobClientAdress, userSuggestionClientAddress, jobSuggestionsClientAdress, messageClientAdress string) Handler {
+func NewAuthentificationHandler(authentificationClientAddress, userClientAddress, postClientAdress, jobClientAdress, userSuggestionClientAddress, jobSuggestionsClientAdress, messageClientAdress, notificationClientAdress string) Handler {
 	return &AuthentificationHandler{
 		authentificationClientAddress: authentificationClientAddress,
 		userClientAddress:             userClientAddress,
@@ -40,6 +42,7 @@ func NewAuthentificationHandler(authentificationClientAddress, userClientAddress
 		jobClientAdress:               jobClientAdress,
 		jobSuggestionsClientAdress:    jobSuggestionsClientAdress,
 		userSuggestionClientAddress:   userSuggestionClientAddress,
+		notificationClientAdress:	   notificationClientAdress,
 	}
 }
 
@@ -88,6 +91,18 @@ func (handler *AuthentificationHandler) Init(mux *runtime.ServeMux) {
 	if err != nil {
 		panic(err)
 	}
+	err = mux.HandlePath("PUT", "/user/changeNotifications", handler.ChangeNotifications)
+	if err != nil {
+		panic(err)
+	}
+	err = mux.HandlePath("PUT", "/user/changeNotificationsUsers", handler.ChangeNotificationsUsers)
+	if err != nil {
+		panic(err)
+	}
+	err = mux.HandlePath("PUT", "/user/changeNotificationsMessages", handler.ChangeNotificationsMessages)
+	if err != nil {
+		panic(err)
+	}
 	err = mux.HandlePath("POST", "/user/post/newPost", handler.AddNewPost)
 	if err != nil {
 		panic(err)
@@ -105,6 +120,14 @@ func (handler *AuthentificationHandler) Init(mux *runtime.ServeMux) {
 		panic(err)
 	}
 	err = mux.HandlePath("GET", "/user/jobDislinktSearch", handler.SearchJobFromDislinkt)
+	if err != nil {
+		panic(err)
+	}
+	err = mux.HandlePath("POST", "/user/notification", handler.AddNewNotification)
+	if err != nil {
+		panic(err)
+	}
+	err = mux.HandlePath("PUT", "/user/notification/editNotification", handler.EditNotification)
 	if err != nil {
 		panic(err)
 	}
@@ -685,6 +708,111 @@ func (handler *AuthentificationHandler) BlockUser(w http.ResponseWriter, r *http
 	return
 }
 
+func (handler *AuthentificationHandler) ChangeNotifications(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	usr := &domain.User{}
+	errr := json.NewDecoder(r.Body).Decode(&usr)
+	if errr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	tokenCookie, err := r.Cookie("sessionId")
+	if err != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	id, err := handler.IsUserLoggedIn(tokenCookie.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	userClient := services.NewUserClient(handler.userClientAddress)
+
+	userToSend := &user.User{
+		Id:       		usr.Id,
+		Notifications: 	usr.Notifications,
+	}
+
+	userResponse, err := userClient.ChangeNotifications(context.TODO(), &user.ChangeNotificationsRequest{User: userToSend})
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(userResponse.Success))
+	return
+}
+
+func (handler *AuthentificationHandler) ChangeNotificationsUsers(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	usr := &domain.User{}
+	errr := json.NewDecoder(r.Body).Decode(&usr)
+	if errr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	tokenCookie, err := r.Cookie("sessionId")
+	if err != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	id, err := handler.IsUserLoggedIn(tokenCookie.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	userClient := services.NewUserClient(handler.userClientAddress)
+
+	userToSend := &user.User{
+		Id:       		usr.Id,
+		Username: 		usr.Username,
+	}
+
+	userResponse, err := userClient.ChangeNotificationsUsers(context.TODO(), &user.ChangeNotificationsUsersRequest{User: userToSend})
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(userResponse.Success))
+	return
+}
+
+func (handler *AuthentificationHandler) ChangeNotificationsMessages(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	usr := &domain.User{}
+	errr := json.NewDecoder(r.Body).Decode(&usr)
+	if errr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	tokenCookie, err := r.Cookie("sessionId")
+	if err != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	id, err := handler.IsUserLoggedIn(tokenCookie.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	userClient := services.NewUserClient(handler.userClientAddress)
+
+	userToSend := &user.User{
+		Id:       		usr.Id,
+		Username: 		usr.Username,
+	}
+
+	userResponse, err := userClient.ChangeNotificationsMessages(context.TODO(), &user.ChangeNotificationsMessagesRequest{User: userToSend})
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(userResponse.Success))
+	return
+}
+
 func (handler *AuthentificationHandler) AddNewPost(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	reqPost := &domain.Post{}
 	errr := json.NewDecoder(r.Body).Decode(&reqPost)
@@ -917,6 +1045,81 @@ func (handler *AuthentificationHandler) AddNewJob(w http.ResponseWriter, r *http
 	jobResponse, err := jobClient.Add(context.TODO(), &job.AddRequest{Job: jobToSend})
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(jobResponse.Success))
+	return
+}
+
+func (handler *AuthentificationHandler) AddNewNotification(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	reqNotification := &domain.Notification{}
+	errr := json.NewDecoder(r.Body).Decode(&reqNotification)
+	if errr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	tokenCookie, err := r.Cookie("sessionId")
+	if err != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	id, err := handler.IsUserLoggedIn(tokenCookie.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	notificationClient := services.NewNotificationClient(handler.notificationClientAdress)
+
+	notificationToSend := &notification.Notification{
+		Id:                 reqNotification.Id,
+		Sender:             reqNotification.Sender,
+		Receiver:           reqNotification.Receiver,
+		CreationDate:       timestamppb.New(time.Now()),
+		NotificationType:   reqNotification.NotificationType,
+		Description:        reqNotification.Description,
+		IsRead: 			false,
+	}
+	notificationResponse, err := notificationClient.Add(context.TODO(), &notification.AddRequest{Notification: notificationToSend})
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(notificationResponse.Success))
+	return
+}
+
+func (handler *AuthentificationHandler) EditNotification(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	not := &domain.Notification{}
+	errr := json.NewDecoder(r.Body).Decode(&not)
+	if errr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	tokenCookie, err := r.Cookie("sessionId")
+	if err != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	id, err := handler.IsUserLoggedIn(tokenCookie.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	notificationClient := services.NewNotificationClient(handler.notificationClientAdress)
+
+	notificationToSend := &notification.Notification {
+		Id:           not.Id,
+		IsRead:       not.IsRead,
+	}
+
+	notificationResponse, err := notificationClient.Edit(context.TODO(), &notification.EditRequest{Notification: notificationToSend})
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(notificationResponse.Success))
 	return
 }
 

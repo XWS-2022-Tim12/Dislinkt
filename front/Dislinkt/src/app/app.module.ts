@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './components/login/login.component';
@@ -22,8 +21,8 @@ import { ShowSuggestionsForFollowingComponent } from './components/show-suggesti
 import { AddJobComponent } from './components/add-job/add-job.component';
 import { ShowJobsComponent } from './components/show-jobs/show-jobs.component';
 import { MessageComponent } from './components/message/message.component';
-
-
+import { NotificationsComponent } from './components/notifications/notifications.component';
+import { EventsComponent } from './components/events/events.component';
 
 @NgModule({
   declarations: [
@@ -39,8 +38,9 @@ import { MessageComponent } from './components/message/message.component';
     ShowSuggestionsForFollowingComponent,
     AddJobComponent,
     ShowJobsComponent,
-    MessageComponent
-
+    MessageComponent,
+    NotificationsComponent,
+    EventsComponent
   ],
   imports: [
     BrowserModule,

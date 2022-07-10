@@ -9,6 +9,7 @@ import (
 	"github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/infrastructure/api"
 	cfg "github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/startup/config"
 	authentificationGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
+	notificationGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/notification_service"
 	jobGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/job_service"
 	jobSuggestionsGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/job_suggestions_service"
 	postGw "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/post_service"
@@ -67,14 +68,21 @@ func (server *Server) initHandlers() {
 	if err != nil {
 		panic(err)
 	}
+
 	jobSuggestionsEndpoint := fmt.Sprintf("%s:%s", server.config.JobSuggestionsHost, server.config.JobSuggestionsPort)
 	err = jobSuggestionsGw.RegisterJobSuggestionsServiceHandlerFromEndpoint(context.TODO(), server.mux, jobSuggestionsEndpoint, opts)
 	if err != nil {
 		panic(err)
 	}
+
 	userSuggestionsEndpoint := fmt.Sprintf("%s:%s", server.config.UserSuggestionsHost, server.config.UserSuggestionsPort)
 	err = userSuggestionsGw.RegisterUserSuggestionsServiceHandlerFromEndpoint(context.TODO(), server.mux, userSuggestionsEndpoint, opts)
+	if err != nil {
+		panic(err)
+	}
 
+	notificationEndpoint := fmt.Sprintf("%s:%s", server.config.NotificationHost, server.config.NotificationPort)
+	err = notificationGw.RegisterNotificationServiceHandlerFromEndpoint(context.TODO(), server.mux, notificationEndpoint, opts)
 	if err != nil {
 		panic(err)
 	}
@@ -88,7 +96,8 @@ func (server *Server) initCustomHandlers() {
 	jobEndpoint := fmt.Sprintf("%s:%s", server.config.JobHost, server.config.JobPort)
 	jobSuggestionsEndpoint := fmt.Sprintf("%s:%s", server.config.JobSuggestionsHost, server.config.JobSuggestionsPort)
 	userSuggestionsEndpoint := fmt.Sprintf("%s:%s", server.config.UserSuggestionsHost, server.config.UserSuggestionsPort)
-	authentificationHandler := api.NewAuthentificationHandler(authentificationEndpoint, userEndpoint, postEndpoint, jobEndpoint, userSuggestionsEndpoint, jobSuggestionsEndpoint, messageEndpoint)
+	notificationEndpoint := fmt.Sprintf("%s:%s", server.config.NotificationHost, server.config.NotificationPort)
+	authentificationHandler := api.NewAuthentificationHandler(authentificationEndpoint, userEndpoint, postEndpoint, jobEndpoint, userSuggestionsEndpoint, jobSuggestionsEndpoint, messageEndpoint, notificationEndpoint)
 	authentificationHandler.Init(server.mux)
 }
 

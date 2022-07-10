@@ -23,7 +23,9 @@ export class UserService {
   private blockUserUrl: string;
   private getSuggestionsUrl: string;
   private getUsernamesInInboxUrl: string;
-
+  private changeNotificationsUrl: string;
+  private changeNotificationsUsersUrl: string;
+  private changeNotificationsMessagesUrl: string;
 
   constructor(private http: HttpClient) {
     this.loginUrl = 'http://localhost:8000/user/login';
@@ -42,6 +44,9 @@ export class UserService {
     this.blockUserUrl = 'http://localhost:8000/user/blockUser';
     this.getSuggestionsUrl = 'http://localhost:8000/user/suggestions/users';
     this.getUsernamesInInboxUrl = 'http://localhost:8000/user/message/messages';
+    this.changeNotificationsUrl = 'http://localhost:8000/user/changeNotifications';
+    this.changeNotificationsUsersUrl = 'http://localhost:8000/user/changeNotificationsUsers';
+    this.changeNotificationsMessagesUrl = 'http://localhost:8000/user/changeNotificationsMessages';
    }
 
    public login(user: User): Observable<void> {
@@ -92,12 +97,23 @@ export class UserService {
     return this.http.put<string>(this.blockUserUrl, user,{responseType: 'text' as 'json',withCredentials: true});
   }
 
-
   public getSuggestions(): Observable<Array<User>> {
     return this.http.get<Array<User>>(this.getSuggestionsUrl,{withCredentials: true});
   }
 
   public getUsernamesInInbox(username: string): Observable<Array<User>> {
     return this.http.get<Array<User>>(this.getUsernamesInInboxUrl + '/' + username,{withCredentials: true});
+  }
+  
+  public changeNotifications(user: User): Observable<string> {
+    return this.http.put<string>(this.changeNotificationsUrl, user, { responseType: 'text' as 'json', withCredentials: true } );
+  }
+
+  public changeNotificationsUsers(user: User): Observable<string> {
+    return this.http.put<string>(this.changeNotificationsUsersUrl, user, { responseType: 'text' as 'json', withCredentials: true } );
+  }
+
+  public changeNotificationsMessages(user: User): Observable<string> {
+    return this.http.put<string>(this.changeNotificationsMessagesUrl, user, { responseType: 'text' as 'json', withCredentials: true } );
   }
 }

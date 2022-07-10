@@ -33,6 +33,9 @@ type UserServiceClient interface {
 	AcceptFollowingRequest(ctx context.Context, in *AcceptFollowingRequestRequest, opts ...grpc.CallOption) (*AcceptFollowingRequestResponse, error)
 	RejectFollowingRequest(ctx context.Context, in *RejectFollowingRequestRequest, opts ...grpc.CallOption) (*RejectFollowingRequestResponse, error)
 	BlockUser(ctx context.Context, in *BlockUserRequest, opts ...grpc.CallOption) (*BlockUserResponse, error)
+	ChangeNotifications(ctx context.Context, in *ChangeNotificationsRequest, opts ...grpc.CallOption) (*ChangeNotificationsResponse, error)
+	ChangeNotificationsUsers(ctx context.Context, in *ChangeNotificationsUsersRequest, opts ...grpc.CallOption) (*ChangeNotificationsUsersResponse, error)
+	ChangeNotificationsMessages(ctx context.Context, in *ChangeNotificationsMessagesRequest, opts ...grpc.CallOption) (*ChangeNotificationsMessagesResponse, error)
 }
 
 type userServiceClient struct {
@@ -187,6 +190,33 @@ func (c *userServiceClient) BlockUser(ctx context.Context, in *BlockUserRequest,
 	return out, nil
 }
 
+func (c *userServiceClient) ChangeNotifications(ctx context.Context, in *ChangeNotificationsRequest, opts ...grpc.CallOption) (*ChangeNotificationsResponse, error) {
+	out := new(ChangeNotificationsResponse)
+	err := c.cc.Invoke(ctx, "/user.UserService/ChangeNotifications", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) ChangeNotificationsUsers(ctx context.Context, in *ChangeNotificationsUsersRequest, opts ...grpc.CallOption) (*ChangeNotificationsUsersResponse, error) {
+	out := new(ChangeNotificationsUsersResponse)
+	err := c.cc.Invoke(ctx, "/user.UserService/ChangeNotificationsUsers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) ChangeNotificationsMessages(ctx context.Context, in *ChangeNotificationsMessagesRequest, opts ...grpc.CallOption) (*ChangeNotificationsMessagesResponse, error) {
+	out := new(ChangeNotificationsMessagesResponse)
+	err := c.cc.Invoke(ctx, "/user.UserService/ChangeNotificationsMessages", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -207,6 +237,9 @@ type UserServiceServer interface {
 	AcceptFollowingRequest(context.Context, *AcceptFollowingRequestRequest) (*AcceptFollowingRequestResponse, error)
 	RejectFollowingRequest(context.Context, *RejectFollowingRequestRequest) (*RejectFollowingRequestResponse, error)
 	BlockUser(context.Context, *BlockUserRequest) (*BlockUserResponse, error)
+	ChangeNotifications(context.Context, *ChangeNotificationsRequest) (*ChangeNotificationsResponse, error)
+	ChangeNotificationsUsers(context.Context, *ChangeNotificationsUsersRequest) (*ChangeNotificationsUsersResponse, error)
+	ChangeNotificationsMessages(context.Context, *ChangeNotificationsMessagesRequest) (*ChangeNotificationsMessagesResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -261,6 +294,15 @@ func (*UnimplementedUserServiceServer) RejectFollowingRequest(context.Context, *
 }
 func (*UnimplementedUserServiceServer) BlockUser(context.Context, *BlockUserRequest) (*BlockUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BlockUser not implemented")
+}
+func (*UnimplementedUserServiceServer) ChangeNotifications(context.Context, *ChangeNotificationsRequest) (*ChangeNotificationsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeNotifications not implemented")
+}
+func (*UnimplementedUserServiceServer) ChangeNotificationsUsers(context.Context, *ChangeNotificationsUsersRequest) (*ChangeNotificationsUsersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeNotificationsUsers not implemented")
+}
+func (*UnimplementedUserServiceServer) ChangeNotificationsMessages(context.Context, *ChangeNotificationsMessagesRequest) (*ChangeNotificationsMessagesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeNotificationsMessages not implemented")
 }
 func (*UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -556,6 +598,60 @@ func _UserService_BlockUser_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_ChangeNotifications_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangeNotificationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ChangeNotifications(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/ChangeNotifications",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ChangeNotifications(ctx, req.(*ChangeNotificationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_ChangeNotificationsUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangeNotificationsUsersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ChangeNotificationsUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/ChangeNotificationsUsers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ChangeNotificationsUsers(ctx, req.(*ChangeNotificationsUsersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_ChangeNotificationsMessages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangeNotificationsMessagesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ChangeNotificationsMessages(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/ChangeNotificationsMessages",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ChangeNotificationsMessages(ctx, req.(*ChangeNotificationsMessagesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _UserService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "user.UserService",
 	HandlerType: (*UserServiceServer)(nil),
@@ -623,6 +719,18 @@ var _UserService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "BlockUser",
 			Handler:    _UserService_BlockUser_Handler,
+		},
+		{
+			MethodName: "ChangeNotifications",
+			Handler:    _UserService_ChangeNotifications_Handler,
+		},
+		{
+			MethodName: "ChangeNotificationsUsers",
+			Handler:    _UserService_ChangeNotificationsUsers_Handler,
+		},
+		{
+			MethodName: "ChangeNotificationsMessages",
+			Handler:    _UserService_ChangeNotificationsMessages_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

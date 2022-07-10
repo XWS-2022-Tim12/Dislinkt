@@ -101,3 +101,18 @@ func (service *UserService) BlockUser(user *domain.User) (string, error) {
 	success, err := service.store.BlockUser(user)
 	return success, err
 }
+
+func (service *UserService) ChangeNotifications(user *domain.User) (string, error) {
+	success, err := service.store.ChangeNotifications(user)
+	return success, err
+}
+
+func (service *UserService) ChangeNotificationsUsers(user *domain.User) (string, error) {
+	success, err := service.store.ChangeNotificationsUsers(user)
+	return success, err
+}
+
+func (service *UserService) ChangeNotificationsMessages(user *domain.User) (string, error) {
+	success, err := service.store.ChangeNotificationsMessages(user)
+	return success, err
+}

@@ -49,3 +49,10 @@
     text-decoration: none;
     display: block;
 }
+
+.notificationSettings {
+    width: 50%;
+    margin: auto;
+    text-align: center;
+    border: 2px solid green;
+}

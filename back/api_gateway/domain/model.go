@@ -21,6 +21,10 @@ type User struct {
 	FollowingRequests []string
 	Public            bool
 	BlockedUsers      []string
+	Notifications	  bool
+	NotificationOffUsers    []string
+	NotificationOffMessages   []string
+	Role				string
 }
 
 type Session struct {
@@ -61,4 +65,14 @@ type Job struct {
 	MediorSalary       []int32
 	HrInterviews       []string
 	TehnicalInterviews []string
+}
+
+type Notification struct {
+	Id                 string
+	Sender             string
+	Receiver           string
+	CreationDate       time.Time
+	NotificationType   string
+	Description        string
+	IsRead		       bool
 }

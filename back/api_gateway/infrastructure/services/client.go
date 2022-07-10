@@ -4,6 +4,7 @@ import (
 	"log"
 
 	authentification "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/authentification_service"
+	notification "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/notification_service"
 	job "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/job_service"
 	jobSuggestions "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/job_suggestions_service"
 	post "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/post_service"
@@ -68,6 +69,14 @@ func NewUserSuggestionsClient(address string) userSuggestions.UserSuggestionsSer
 		log.Fatalf("Failed to start gRPC connection to User Suggestions service: %v", err)
 	}
 	return userSuggestions.NewUserSuggestionsServiceClient(conn)
+}
+
+func NewNotificationClient(address string) notification.NotificationServiceClient {
+	conn, err := getConnection(address)
+	if err != nil {
+		log.Fatalf("Failed to start gRPC connection to Notification service: %v", err)
+	}
+	return notification.NewNotificationServiceClient(conn)
 }
 
 func getConnection(address string) (*grpc.ClientConn, error) {
