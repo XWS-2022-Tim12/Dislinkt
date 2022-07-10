@@ -7,6 +7,13 @@ services:
     build:
       context: .
       dockerfile: ./user_service/Dockerfile
+    volumes:
+      - type: bind
+        source: ./user_service/logs/info.log
+        target: /root/info.log
+      - type: bind
+        source: ./user_service/logs/error.log
+        target: /root/error.log
     restart: on-failure
     environment:
       USER_DB_HOST: ${USER_DB_HOST}
@@ -37,6 +44,13 @@ services:
     build:
       context: .
       dockerfile: ./post_service/Dockerfile
+    volumes:
+      - type: bind
+        source: ./post_service/logs/info.log
+        target: /root/info.log
+      - type: bind
+        source: ./post_service/logs/error.log
+        target: /root/error.log
     restart: on-failure
     environment:
       POST_DB_HOST: ${POST_DB_HOST}
@@ -77,6 +91,13 @@ services:
     build:
       context: .
       dockerfile: ./job_service/Dockerfile
+    volumes:
+      - type: bind
+        source: ./job_service/logs/info.log
+        target: /root/info.log
+      - type: bind
+        source: ./job_service/logs/error.log
+        target: /root/error.log
     restart: on-failure
     environment:
       JOB_DB_HOST: ${JOB_DB_HOST}
@@ -117,6 +138,13 @@ services:
     build:
       context: .
       dockerfile: ./authentification_service/Dockerfile
+    volumes:
+      - type: bind
+        source: ./authentification_service/logs/info.log
+        target: /root/info.log
+      - type: bind
+        source: ./authentification_service/logs/error.log
+        target: /root/error.log
     restart: on-failure
     environment:
       AUTHENTIFICATION_DB_HOST: ${AUTHENTIFICATION_DB_HOST}
@@ -147,6 +175,13 @@ services:
     build:
       context: .
       dockerfile: ./user_suggestions_service/Dockerfile
+    volumes:
+      - type: bind
+        source: ./user_suggestions_service/logs/info.log
+        target: /root/info.log
+      - type: bind
+        source: ./user_suggestions_service/logs/error.log
+        target: /root/error.log
     restart: on-failure
     environment:
         - USER_SUGGESTIONS_DB_HOST=${USER_SUGGESTIONS_DB_HOST}
@@ -173,6 +208,13 @@ services:
     build:
       context: .
       dockerfile: ./job_suggestions_service/Dockerfile
+    volumes:
+      - type: bind
+        source: ./job_suggestions_service/logs/info.log
+        target: /root/info.log
+      - type: bind
+        source: ./job_suggestions_service/logs/error.log
+        target: /root/error.log
     restart: on-failure
     environment:
         - JOB_SUGGESTIONS_DB_HOST=${JOB_SUGGESTIONS_DB_HOST}

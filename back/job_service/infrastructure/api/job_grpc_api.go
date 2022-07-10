@@ -2,10 +2,20 @@ package api
 
 import (
 	"context"
+	"log"
+	"os"
 
+	"github.com/XWS-2022-Tim12/Dislinkt/back/job_service/tracer"
 	pb "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/job_service"
 	"github.com/XWS-2022-Tim12/Dislinkt/back/job_service/application"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	otgo "github.com/opentracing/opentracing-go"
+)
+
+var (
+    InfoLogger  *log.Logger
+	ErrorLogger *log.Logger
+    trace       otgo.Tracer
 )
 
 type JobHandler struct {
@@ -19,6 +29,22 @@ func NewJobHandler(service *application.JobService) *JobHandler {
 	}
 }
 
+func init() {
+    trace, _ = tracer.Init("job-service")
+    otgo.SetGlobalTracer(trace)
+    infoFile, err := os.OpenFile("info.log", os.O_APPEND|os.O_WRONLY, 0666)
+    if err != nil {
+        log.Fatal(err)
+    }
+    InfoLogger = log.New(infoFile, "INFO: ", log.LstdFlags|log.Lshortfile)
+
+    errFile, err1 := os.OpenFile("error.log", os.O_APPEND|os.O_WRONLY, 0666)
+    if err1 != nil {
+        log.Fatal(err1)
+    }
+    ErrorLogger = log.New(errFile, "ERROR: ", log.LstdFlags|log.Lshortfile)
+}
+
 func (handler *JobHandler) Get(ctx context.Context, request *pb.GetRequest) (*pb.GetResponse, error) {
 	id := request.Id
 	objectId, err := primitive.ObjectIDFromHex(id)
@@ -27,8 +53,10 @@ func (handler *JobHandler) Get(ctx context.Context, request *pb.GetRequest) (*pb
 	}
 	job, err := handler.service.Get(objectId)
 	if err != nil {
+		ErrorLogger.Println("Action: 7, Message: Can not retrieve job!")
 		return nil, err
 	}
+	InfoLogger.Println("Action: 8, Message: Job retrieved successfully!")
 	jobPb := mapJob(job)
 	response := &pb.GetResponse{
 		Job: jobPb,
@@ -122,6 +150,11 @@ func (handler *JobHandler) SearchByRequirements(ctx context.Context, request *pb
 func (handler *JobHandler) Add(ctx context.Context, request *pb.AddRequest) (*pb.AddResponse, error) {
 	job := mapNewJob(request.Job)
 	successs, err := handler.service.Add(job)
+	if err != nil {
+		ErrorLogger.Println("Action: 3, Message: Can not add job!")
+        return nil, err
+	}
+	InfoLogger.Println("Action: 4, Message: Job added successfully!")
 	response := &pb.AddResponse{
 		Success: successs,
 	}
@@ -131,6 +164,11 @@ func (handler *JobHandler) Add(ctx context.Context, request *pb.AddRequest) (*pb
 func (handler *JobHandler) Edit(ctx context.Context, request *pb.EditRequest) (*pb.EditResponse, error) {
 	job := mapChangesOfJob(request.Job)
 	successs, err := handler.service.Edit(job)
+	if err != nil {
+		ErrorLogger.Println("Action: 5, Message: Can not edit job!")
+        return nil, err
+	}
+	InfoLogger.Println("Action: 6, Message: Job edited successfully!")
 	response := &pb.EditResponse{
 		Success: successs,
 	}

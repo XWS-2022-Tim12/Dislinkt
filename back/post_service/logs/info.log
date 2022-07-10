@@ -1,0 +1,4 @@
+INFO: 2022/07/10 21:06:48 post_grpc_api.go:122: Action: 18, Message: Post liked successfully!
+INFO: 2022/07/10 21:06:51 post_grpc_api.go:137: Action: 20, Message: Post disliked successfully!
+INFO: 2022/07/10 21:06:59 post_grpc_api.go:152: Action: 22, Message: Post commented successfully!
+INFO: 2022/07/10 21:10:12 post_grpc_api.go:137: Action: 20, Message: Post disliked successfully!
