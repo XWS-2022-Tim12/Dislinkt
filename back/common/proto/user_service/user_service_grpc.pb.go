@@ -23,6 +23,7 @@ type UserServiceClient interface {
 	GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
 	GetAllPublicUsers(ctx context.Context, in *GetAllPublicUsersRequest, opts ...grpc.CallOption) (*GetAllPublicUsersResponse, error)
 	GetAllPublicUsersByUsername(ctx context.Context, in *GetAllPublicUsersByUsernameRequest, opts ...grpc.CallOption) (*GetAllPublicUsersByUsernameResponse, error)
+	GetFollowingNotBlockedUsers(ctx context.Context, in *GetFollowingNotBlockedUsersRequest, opts ...grpc.CallOption) (*GetFollowingNotBlockedUsersResponse, error)
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 	UpdateBasicInfo(ctx context.Context, in *UpdateBasicInfoRequest, opts ...grpc.CallOption) (*UpdateBasicInfoResponse, error)
 	UpdateAdvancedInfo(ctx context.Context, in *UpdateAdvancedInfoRequest, opts ...grpc.CallOption) (*UpdateAdvancedInfoResponse, error)
@@ -90,6 +91,15 @@ func (c *userServiceClient) GetAllPublicUsers(ctx context.Context, in *GetAllPub
 func (c *userServiceClient) GetAllPublicUsersByUsername(ctx context.Context, in *GetAllPublicUsersByUsernameRequest, opts ...grpc.CallOption) (*GetAllPublicUsersByUsernameResponse, error) {
 	out := new(GetAllPublicUsersByUsernameResponse)
 	err := c.cc.Invoke(ctx, "/user.UserService/GetAllPublicUsersByUsername", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) GetFollowingNotBlockedUsers(ctx context.Context, in *GetFollowingNotBlockedUsersRequest, opts ...grpc.CallOption) (*GetFollowingNotBlockedUsersResponse, error) {
+	out := new(GetFollowingNotBlockedUsersResponse)
+	err := c.cc.Invoke(ctx, "/user.UserService/GetFollowingNotBlockedUsers", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -187,6 +197,7 @@ type UserServiceServer interface {
 	GetAll(context.Context, *GetAllRequest) (*GetAllResponse, error)
 	GetAllPublicUsers(context.Context, *GetAllPublicUsersRequest) (*GetAllPublicUsersResponse, error)
 	GetAllPublicUsersByUsername(context.Context, *GetAllPublicUsersByUsernameRequest) (*GetAllPublicUsersByUsernameResponse, error)
+	GetFollowingNotBlockedUsers(context.Context, *GetFollowingNotBlockedUsersRequest) (*GetFollowingNotBlockedUsersResponse, error)
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	UpdateBasicInfo(context.Context, *UpdateBasicInfoRequest) (*UpdateBasicInfoResponse, error)
 	UpdateAdvancedInfo(context.Context, *UpdateAdvancedInfoRequest) (*UpdateAdvancedInfoResponse, error)
@@ -220,6 +231,9 @@ func (*UnimplementedUserServiceServer) GetAllPublicUsers(context.Context, *GetAl
 }
 func (*UnimplementedUserServiceServer) GetAllPublicUsersByUsername(context.Context, *GetAllPublicUsersByUsernameRequest) (*GetAllPublicUsersByUsernameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllPublicUsersByUsername not implemented")
+}
+func (*UnimplementedUserServiceServer) GetFollowingNotBlockedUsers(context.Context, *GetFollowingNotBlockedUsersRequest) (*GetFollowingNotBlockedUsersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetFollowingNotBlockedUsers not implemented")
 }
 func (*UnimplementedUserServiceServer) Register(context.Context, *RegisterRequest) (*RegisterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
@@ -358,6 +372,24 @@ func _UserService_GetAllPublicUsersByUsername_Handler(srv interface{}, ctx conte
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).GetAllPublicUsersByUsername(ctx, req.(*GetAllPublicUsersByUsernameRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetFollowingNotBlockedUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetFollowingNotBlockedUsersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetFollowingNotBlockedUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.UserService/GetFollowingNotBlockedUsers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetFollowingNotBlockedUsers(ctx, req.(*GetFollowingNotBlockedUsersRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -551,6 +583,10 @@ var _UserService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAllPublicUsersByUsername",
 			Handler:    _UserService_GetAllPublicUsersByUsername_Handler,
+		},
+		{
+			MethodName: "GetFollowingNotBlockedUsers",
+			Handler:    _UserService_GetFollowingNotBlockedUsers_Handler,
 		},
 		{
 			MethodName: "Register",

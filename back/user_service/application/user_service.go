@@ -41,6 +41,10 @@ func (service *UserService) GetAllPublicUsersByUsername(username string) ([]*dom
 	return service.store.GetAllPublicUsersByUsername(username)
 }
 
+func (service *UserService) GetFollowingNotBlockedUsers(username string) ([]*domain.User, error) {
+	return service.store.GetFollowingNotBlockedUsers(username)
+}
+
 func (service *UserService) Register(user *domain.User) (string, error) {
 	success, err := service.store.Insert(user)
 	if err != nil {

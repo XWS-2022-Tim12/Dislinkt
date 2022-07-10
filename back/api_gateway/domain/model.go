@@ -41,6 +41,14 @@ type Post struct {
 	ImageContent string    `json:"imageContent"`
 }
 
+type Message struct {
+	Id           string    `json:"id"`
+	Text         string    `json:"text"`
+	Date         time.Time `json:"date"`
+	SenderUsername     string    `json:"senderUsername"`
+	ReceiverUsername string    `json:"receiverUsername"`
+}
+
 type Job struct {
 	Id                 string
 	UserId             string

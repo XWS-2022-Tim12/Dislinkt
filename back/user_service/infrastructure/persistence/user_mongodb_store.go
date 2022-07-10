@@ -88,6 +88,42 @@ func (store *UserMongoDBStore) GetAllPublicUsersByUsername(username string) ([]*
 	return publicUsersByUsername, nil
 }
 
+func (store *UserMongoDBStore) GetFollowingNotBlockedUsers(username string) ([]*domain.User, error) {
+	user, err := store.GetByUsername(username)
+	if err != nil {
+		return nil, err
+	}
+	followingUsers := user.FollowingUsers 
+	blockedUsers := user.BlockedUsers
+
+	var followingNotBlockedUsersUsernames []string
+	blocked := false
+	for i := 0; i < len(followingUsers); i++ {
+		blocked = false
+		for j := 0; j < len(blockedUsers); j++ {
+			if followingUsers[i] == blockedUsers[j] {
+				blocked = true
+				break
+			}
+		}
+		if blocked == false {
+			followingNotBlockedUsersUsernames = append(followingNotBlockedUsersUsernames, followingUsers[i])
+		}
+	}
+
+	var followingNotBlockedUsers []*domain.User
+	for j := 0; j < len(followingNotBlockedUsersUsernames); j++ {
+		usr, err := store.GetByUsername(followingNotBlockedUsersUsernames[j])
+		if err != nil {
+			return nil, err
+		}
+		
+		followingNotBlockedUsers = append(followingNotBlockedUsers, usr)
+	}
+
+	return followingNotBlockedUsers, nil
+}
+
 func (store *UserMongoDBStore) UpdateBasicInfo(user *domain.User) (string, error) {
 	userInDatabase, err := store.Get(user.Id)
 	if userInDatabase == nil {

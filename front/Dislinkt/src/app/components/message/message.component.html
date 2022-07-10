@@ -1,0 +1,22 @@
+<div class="container">
+    <div class="row">
+        <div class="col-6 offset-3" style="border-style: solid; margin-top: 3%; border-width: 2px; height: 480px; overflow-y: scroll;">
+            <div *ngFor="let message of messages">
+                <div *ngIf="message.senderUsername === loggedUser.username" style="margin-top: 1%;">
+                    <b>Ja:&ensp;</b>
+                    {{message.text}}
+                </div>
+                <div *ngIf="message.senderUsername !== loggedUser.username" style="margin-top: 1%;">
+                    <b>{{user.username}}:&ensp;</b>
+                    {{message.text}}
+                </div>
+            </div>
+        </div>
+        <div>
+            <mat-form-field class="col-3 offset-4">
+                <input type="text" name="messageText" matInput [(ngModel)]="messageText" />
+            </mat-form-field>
+            <button style="margin-top: 3%;" (click)="message()" class="col-1 offset-1">Send</button>
+        </div>
+    </div>
+</div>

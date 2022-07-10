@@ -14,6 +14,7 @@ import (
 	job "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/job_service"
 	jobSuggestions "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/job_suggestions_service"
 	post "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/post_service"
+	message "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/message_service"
 	user "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_service"
 	userSuggestion "github.com/XWS-2022-Tim12/Dislinkt/back/common/proto/user_suggestions_service"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -24,16 +25,18 @@ type AuthentificationHandler struct {
 	authentificationClientAddress string
 	userClientAddress             string
 	postClientAdress              string
+	messageClientAdress              string
 	jobClientAdress               string
 	jobSuggestionsClientAdress    string
 	userSuggestionClientAddress   string
 }
 
-func NewAuthentificationHandler(authentificationClientAddress, userClientAddress, postClientAdress, jobClientAdress, userSuggestionClientAddress, jobSuggestionsClientAdress string) Handler {
+func NewAuthentificationHandler(authentificationClientAddress, userClientAddress, postClientAdress, jobClientAdress, userSuggestionClientAddress, jobSuggestionsClientAdress, messageClientAdress string) Handler {
 	return &AuthentificationHandler{
 		authentificationClientAddress: authentificationClientAddress,
 		userClientAddress:             userClientAddress,
 		postClientAdress:              postClientAdress,
+		messageClientAdress:		   messageClientAdress,
 		jobClientAdress:               jobClientAdress,
 		jobSuggestionsClientAdress:    jobSuggestionsClientAdress,
 		userSuggestionClientAddress:   userSuggestionClientAddress,
@@ -89,6 +92,10 @@ func (handler *AuthentificationHandler) Init(mux *runtime.ServeMux) {
 	if err != nil {
 		panic(err)
 	}
+	err = mux.HandlePath("POST", "/user/message/newMessage", handler.AddNewMessage)
+	if err != nil {
+		panic(err)
+	}
 	err = mux.HandlePath("POST", "/job", handler.AddNewJob)
 	if err != nil {
 		panic(err)
@@ -114,6 +121,14 @@ func (handler *AuthentificationHandler) Init(mux *runtime.ServeMux) {
 		panic(err)
 	}
 	err = mux.HandlePath("GET", "/user/post/findPosts", handler.FindPosts)
+	if err != nil {
+		panic(err)
+	}
+	err = mux.HandlePath("GET", "/user/message/messages/{sender}/{receiver}", handler.GetMessagesBySenderAndReceiver)
+	if err != nil {
+		panic(err)
+	}
+	err = mux.HandlePath("GET", "/user/message/messages/{username}", handler.GetUsersInInbox)
 	if err != nil {
 		panic(err)
 	}
@@ -719,6 +734,7 @@ func (handler *AuthentificationHandler) AddNewPost(w http.ResponseWriter, r *htt
 func (handler *AuthentificationHandler) AddNewJobFromDislinkt(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	reqJob := &domain.Job{}
 	errr := json.NewDecoder(r.Body).Decode(&reqJob)
+
 	if errr != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -728,12 +744,12 @@ func (handler *AuthentificationHandler) AddNewJobFromDislinkt(w http.ResponseWri
 		w.WriteHeader(http.StatusNotAcceptable)
 		return
 	}
+
 	_, err = handler.IsUserLoggedIn(tokenCookie.Value)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-
 	jobClient := services.NewJobClient(handler.jobClientAdress)
 	jobSuggestionsClient := services.NewJobSuggestionsClient(handler.jobSuggestionsClientAdress)
 
@@ -798,6 +814,66 @@ func (handler *AuthentificationHandler) SearchJobFromDislinkt(w http.ResponseWri
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(newJobs)
+	return
+}
+
+func (handler *AuthentificationHandler) AddNewMessage(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	reqMessage := &domain.Message{}
+	errr := json.NewDecoder(r.Body).Decode(&reqMessage)
+	if errr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	tokenCookie, err := r.Cookie("sessionId")
+	if err != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+	id, err := handler.IsUserLoggedIn(tokenCookie.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	messageClient := services.NewMessageClient(handler.messageClientAdress)
+	username, err := handler.findUsersUsername(tokenCookie.Value)
+	if username == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	userClient := services.NewUserClient(handler.userClientAddress)
+	followingNotBlockedUsers, err := userClient.GetFollowingNotBlockedUsers(context.TODO(), &user.GetFollowingNotBlockedUsersRequest{Username: username})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	found := false
+	for _, usr := range followingNotBlockedUsers.Users {
+        if usr.Username == reqMessage.ReceiverUsername {
+            found = true
+        }
+    }
+    if found == false {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
+	messageToSend := &message.Message{
+		Id:           reqMessage.Id,
+		Text:         reqMessage.Text,
+		Date:         timestamppb.New(time.Now()),
+		SenderUsername:     username,
+		ReceiverUsername: reqMessage.ReceiverUsername,
+	}
+	messageResponse, err := messageClient.AddNewMessage(context.TODO(), &message.AddNewMessageRequest{Message: messageToSend})
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(messageResponse.Success))
 	return
 }
 
@@ -1205,6 +1281,193 @@ func (handler *AuthentificationHandler) FindUserPosts(w http.ResponseWriter, r *
 	}
 }
 
+func (handler *AuthentificationHandler) GetMessagesBySenderAndReceiver(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	sender := pathParams["sender"]
+	receiver := pathParams["receiver"]
+	
+	tokenCookie, err := r.Cookie("sessionId")
+	if err != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	id, err := handler.IsUserLoggedIn(tokenCookie.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	userClient := services.NewUserClient(handler.userClientAddress)
+	userResponse, err := userClient.GetByUsername(context.TODO(), &user.GetByUsernameRequest{Username: sender})
+
+	for _, usr := range userResponse.User.BlockedUsers {
+        if usr == receiver {
+            w.WriteHeader(http.StatusForbidden)
+			return
+        }
+    }
+
+	messageClient := services.NewMessageClient(handler.messageClientAdress)
+	messagesBySenderAndReceiver, err := messageClient.GetMessagesBySenderAndReceiver(context.TODO(), &message.GetMessagesBySenderAndReceiverRequest{Sender: sender, Receiver: receiver})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	var messagesToSend []*domain.Message
+	for _, message := range messagesBySenderAndReceiver.Messages {
+		current := mapMessage(message)
+		messagesToSend = append(messagesToSend, current)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(messagesToSend)
+	return
+}
+
+func (handler *AuthentificationHandler) GetUsersInInbox(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	username := pathParams["username"]
+	
+	tokenCookie, err := r.Cookie("sessionId")
+	if err != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	id, err := handler.IsUserLoggedIn(tokenCookie.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	userClient := services.NewUserClient(handler.userClientAddress)
+	userResponse, err := userClient.GetByUsername(context.TODO(), &user.GetByUsernameRequest{Username: username})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	
+	messageClient := services.NewMessageClient(handler.messageClientAdress)
+	messagesByUsername, err := messageClient.GetMessagesByUsername(context.TODO(), &message.GetMessagesByUsernameRequest{Username: username})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	var users []*domain.User
+	found := false
+	for _, message := range messagesByUsername.Messages {
+		found = false
+        if username != message.SenderUsername {
+            userResponse1, err := userClient.GetByUsername(context.TODO(), &user.GetByUsernameRequest{Username: message.SenderUsername})
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
+			for _, usr := range userResponse.User.BlockedUsers {
+				if usr == userResponse1.User.Username {
+					found = true
+				}
+			}
+	
+			for _, user := range users {
+				if user.Username == userResponse1.User.Username {
+					found = true
+				}
+			}
+	
+			if found == false {
+				current := mapUser(userResponse1.User)
+				users = append(users, current)
+			}
+        } else {
+			userResponse1, err := userClient.GetByUsername(context.TODO(), &user.GetByUsernameRequest{Username: message.ReceiverUsername})
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
+			for _, usr := range userResponse.User.BlockedUsers {
+				if usr == userResponse1.User.Username {
+					found = true
+				}
+			}
+	
+			for _, user := range users {
+				if user.Username == userResponse1.User.Username {
+					found = true
+				}
+			}
+	
+			if found == false {
+				current := mapUser(userResponse1.User)
+				users = append(users, current)
+			}
+		}
+    }	
+
+	for i, j := 0, len(users)-1; i < j; i, j = i+1, j-1 {
+		users[i], users[j] = users[j], users[i]
+	}
+
+	var usersWithoutBlocked []*domain.User
+	exist := false
+	for _, user := range users {
+		exist = false
+		for _, usr := range user.BlockedUsers {
+			if usr == username {
+				exist = true
+			}
+		}
+
+		if !exist {
+			usersWithoutBlocked = append(usersWithoutBlocked, user)
+		}
+	}
+
+	var usersToSend []*domain.User
+	for _, user := range usersWithoutBlocked {
+		usersToSend = append(usersToSend, user)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(usersToSend)
+	return
+}
+
+func mapMessage(messagePb *message.Message) *domain.Message {
+	if messagePb.Date != nil {
+		message := &domain.Message{
+			Id:           messagePb.Id,
+			Text:         messagePb.Text,
+			Date:         messagePb.Date.AsTime(),
+			SenderUsername:     messagePb.SenderUsername,
+			ReceiverUsername: messagePb.ReceiverUsername,
+		}
+		return message
+	} else {
+		message := &domain.Message{
+			Id:           messagePb.Id,
+			Text:         messagePb.Text,
+			Date:         time.Now(),
+			SenderUsername:     messagePb.SenderUsername,
+			ReceiverUsername: messagePb.ReceiverUsername,
+		}
+		return message
+	}
+}
+
 func mapPost(postPb *post.Post) *domain.Post {
 	if postPb.Date != nil {
 		post := &domain.Post{
@@ -1231,4 +1494,76 @@ func mapPost(postPb *post.Post) *domain.Post {
 		}
 		return post
 	}
+}
+
+func mapUser(userPb *user.User) *domain.User {
+	if userPb.BirthDay != nil {
+		user := &domain.User{
+			Id:                userPb.Id,
+			Firstname:         userPb.Firstname,
+			Email:             userPb.Email,
+			MobileNumber:      userPb.MobileNumber,
+			Gender:            mapNewGender(userPb.Gender),
+			BirthDay:          userPb.BirthDay.AsTime(),
+			Username:          userPb.Username,
+			Biography:         userPb.Biography,
+			Experience:        userPb.Experience,
+			Education:         mapNewEducation(userPb.Education),
+			Skills:            userPb.Skills,
+			Interests:         userPb.Interests,
+			Password:          userPb.Password,
+			FollowingUsers:    userPb.FollowingUsers,
+			FollowedByUsers:   userPb.FollowedByUsers,
+			FollowingRequests: userPb.FollowingRequests,
+			Public:            userPb.Public,
+			BlockedUsers:      userPb.BlockedUsers,
+		}
+		return user
+	} else {
+		user := &domain.User{
+			Id:                userPb.Id,
+			Firstname:         userPb.Firstname,
+			Email:             userPb.Email,
+			MobileNumber:      userPb.MobileNumber,
+			Gender:            mapNewGender(userPb.Gender),
+			BirthDay:          time.Now(),
+			Username:          userPb.Username,
+			Biography:         userPb.Biography,
+			Experience:        userPb.Experience,
+			Education:         mapNewEducation(userPb.Education),
+			Skills:            userPb.Skills,
+			Interests:         userPb.Interests,
+			Password:          userPb.Password,
+			FollowingUsers:    userPb.FollowingUsers,
+			FollowedByUsers:   userPb.FollowedByUsers,
+			FollowingRequests: userPb.FollowingRequests,
+			Public:            userPb.Public,
+			BlockedUsers:      userPb.BlockedUsers,
+		}
+		return user
+	}
+}
+
+func mapNewGender(status user.User_GenderEnum) string {
+	switch status {
+	case user.User_Male:
+		return "Male"
+	}
+	return "Female"
+}
+
+func mapNewEducation(status user.User_EducationEnum) string {
+	switch status {
+	case user.User_PrimaryEducation:
+		return "Primary education"
+	case user.User_LowerSecondaryEducation:
+		return "Lower secondary education"
+	case user.User_UpperSecondaryEducation:
+		return "Upper secondary education"
+	case user.User_Bachelor:
+		return "Bachelor"
+	case user.User_Master:
+		return "Master"
+	}
+	return "Doctorate"
 }
