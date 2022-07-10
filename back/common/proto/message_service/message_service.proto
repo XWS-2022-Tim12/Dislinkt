@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+option go_package = "github.com/XWS-2022-Tim12/Dislinkt/back/common/message";
+
+package message;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+service MessageService{
+        rpc Get(GetRequest) returns(GetResponse) {
+        	option (google.api.http) = {
+			get: "/message/{id}"
+		};
+        }
+        rpc GetAll(GetAllRequest) returns(GetAllResponse) {
+        	option (google.api.http) = {
+			get: "/message/messages"
+		};
+        }
+        rpc GetMessagesBySenderAndReceiver(GetMessagesBySenderAndReceiverRequest) returns(GetMessagesBySenderAndReceiverResponse) {
+        	option (google.api.http) = {
+			get: "/message/messages/{sender}/{receiver}"
+		};
+        }
+        rpc GetMessagesByUsername(GetMessagesByUsernameRequest) returns(GetMessagesByUsernameResponse) {
+        	option (google.api.http) = {
+			get: "/message/messages/{username}"
+		};
+        }
+        rpc AddNewMessage(AddNewMessageRequest) returns(AddNewMessageResponse) {
+                option (google.api.http) = {
+                        post: "/message/addMessage"
+                        body: "message"
+                };
+        }
+}
+
+message GetRequest {
+        string id = 1;
+}
+
+message GetResponse {
+        Message message = 1;
+}
+
+message GetMessagesBySenderAndReceiverRequest {
+        string sender = 1;
+        string receiver = 2;
+}
+
+message GetMessagesBySenderAndReceiverResponse {
+        repeated Message messages = 1;
+}
+
+message GetMessagesByUsernameRequest {
+        string username = 1;
+}
+
+message GetMessagesByUsernameResponse {
+        repeated Message messages = 1;
+}
+
+message GetAllRequest {
+}
+
+message GetAllResponse {
+        repeated Message messages = 1;
+}
+
+message AddNewMessageRequest {
+        Message message = 1;
+}
+
+message AddNewMessageResponse {
+        string success = 1;
+}
+
+message Message {
+        string id = 1;
+        string text = 2;
+        google.protobuf.Timestamp date = 3;
+        string senderUsername = 4;
+        string receiverUsername = 5;
+}

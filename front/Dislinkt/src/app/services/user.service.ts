@@ -22,6 +22,8 @@ export class UserService {
   private rejectFollowingRequestUrl: string;
   private blockUserUrl: string;
   private getSuggestionsUrl: string;
+  private getUsernamesInInboxUrl: string;
+
 
   constructor(private http: HttpClient) {
     this.loginUrl = 'http://localhost:8000/user/login';
@@ -39,6 +41,7 @@ export class UserService {
     this.rejectFollowingRequestUrl = 'http://localhost:8000/user/rejectFollowingRequest';
     this.blockUserUrl = 'http://localhost:8000/user/blockUser';
     this.getSuggestionsUrl = 'http://localhost:8000/user/suggestions/users';
+    this.getUsernamesInInboxUrl = 'http://localhost:8000/user/message/messages';
    }
 
    public login(user: User): Observable<void> {
@@ -89,7 +92,12 @@ export class UserService {
     return this.http.put<string>(this.blockUserUrl, user,{responseType: 'text' as 'json',withCredentials: true});
   }
 
+
   public getSuggestions(): Observable<Array<User>> {
     return this.http.get<Array<User>>(this.getSuggestionsUrl,{withCredentials: true});
+  }
+
+  public getUsernamesInInbox(username: string): Observable<Array<User>> {
+    return this.http.get<Array<User>>(this.getUsernamesInInboxUrl + '/' + username,{withCredentials: true});
   }
 }

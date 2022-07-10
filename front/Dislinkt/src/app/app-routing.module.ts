@@ -11,6 +11,8 @@ import { ShowUsersComponent } from './components/show-users/show-users.component
 import { ShowSuggestionsForFollowingComponent } from './components/show-suggestions-for-following/show-suggestions-for-following.component';
 import { AddJobComponent } from './components/add-job/add-job.component';
 import { ShowJobsComponent } from './components/show-jobs/show-jobs.component';
+import { MessageComponent } from './components/message/message.component';
+
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -23,7 +25,8 @@ const routes: Routes = [
   { path: 'showUsers', component: ShowUsersComponent},
   { path: 'followingSuggestions', component: ShowSuggestionsForFollowingComponent},
   { path: 'addJob', component: AddJobComponent},
-  { path: 'recommendedJobs', component: ShowJobsComponent}
+  { path: 'recommendedJobs', component: ShowJobsComponent},
+  { path: 'message/:username', component: MessageComponent}
 ];
 
 @NgModule({

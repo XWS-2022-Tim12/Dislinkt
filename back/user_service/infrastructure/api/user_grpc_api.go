@@ -112,6 +112,23 @@ func (handler *UserHandler) GetAllPublicUsersByUsername(ctx context.Context, req
 	return response, nil
 }
 
+func (handler *UserHandler) GetFollowingNotBlockedUsers(ctx context.Context, request *pb.GetFollowingNotBlockedUsersRequest) (*pb.GetFollowingNotBlockedUsersResponse, error) {
+	username := request.Username
+	followingNotBlockedUsers, err := handler.service.GetFollowingNotBlockedUsers(username)
+	if err != nil {
+		return nil, err
+	}
+
+	response := &pb.GetFollowingNotBlockedUsersResponse{
+		Users: []*pb.User{},
+	}
+	for _, user := range followingNotBlockedUsers {
+		current := mapUser(user)
+		response.Users = append(response.Users, current)
+	}
+	return response, nil
+}
+
 func (handler *UserHandler) Register(ctx context.Context, request *pb.RegisterRequest) (*pb.RegisterResponse, error) {
 	user := mapNewUser(request.User)
 	successs, err := handler.service.Register(user)

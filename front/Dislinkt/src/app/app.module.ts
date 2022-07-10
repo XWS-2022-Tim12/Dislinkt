@@ -21,6 +21,8 @@ import { ShowUsersComponent } from './components/show-users/show-users.component
 import { ShowSuggestionsForFollowingComponent } from './components/show-suggestions-for-following/show-suggestions-for-following.component';
 import { AddJobComponent } from './components/add-job/add-job.component';
 import { ShowJobsComponent } from './components/show-jobs/show-jobs.component';
+import { MessageComponent } from './components/message/message.component';
+
 
 
 @NgModule({
@@ -36,7 +38,9 @@ import { ShowJobsComponent } from './components/show-jobs/show-jobs.component';
     ShowUsersComponent,
     ShowSuggestionsForFollowingComponent,
     AddJobComponent,
-    ShowJobsComponent
+    ShowJobsComponent,
+    MessageComponent
+
   ],
   imports: [
     BrowserModule,

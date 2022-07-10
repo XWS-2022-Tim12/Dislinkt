@@ -1,26 +1,26 @@
 <div class="container">
-    <div class="row">
-      <div class="col-6 offset-3" style="border-style: solid; margin-top: 3%; border-width: 2px; height: 550px;">
-        <div class="col-4 offset-4" style="font-size: 20px; margin-top: 5%; font-weight: bold; text-align: center;">Create a post</div>
-        <form>
-          <mat-form-field class="col-6 offset-3" style="margin-top: 5%;">
-            <mat-label>Text</mat-label>
-            <textarea id="text" name="text" matInput [(ngModel)]="text"></textarea>
-          </mat-form-field>
-          <div *ngIf="!file" class="col-6 offset-3" style="color:gray; text-align: left; font-size: 16px; margin-top: 5%;">Picture</div>
-          <div class="file-container col-6 offset-3" *ngIf="!file">
-            <input id="imageContent" type="file" name="imageContent" (change)="getFile($event)" class="file" />
-          </div>
-          <div *ngIf="file" class="col-6 offset-3">
-            File name: {{file.name}} <br />
-            <button (click)="file = undefined">clear file</button>
-          </div> <br />
-          <div style="text-align: left;" class="col-7 offset-3">
-            <span *ngIf="emptyFields" style="visibility: visible;color: red;">Post must have at least text or picture!</span>
-            <span *ngIf="!emptyFields" style="visibility: hidden;color: red;">Post must have at least text or picture!</span>
-          </div>
-        </form>
-        <button style="margin-top: 10%;" (click)="createPost()" class="col-2 offset-5">Create</button>
-      </div>
+  <div class="row">
+    <div class="col-6 offset-3" style="border-style: solid; margin-top: 3%; border-width: 2px; height: 550px;">
+      <div class="col-4 offset-4" style="font-size: 20px; margin-top: 5%; font-weight: bold; text-align: center;">Create a post</div>
+      <form>
+        <mat-form-field class="col-6 offset-3" style="margin-top: 5%;">
+          <mat-label>Text</mat-label>
+          <textarea id="text" name="text" matInput [(ngModel)]="text"></textarea>
+        </mat-form-field>
+        <div *ngIf="!file" class="col-6 offset-3" style="color:gray; text-align: left; font-size: 16px; margin-top: 5%;">Picture</div>
+        <div class="file-container col-6 offset-3" *ngIf="!file">
+          <input id="imageContent" type="file" name="imageContent" (change)="getFile($event)" class="file" />
+        </div>
+        <div *ngIf="file" class="col-6 offset-3">
+          File name: {{file.name}} <br />
+          <button (click)="file = undefined">clear file</button>
+        </div> <br />
+        <div style="text-align: left;" class="col-7 offset-3">
+          <span *ngIf="emptyFields" style="visibility: visible;color: red;">Post must have at least text or picture!</span>
+          <span *ngIf="!emptyFields" style="visibility: hidden;color: red;">Post must have at least text or picture!</span>
+        </div>
+      </form>
+      <button style="margin-top: 10%;" (click)="createPost()" class="col-2 offset-5">Create</button>
     </div>
   </div>
+</div>

@@ -10,6 +10,8 @@ type Config struct {
 	AuthentificationPort string
 	PostHost             string
 	PostPort             string
+	MessageHost          string
+	MessagePort          string
 	JobHost              string
 	JobPort              string
 	JobSuggestionsHost   string
@@ -27,6 +29,8 @@ func NewConfig() *Config {
 		AuthentificationPort: os.Getenv("AUTHENTIFICATION_SERVICE_PORT"),
 		PostHost:             os.Getenv("POST_SERVICE_HOST"),
 		PostPort:             os.Getenv("POST_SERVICE_PORT"),
+		MessageHost:          os.Getenv("MESSAGE_SERVICE_HOST"),
+		MessagePort:          os.Getenv("MESSAGE_SERVICE_PORT"),
 		JobHost:              os.Getenv("JOB_SERVICE_HOST"),
 		JobPort:              os.Getenv("JOB_SERVICE_PORT"),
 		JobSuggestionsHost:   os.Getenv("JOB_SUGGESTIONS_SERVICE_HOST"),

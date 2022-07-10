@@ -12,6 +12,7 @@ type UserStore interface {
 	GetAllPublicUsers() ([]*User, error)
 	GetAllUsersByUsername(username string) ([]*User, error)
 	GetAllPublicUsersByUsername(username string) ([]*User, error)
+	GetFollowingNotBlockedUsers(username string) ([]*User, error)
 	GetAll() ([]*User, error)
 	Insert(user *User) (string, error)
 	InsertClassic(user *User) (string, error)
