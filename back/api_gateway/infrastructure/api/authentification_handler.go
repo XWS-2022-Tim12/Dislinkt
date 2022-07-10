@@ -1029,6 +1029,7 @@ func (handler *AuthentificationHandler) AddNewJob(w http.ResponseWriter, r *http
 	}
 
 	jobClient := services.NewJobClient(handler.jobClientAdress)
+	jobSuggestionsClient := services.NewJobSuggestionsClient(handler.jobSuggestionsClientAdress)
 
 	jobToSend := &job.Job{
 		Id:                 reqJob.Id,
@@ -1042,7 +1043,16 @@ func (handler *AuthentificationHandler) AddNewJob(w http.ResponseWriter, r *http
 		HrInterviews:       reqJob.HrInterviews,
 		TehnicalInterviews: reqJob.TehnicalInterviews,
 	}
+	jobToSendSugg := &jobSuggestions.Job{
+		Id:           reqJob.Id,
+		UserId:       reqJob.UserId,
+		Position:     reqJob.Position,
+		Description:  reqJob.Description,
+		Requirements: reqJob.Requirements,
+	}
+
 	jobResponse, err := jobClient.Add(context.TODO(), &job.AddRequest{Job: jobToSend})
+	_, err = jobSuggestionsClient.Register(context.TODO(), &jobSuggestions.RegisterRequest{Job: jobToSendSugg})
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(jobResponse.Success))
 	return
@@ -1323,7 +1333,7 @@ func (handler *AuthentificationHandler) GetSuggestionsForLoggedUser(w http.Respo
 
 	suggestionsResponse, err := userSuggestionsClient.GetAll(context.TODO(), &userSuggestion.GetAllRequest{})
 	for _, suggest := range suggestionsResponse.Users {
-		if strings.Contains(strings.ToLower(suggest.Interests), strings.ToLower(user.User.Interests)) {
+		if strings.Contains(strings.ToLower(user.User.Interests), strings.ToLower(suggest.Interests)) {
 			suggestedUsers = append(suggestedUsers, suggest)
 		}
 	}
