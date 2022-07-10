@@ -220,6 +220,10 @@ export class ProfileComponent implements OnInit {
     this.router.navigate(['/showUsers']);
   }
 
+  showSuggestions() {
+    this.router.navigate(['/followingSuggestions']);
+  }
+
   get username() {
     return this.profileForm.get('username');
   }

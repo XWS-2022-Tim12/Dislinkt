@@ -1,0 +1,29 @@
+<div style=" background-color: rgba(128, 150, 240, 0.278);">
+    <label style="margin-left: 600px; font-size: 35px; margin-top: 50px;"> <b>All users</b> </label>
+    <div class="container">
+        <div class="row" style="margin-top: 30px;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="table" *ngIf="suggestedUsers.length !== 0">
+                            <thead class="thead-light">
+                                <tr >
+                                    <th scope="col">Username</th>
+                                </tr>
+                            </thead>
+                            <tbody *ngFor="let user of suggestedUsers;let indexOfelement=index;">
+                                <tr *ngIf="isUserFollowing(user.username) === false">
+                                    <td scope="col">{{user.username}}</td>
+                                    <td> <button class="btn btn-primary" (click)="openProfile(indexOfelement)"> Open profile </button> </td>
+                                    <td> <button class="btn btn-success" (click)="followUser(indexOfelement)"> Follow </button> </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <label *ngIf="suggestedUsers.length === 0" style="margin-left: 500px; margin-top: 50px; font-size: 20px;"> There are not suggested users for you!</label>
+    <div class="row" style="height: 150px;"></div>
+</div>

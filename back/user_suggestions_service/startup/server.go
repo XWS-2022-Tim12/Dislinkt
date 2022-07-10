@@ -48,6 +48,7 @@ func (server *Server) initNeo4jSession() *neo4j.Session {
 
 func (server *Server) initUserSuggestionsStore(client *neo4j.Session) domain.UserSuggestionsGraph {
 	store := persistence.NewUserSuggestionsGraph(client)
+	store.DeleteAll()
 	return store
 }
 

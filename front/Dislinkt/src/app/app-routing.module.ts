@@ -8,6 +8,7 @@ import { NewPostComponent } from './components/new-post/new-post.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { RegisterComponent } from './components/register/register.component';
 import { ShowUsersComponent } from './components/show-users/show-users.component';
+import { ShowSuggestionsForFollowingComponent } from './components/show-suggestions-for-following/show-suggestions-for-following.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -17,7 +18,8 @@ const routes: Routes = [
   { path: 'user/profile/:username', component: OtherUserProfileComponent },
   { path: 'user/following-requests', component: FollowingRequestsComponent },
   { path: 'createPost', component: NewPostComponent},
-  { path: 'showUsers', component: ShowUsersComponent}
+  { path: 'showUsers', component: ShowUsersComponent},
+  { path: 'followingSuggestions', component: ShowSuggestionsForFollowingComponent}
 ];
 
 @NgModule({

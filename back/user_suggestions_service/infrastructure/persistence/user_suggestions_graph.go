@@ -31,3 +31,9 @@ func (store *UserSuggestionsDBGraph) GetAll() ([]*domain.User, error) {
 	}
 	return users, nil
 }
+
+func (store *UserSuggestionsDBGraph) DeleteAll() {
+	var session = *store.session
+	DeleteAll(session)
+	return
+}

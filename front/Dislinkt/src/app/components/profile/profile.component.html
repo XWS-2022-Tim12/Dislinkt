@@ -10,9 +10,18 @@
                     <button class="btn btn-dark" style="width: 70px;" (click)="searchUser()"> Search </button>
                 </div>
             </div>
-            <button class="btn btn-primary" (click)="showUsers()" style="margin-top: 20px; margin-left: 30px; width: 150px;">
-                <span>Show all users</span>
-            </button>
+            <div class="row">
+                <div class="col-3">
+                    <button class="btn btn-primary" (click)="showUsers()" style="margin-top: 20px; margin-left: 30px; width: 150px;">
+                        <span>Show all users</span>
+                    </button>
+                </div>
+                <div class="col-3">
+                    <button class="btn btn-secondary" (click)="showSuggestions()" style="margin-top: 20px; margin-left: 20px; width: 250px;">
+                        <span>Show suggestions for following</span>
+                    </button>
+                </div>
+            </div>
 			<form class="profile" [formGroup]="profileForm">
 				<div class="profilePolje">
 					<input type="text" formControlName="username" [(ngModel)]="user.username" class="profileInput" placeholder="username"/>

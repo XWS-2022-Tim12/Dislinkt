@@ -52,7 +52,8 @@ export class RegisterComponent implements OnInit {
 
     let dateTimeUTC = new Date(this.user.birthDay+"T12:00:00Z");
     this.user.birthDay = dateTimeUTC;
-      this.userService.register(this.user).subscribe(ret => {   
+      this.userService.register(this.user).subscribe(ret => { 
+        sessionStorage.setItem("username",this.user.username);  
           this.router.navigate(['/profile']);
       },
       (error: HttpErrorResponse) => {

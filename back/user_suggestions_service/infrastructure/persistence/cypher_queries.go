@@ -54,3 +54,12 @@ func GetAll(session neo4j.Session) (users []*domain.User, err1 error) {
 	return users, nil
 
 }
+
+func DeleteAll(session neo4j.Session) {
+	session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+		var records, err = tx.Run(
+			"MATCH (n) DETACH DELETE n", map[string]interface{}{})
+		return records, err
+	})
+	return
+}

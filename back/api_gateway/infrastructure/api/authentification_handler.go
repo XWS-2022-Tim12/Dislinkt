@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/XWS-2022-Tim12/Dislinkt/back/api_gateway/domain"
@@ -106,6 +107,10 @@ func (handler *AuthentificationHandler) Init(mux *runtime.ServeMux) {
 		panic(err)
 	}
 	err = mux.HandlePath("GET", "/user/post/findUserPosts/{username}", handler.FindUserPosts)
+	if err != nil {
+		panic(err)
+	}
+	err = mux.HandlePath("GET", "/user/suggestions/users", handler.GetSuggestionsForLoggedUser)
 	if err != nil {
 		panic(err)
 	}
@@ -894,6 +899,45 @@ func (handler *AuthentificationHandler) CommentPost(w http.ResponseWriter, r *ht
 	postResponse, err := postClient.CommentPost(context.TODO(), &post.CommentPostRequest{Post: postToSend})
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(postResponse.Success))
+	return
+}
+
+func (handler *AuthentificationHandler) GetSuggestionsForLoggedUser(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+
+	tokenCookie, err := r.Cookie("sessionId")
+	if err != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	id, err := handler.IsUserLoggedIn(tokenCookie.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	if id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	authentificationClient := services.NewAuthentificationClient(handler.authentificationClientAddress)
+	success, err := authentificationClient.Get(context.TODO(), &authentification.GetRequest{Id: tokenCookie.Value})
+	userId := success.Session.UserId
+	userClient := services.NewUserClient(handler.userClientAddress)
+	user, err := userClient.Get(context.TODO(), &user.GetRequest{Id: userId})
+
+	userSuggestionsClient := services.NewUserSuggestionsClient(handler.userSuggestionClientAddress)
+	suggestedUsers := make([]*userSuggestion.User, 0)
+
+	suggestionsResponse, err := userSuggestionsClient.GetAll(context.TODO(), &userSuggestion.GetAllRequest{})
+	for _, suggest := range suggestionsResponse.Users {
+		if strings.Contains(strings.ToLower(suggest.Interests), strings.ToLower(user.User.Interests)) {
+			suggestedUsers = append(suggestedUsers, suggest)
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(suggestedUsers)
 	return
 }
 

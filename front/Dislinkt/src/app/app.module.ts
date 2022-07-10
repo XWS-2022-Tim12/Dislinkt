@@ -18,6 +18,7 @@ import { FollowingRequestsComponent } from './components/following-requests/foll
 import { NewPostComponent } from './components/new-post/new-post.component';
 import { LinkyModule } from 'ngx-linky';
 import { ShowUsersComponent } from './components/show-users/show-users.component';
+import { ShowSuggestionsForFollowingComponent } from './components/show-suggestions-for-following/show-suggestions-for-following.component';
 
 
 @NgModule({
@@ -30,7 +31,8 @@ import { ShowUsersComponent } from './components/show-users/show-users.component
     OtherUserProfileComponent,
     FollowingRequestsComponent,
     NewPostComponent,
-    ShowUsersComponent
+    ShowUsersComponent,
+    ShowSuggestionsForFollowingComponent
   ],
   imports: [
     BrowserModule,
