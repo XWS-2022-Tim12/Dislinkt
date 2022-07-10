@@ -288,4 +288,9 @@ message User {
         bool notifications = 19;
         repeated string notificationOffUsers = 20;
         repeated string notificationOffMessages = 21;
+        enum RoleEnum {
+                Client = 0;
+                Admin = 1;
+        }
+        RoleEnum role = 22;
 }

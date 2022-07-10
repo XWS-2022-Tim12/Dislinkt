@@ -23,4 +23,5 @@ export class User {
     notifications: boolean;
     notificationOffUsers: Array<string>;
     notificationOffMessages: Array<string>;
+    role: string;
 }

@@ -1,0 +1,27 @@
+<div *ngIf="areEventsEmpty">
+    <h3>There are not any events!</h3>
+</div>
+<div *ngIf="!areEventsEmpty">
+    <h3>All events:</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Sender</th>
+                <th>Receiver</th>
+                <th>Type</th>
+                <th>Date</th>
+                <th>Description</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let event of events">
+                <td>{{ event.sender }}</td>
+                <td>{{ event.receiver }}</td>
+                <td>{{ event.notificationType }}</td>
+                <td>{{ event.creationDate }}</td>
+                <td>{{ event.description }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

@@ -141,6 +141,28 @@ var users = []*domain.User{
 		BlockedUsers:	   []string{},
 		Notifications:	   true,
 	},
+	{
+		Id:                getObjectId("23f834d25d8367d913d"),
+		Firstname:         "Admin",
+		Email:             "admin@gmail.com",
+		MobileNumber:      "063485264",
+		Gender:            domain.Male,
+		BirthDay:          time.Now(),
+		Username:          "admin",
+		Biography:         "Zivio u Nisu",
+		Experience:        "Sportsko iskustvo",
+		Education:         domain.Master,
+		Skills:            "Trener",
+		Interests:         "Sport",
+		Password:          "adminadmin",
+		FollowingUsers:    []string{},
+		FollowedByUsers:   []string{},
+		FollowingRequests: []string{},
+		Public:            false,
+		BlockedUsers:	   []string{},
+		Notifications:	   true,
+		Role:			   domain.Admin,
+	},
 }
 
 func getObjectId(id string) primitive.ObjectID {

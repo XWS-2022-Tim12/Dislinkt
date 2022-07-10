@@ -19,6 +19,7 @@ import { NewPostComponent } from './components/new-post/new-post.component';
 import { LinkyModule } from 'ngx-linky';
 import { ShowUsersComponent } from './components/show-users/show-users.component';
 import { NotificationsComponent } from './components/notifications/notifications.component';
+import { EventsComponent } from './components/events/events.component';
 
 
 @NgModule({
@@ -32,7 +33,8 @@ import { NotificationsComponent } from './components/notifications/notifications
     FollowingRequestsComponent,
     NewPostComponent,
     ShowUsersComponent,
-    NotificationsComponent
+    NotificationsComponent,
+    EventsComponent
   ],
   imports: [
     BrowserModule,

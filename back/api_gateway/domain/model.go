@@ -24,6 +24,7 @@ type User struct {
 	Notifications	  bool
 	NotificationOffUsers    []string
 	NotificationOffMessages   []string
+	Role				string
 }
 
 type Session struct {

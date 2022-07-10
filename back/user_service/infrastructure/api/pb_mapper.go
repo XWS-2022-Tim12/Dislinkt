@@ -32,6 +32,7 @@ func mapUser(user *domain.User) *pb.User {
 		Notifications:	   user.Notifications,
 		NotificationOffUsers: user.NotificationOffUsers,
 		NotificationOffMessages: user.NotificationOffMessages,
+		Role:			   mapRole(user.Role),
 	}
 	return userPb
 }
@@ -229,6 +230,14 @@ func mapNewGender(status pb.User_GenderEnum) domain.GenderEnum {
 	}
 	return domain.Female
 
+}
+
+func mapRole(status domain.RoleEnum) pb.User_RoleEnum {
+	switch status {
+		case domain.Client:
+			return pb.User_Client
+	}
+	return pb.User_Admin
 }
 
 func mapUserToFollow(userPb *pb.User) *domain.User {
