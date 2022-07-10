@@ -15,6 +15,15 @@
     <div *ngIf="followingRequest" class="following">
         <label>Following request</label>
     </div>
+
+    <div *ngIf="following" class="notificationSettings">
+        <div *ngIf="blockedNotifications">
+            <button (click)="blockNotifications(user.username)">Turn on notifications</button>
+        </div>
+        <div *ngIf="!blockedNotifications">
+            <button (click)="blockNotifications(user.username)">Turn off notifications</button>
+        </div>
+    </div>
 </div>
 <div style="font-weight: bold;" class="posts">
     Posts

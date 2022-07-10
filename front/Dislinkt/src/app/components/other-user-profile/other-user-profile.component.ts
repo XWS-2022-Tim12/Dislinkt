@@ -22,6 +22,8 @@ export class OtherUserProfileComponent implements OnInit {
   following: boolean;
   followingRequest: boolean;
 
+  blockedNotifications: boolean;
+
   constructor(private route: ActivatedRoute,  private postService: PostService, private userService: UserService, public sanitizer: DomSanitizer) { }
 
   ngOnInit(): void {
@@ -36,6 +38,7 @@ export class OtherUserProfileComponent implements OnInit {
           this.canFollow = false;
           this.following = false;
           this.followingRequest = false;
+          this.blockedNotifications = false;
           return
         }
         if (sessionStorage.getItem("username") != null) {
@@ -56,6 +59,12 @@ export class OtherUserProfileComponent implements OnInit {
             this.canFollow = false;
             this.following = false;
             this.followingRequest = true;
+            break;
+          }
+        }
+        for (let u of this.loggedUser.notificationOffUsers) {
+          if (u == this.username) {
+            this.blockedNotifications = true;
             break;
           }
         }
@@ -105,5 +114,14 @@ export class OtherUserProfileComponent implements OnInit {
 
       })
     }
+  }
+
+  blockNotifications(username: string) {
+    let user = new User();
+    user.id = this.loggedUser.id;
+    user.username = username;
+    this.userService.changeNotificationsUsers(user).subscribe(ret => {
+      window.location.reload();
+    })
   }
 }

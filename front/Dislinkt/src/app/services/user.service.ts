@@ -21,6 +21,9 @@ export class UserService {
   private acceptFollowingRequestUrl: string;
   private rejectFollowingRequestUrl: string;
   private blockUserUrl: string;
+  private changeNotificationsUrl: string;
+  private changeNotificationsUsersUrl: string;
+  private changeNotificationsMessagesUrl: string;
 
   constructor(private http: HttpClient) {
     this.loginUrl = 'http://localhost:8000/user/login';
@@ -37,6 +40,9 @@ export class UserService {
     this.acceptFollowingRequestUrl = 'http://localhost:8000/user/acceptFollowingRequest';
     this.rejectFollowingRequestUrl = 'http://localhost:8000/user/rejectFollowingRequest';
     this.blockUserUrl = 'http://localhost:8000/user/blockUser';
+    this.changeNotificationsUrl = 'http://localhost:8000/user/changeNotifications';
+    this.changeNotificationsUsersUrl = 'http://localhost:8000/user/changeNotificationsUsers';
+    this.changeNotificationsMessagesUrl = 'http://localhost:8000/user/changeNotificationsMessages';
    }
 
    public login(user: User): Observable<void> {
@@ -85,5 +91,17 @@ export class UserService {
 
   public blockUser(user: User): Observable<string> {
     return this.http.put<string>(this.blockUserUrl, user,{responseType: 'text' as 'json',withCredentials: true});
+  }
+
+  public changeNotifications(user: User): Observable<string> {
+    return this.http.put<string>(this.changeNotificationsUrl, user, { responseType: 'text' as 'json', withCredentials: true } );
+  }
+
+  public changeNotificationsUsers(user: User): Observable<string> {
+    return this.http.put<string>(this.changeNotificationsUsersUrl, user, { responseType: 'text' as 'json', withCredentials: true } );
+  }
+
+  public changeNotificationsMessages(user: User): Observable<string> {
+    return this.http.put<string>(this.changeNotificationsMessagesUrl, user, { responseType: 'text' as 'json', withCredentials: true } );
   }
 }

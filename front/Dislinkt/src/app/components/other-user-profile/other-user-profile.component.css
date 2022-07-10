@@ -33,3 +33,10 @@
     margin-left: 2%;
     border: 2px solid green;
 }
+
+.notificationSettings {
+    width: 50%;
+    margin: auto;
+    text-align: center;
+    border: 2px solid green;
+}
